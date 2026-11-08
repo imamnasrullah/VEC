@@ -7,8 +7,84 @@
   <title>VEC | Vocational Education Challenge</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="app-shell">
+
+  <body>
+
+  <!-- HALAMAN LOGIN -->
+  <section id="loginScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">VEC<span>✦</span></div>
+      <h1>Selamat Datang di VEC</h1>
+      <p>Vocational Education Challenge</p>
+
+      <form id="loginForm">
+        <label for="loginNim">Nomor Induk Mahasiswa (NIM)</label>
+        <input
+          type="text"
+          id="loginNim"
+          placeholder="Masukkan NIM"
+          inputmode="numeric"
+          autocomplete="username"
+          required
+        >
+
+        <label for="loginPassword">Password</label>
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Masukkan password"
+          autocomplete="current-password"
+          required
+        >
+
+        <button type="submit" class="auth-button" id="loginBtn">
+          Login
+        </button>
+
+        <p id="loginMessage" class="auth-message"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- HALAMAN GANTI PASSWORD -->
+  <section id="changePasswordScreen" class="auth-screen" hidden>
+    <div class="auth-card">
+      <div class="auth-logo">VEC<span>✦</span></div>
+      <h1>Ganti Password</h1>
+      <p>Silakan buat password baru sebelum masuk ke Dashboard.</p>
+
+      <form id="changePasswordForm">
+        <label for="newPassword">Password Baru</label>
+        <input
+          type="password"
+          id="newPassword"
+          placeholder="Minimal 8 karakter"
+          minlength="8"
+          autocomplete="new-password"
+          required
+        >
+
+        <label for="confirmPassword">Konfirmasi Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          placeholder="Ulangi password baru"
+          minlength="8"
+          autocomplete="new-password"
+          required
+        >
+
+        <button type="submit" class="auth-button">
+          Simpan Password Baru
+        </button>
+
+        <p id="changePasswordMessage" class="auth-message"></p>
+      </form>
+    </div>
+  </section>
+
+  <div class="app-shell" id="dashboardScreen" hidden>
+    
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="#" aria-label="VEC Dashboard">
         <div class="brand-mark">VEC<span>✦</span></div>
@@ -130,6 +206,8 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
