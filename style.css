@@ -239,3 +239,1239 @@ footer { color: #7890b1; font-size: 10px; display: flex; justify-content: space-
   font-size: 12px;
   margin-top: 12px;
 }
+
+
+
+/* ==========================================
+   ADMIN VEC
+========================================== */
+
+.admin-screen {
+    min-height: 100vh;
+    width: 100%;
+    padding: 50px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #101827;
+    box-sizing: border-box;
+}
+
+.admin-screen[hidden] {
+    display: none !important;
+}
+
+.admin-screen > .panel {
+    width: 100%;
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 32px;
+    background: #1c2940;
+    border: 1px solid #34465f;
+    border-radius: 18px;
+    box-sizing: border-box;
+    color: #ffffff;
+}
+
+.admin-screen h2 {
+    margin-top: 0;
+    color: #59e6b5;
+    font-size: 28px;
+}
+
+.admin-screen p {
+    color: #c5d1e0;
+}
+
+.admin-search {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.admin-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 16px;
+    border: 1px solid #435671;
+    border-radius: 10px;
+    background: #101827;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+}
+
+.admin-search input:focus {
+    border-color: #59e6b5;
+}
+
+.admin-search button {
+    padding: 14px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #59e6b5;
+    color: #101827;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.admin-search button:hover {
+    opacity: 0.85;
+}
+
+.admin-search button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#adminStudentResult .panel {
+    margin-top: 24px;
+    padding: 22px;
+    background: #243650;
+    border-radius: 12px;
+    border: 1px solid #435671;
+}
+
+#adminStudentResult h3 {
+    color: #59e6b5;
+    margin-top: 0;
+}
+
+#adminStudentResult p {
+    padding: 8px 0;
+    border-bottom: 1px solid #435671;
+}
+
+@media (max-width: 600px) {
+    .admin-screen {
+        padding: 20px 12px;
+    }
+
+    .admin-screen > .panel {
+        padding: 20px;
+        margin: 10px auto;
+    }
+
+    .admin-search {
+        flex-direction: column;
+    }
+
+    .admin-search button {
+        width: 100%;
+    }
+}
+
+
+/* Tombol Reset Password */
+#adminResetPasswordBtn {
+    margin-top: 18px;
+    padding: 13px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #59e6b5;
+    color: #101827;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#adminResetPasswordBtn:hover {
+    background: #42c99b;
+    transform: translateY(-2px);
+}
+
+#adminResetPasswordBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Panel Password Sementara */
+.admin-reset-result {
+    margin-top: 20px;
+    padding: 22px;
+    background: #243650;
+    border: 1px solid #59e6b5;
+    border-radius: 12px;
+    color: #ffffff;
+}
+
+.admin-reset-result h3 {
+    margin-top: 0;
+    color: #59e6b5;
+}
+
+.admin-reset-result p {
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.admin-reset-result .temporary-password {
+    display: block;
+    margin-top: 10px;
+    padding: 14px;
+    background: #101827;
+    border: 1px dashed #59e6b5;
+    border-radius: 8px;
+    color: #59e6b5;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    overflow-wrap: anywhere;
+}
+
+
+
+.admin-list-control {
+    margin-top: 18px;
+}
+
+#adminLoadStudentsBtn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #59e6b5;
+    color: #101827;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#adminLoadStudentsBtn:hover {
+    background: #42c99b;
+}
+
+#adminLoadStudentsBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#adminStudentsList {
+    margin-top: 25px;
+    overflow-x: auto;
+}
+
+#adminStudentsList h3 {
+    color: #59e6b5;
+    margin-bottom: 15px;
+}
+
+.admin-students-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ffffff;
+    background: #243650;
+    font-size: 13px;
+}
+
+.admin-students-table th,
+.admin-students-table td {
+    padding: 12px;
+    border: 1px solid #435671;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.admin-students-table th {
+    background: #101827;
+    color: #59e6b5;
+}
+
+.admin-students-table tr:hover {
+    background: #304765;
+}
+
+
+#adminLogoutBtn {
+    margin-top: 12px;
+    padding: 11px 18px;
+    border: 1px solid #59e6b5;
+    border-radius: 9px;
+    background-color: #1c2940 !important;
+    color: #59e6b5 !important;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#adminLogoutBtn:hover {
+    background-color: #59e6b5 !important;
+    color: #101827 !important;
+}
+
+
+button#adminLogoutBtn {
+    background: #1c2940 !important;
+    background-color: #1c2940 !important;
+    color: #59e6b5 !important;
+    border: 1px solid #59e6b5 !important;
+    opacity: 1 !important;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+button#adminLogoutBtn:hover {
+    background: #59e6b5 !important;
+    background-color: #59e6b5 !important;
+    color: #101827 !important;
+}
+
+.nav-link span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.nav-link span svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+
+/* ==========================================
+   HALAMAN MATERI
+========================================== */
+
+.materi-container {
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 25px;
+}
+
+.materi-icon {
+    width: 65px;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+    background: rgba(89, 230, 181, 0.12);
+    color: #59e6b5;
+    margin-bottom: 20px;
+}
+
+.materi-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.materi-container h2 {
+    margin-bottom: 12px;
+}
+
+.materi-container p {
+    max-width: 550px;
+    line-height: 1.7;
+    color: #aebed1;
+}
+
+
+/* ==========================================
+   MATERI PEMBELAJARAN VEC
+========================================== */
+
+.materi-container {
+    padding: 28px;
+}
+
+.materi-header {
+    margin-bottom: 25px;
+}
+
+.materi-label {
+    color: #59e6b5;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.materi-header h2 {
+    margin: 10px 0;
+}
+
+.materi-header p {
+    color: #aebed1;
+    line-height: 1.7;
+}
+
+.materi-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.materi-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #34465f;
+    border-radius: 14px;
+    background: #243650;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.materi-card:hover {
+    border-color: #59e6b5;
+    transform: translateY(-3px);
+}
+
+.materi-number {
+    min-width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(89, 230, 181, 0.13);
+    color: #59e6b5;
+    font-weight: 700;
+}
+
+.materi-card h3 {
+    font-size: 15px;
+    margin: 0 0 6px;
+}
+
+.materi-card p {
+    font-size: 12px;
+    color: #aebed1;
+    margin: 0;
+}
+
+.materi-detail {
+    margin-top: 15px;
+}
+
+.btn-kembali {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    margin-bottom: 25px;
+    border: 1px solid #40536d;
+    border-radius: 9px;
+    background: #243650;
+    color: #fff;
+    cursor: pointer;
+}
+
+.btn-kembali:hover {
+    border-color: #59e6b5;
+}
+
+.materi-isi h2 {
+    color: #59e6b5;
+    margin-bottom: 15px;
+}
+
+.materi-isi h3 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.materi-isi p,
+.materi-isi li {
+    color: #c4d0df;
+    line-height: 1.8;
+}
+
+.materi-isi ul {
+    padding-left: 22px;
+}
+
+.materi-rangkuman {
+    margin-top: 25px;
+    padding: 18px;
+    border-left: 4px solid #59e6b5;
+    border-radius: 8px;
+    background: #243650;
+}
+
+@media (max-width: 700px) {
+    .materi-list {
+        grid-template-columns: 1fr;
+    }
+
+    .materi-container {
+        padding: 18px;
+    }
+}
+
+
+
+/* Teks isi materi rata kiri */
+.materi-isi {
+    text-align: left;
+}
+
+.materi-isi h2,
+.materi-isi h3,
+.materi-isi p,
+.materi-isi ul,
+.materi-isi li {
+    text-align: left;
+}
+
+.materi-isi p,
+.materi-isi li {
+    line-height: 1.8;
+}
+
+
+/* ==========================================
+   CHALLENGES VEC
+========================================== */
+
+.challenges-container {
+    padding: 28px;
+}
+
+.challenges-header {
+    margin-bottom: 25px;
+}
+
+.challenges-label {
+    color: #59e6b5;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.challenges-header h2 {
+    margin: 10px 0;
+}
+
+.challenges-header p {
+    color: #aebed1;
+    line-height: 1.7;
+}
+
+.challenge-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.challenge-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border: 1px solid #34465f;
+    border-radius: 14px;
+    background: #243650;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.challenge-card:hover {
+    border-color: #59e6b5;
+    transform: translateY(-3px);
+}
+
+.challenge-number {
+    min-width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(89, 230, 181, 0.13);
+    color: #59e6b5;
+    font-weight: 700;
+}
+
+.challenge-card h3 {
+    font-size: 15px;
+    margin: 0 0 7px;
+}
+
+.challenge-card p {
+    color: #aebed1;
+    font-size: 12px;
+    margin: 0;
+}
+
+.challenge-xp {
+    color: #59e6b5;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.challenge-detail-content {
+    text-align: left;
+}
+
+.challenge-detail-content h2 {
+    color: #59e6b5;
+}
+
+.challenge-detail-content p,
+.challenge-detail-content li {
+    color: #c4d0df;
+    line-height: 1.8;
+}
+
+.challenge-answer {
+    width: 100%;
+    min-height: 180px;
+    padding: 15px;
+    margin-top: 12px;
+    border: 1px solid #40536d;
+    border-radius: 10px;
+    background: #101827;
+    color: white;
+    resize: vertical;
+    font: inherit;
+}
+
+.challenge-submit {
+    margin-top: 15px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 9px;
+    background: #59e6b5;
+    color: #101827;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 700px) {
+    .challenge-list {
+        grid-template-columns: 1fr;
+    }
+
+    .challenges-container {
+        padding: 18px;
+    }
+}
+
+
+/* =====================================
+   CHALLENGES - SISTEM UJIAN
+===================================== */
+
+.exam-info {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 22px 0;
+}
+
+.exam-info-card {
+    background: #243650;
+    border: 1px solid #34465f;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exam-info-card span,
+.exam-timer span,
+.exam-small-label {
+    color: #aebed1;
+    font-size: 12px;
+}
+
+.exam-info-card strong {
+    color: #59e6b5;
+    font-size: 18px;
+}
+
+.exam-instructions {
+    margin: 22px 0;
+    padding: 20px;
+    background: #243650;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.exam-instructions h3 {
+    margin-top: 0;
+}
+
+.exam-instructions li {
+    color: #c4d0df;
+    line-height: 1.8;
+    margin: 5px 0;
+}
+
+.exam-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    background: #243650;
+    border-radius: 12px;
+}
+
+.exam-top h3 {
+    margin: 5px 0 0;
+    color: #59e6b5;
+}
+
+.exam-timer {
+    background: #101827;
+    border: 1px solid #59e6b5;
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+}
+
+.exam-timer strong {
+    display: block;
+    font-size: 24px;
+    color: #59e6b5;
+    font-variant-numeric: tabular-nums;
+}
+
+.exam-progress {
+    margin: 20px 0;
+}
+
+.exam-progress-track {
+    height: 8px;
+    background: #101827;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+#examProgressBar {
+    height: 100%;
+    width: 0;
+    background: #59e6b5;
+    transition: width 0.2s;
+}
+
+.exam-question-card {
+    padding: 20px;
+    margin: 16px 0;
+    background: #243650;
+    border: 1px solid #34465f;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.exam-question-card h4 {
+    margin: 0 0 16px;
+}
+
+.exam-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    margin: 8px 0;
+    background: #101827;
+    border: 1px solid #40536d;
+    border-radius: 9px;
+    cursor: pointer;
+    color: #e8eef6;
+}
+
+.exam-option input {
+    margin-top: 4px;
+    accent-color: #59e6b5;
+}
+
+.exam-option:has(input:checked) {
+    border-color: #59e6b5;
+    background: rgba(89, 230, 181, 0.1);
+}
+
+.exam-submit {
+    margin-top: 20px;
+}
+
+#kumpulkanUjianBtn:disabled,
+#mulaiUjianBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#examWaiting,
+#examResult {
+    text-align: center;
+    padding: 30px 10px;
+}
+
+.exam-result-icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: rgba(89, 230, 181, 0.13);
+    color: #59e6b5;
+    font-size: 30px;
+}
+
+.exam-score {
+    margin: 24px auto;
+    padding: 24px;
+    background: #243650;
+    border-radius: 14px;
+    max-width: 260px;
+}
+
+.exam-score span,
+.exam-score small {
+    display: block;
+    color: #aebed1;
+}
+
+.exam-score strong {
+    display: block;
+    font-size: 48px;
+    color: #59e6b5;
+}
+
+@media (max-width: 700px) {
+    .exam-info {
+        grid-template-columns: 1fr;
+    }
+
+    .exam-top {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .exam-timer {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   PEMANTAUAN UJIAN - ADMIN VEC
+========================================== */
+
+.admin-exam-panel {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+.admin-exam-panel h3 {
+    color: #59e6b5;
+    margin-bottom: 10px;
+}
+
+.admin-exam-panel p {
+    color: #b8c5d8;
+}
+
+.admin-exam-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.admin-exam-actions button {
+    background: #59e6b5;
+    color: #101827;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-exam-actions button:hover {
+    background: #36c99a;
+    transform: translateY(-2px);
+}
+
+.admin-exam-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.admin-exam-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    color: #eaf1fb;
+}
+
+.admin-exam-table th,
+.admin-exam-table td {
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    text-align: left;
+}
+
+.admin-exam-table th {
+    background: #243650;
+    color: #59e6b5;
+}
+
+.admin-exam-table td {
+    background: #1c2940;
+}
+
+#adminExamSummary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+#adminExamSummary p {
+    background: #243650;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: #59e6b5;
+    margin: 0;
+    font-weight: 600;
+}
+
+#adminExamList {
+    overflow-x: auto;
+}
+
+/* TOMBOL PEMANTAUAN UJIAN VEC */
+
+#adminExamPanel .admin-exam-actions {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+#adminExamPanel #adminRefreshExamBtn,
+#adminExamPanel #adminFinishExamBtn {
+    background: #59e6b5 !important;
+    color: #101827 !important;
+    border: none !important;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    pointer-events: auto;
+}
+
+#adminExamPanel #adminRefreshExamBtn:hover,
+#adminExamPanel #adminFinishExamBtn:hover {
+    background: #36c99a !important;
+}
+
+#adminExamPanel .admin-exam-actions button svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* FIX TOMBOL PEMANTAUAN UJIAN ADMIN VEC */
+
+.admin-screen #adminExamPanel button#adminRefreshExamBtn,
+.admin-screen #adminExamPanel button#adminFinishExamBtn {
+    background-color: #59e6b5 !important;
+    color: #101827 !important;
+    border: 2px solid #59e6b5 !important;
+    padding: 12px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+.admin-screen #adminExamPanel button#adminRefreshExamBtn:hover,
+.admin-screen #adminExamPanel button#adminFinishExamBtn:hover {
+    background-color: #36c99a !important;
+    border-color: #36c99a !important;
+}
+
+/* ==========================================
+   TOMBOL PEMANTAUAN UJIAN ADMIN VEC
+========================================== */
+
+.admin-screen .admin-exam-controls {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+    position: relative;
+    z-index: 20;
+}
+
+.admin-screen .admin-exam-controls button {
+    background: #59e6b5 !important;
+    background-color: #59e6b5 !important;
+    color: #101827 !important;
+    border: 2px solid #59e6b5 !important;
+    border-radius: 8px !important;
+    padding: 12px 20px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+.admin-screen .admin-exam-controls button:hover {
+    background: #36c99a !important;
+    background-color: #36c99a !important;
+}
+
+
+/* ==========================================
+   HALAMAN STUDI KASUS VEC
+========================================== */
+
+.studi-kasus-container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.studi-kasus-header {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.studi-kasus-label {
+    display: inline-block;
+    color: #59e6b5;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.studi-kasus-header h2 {
+    color: #ffffff;
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.studi-kasus-header p {
+    color: #aebbd0;
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 750px;
+}
+
+.studi-kasus-content {
+    background: #243650;
+    border: 1px solid rgba(89, 230, 181, 0.2);
+    border-radius: 14px;
+    padding: 28px;
+    text-align: left;
+}
+
+.studi-kasus-content h3 {
+    color: #59e6b5;
+    font-size: 21px;
+    margin-bottom: 15px;
+}
+
+.studi-kasus-content p {
+    color: #c5d0df;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.studi-kasus-content .status-pengembangan {
+    margin-top: 20px;
+    padding: 14px;
+    background: rgba(89, 230, 181, 0.08);
+    border-radius: 10px;
+    color: #59e6b5;
+    font-weight: 600;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .studi-kasus-container {
+        padding: 20px 15px;
+    }
+
+    .studi-kasus-header h2 {
+        font-size: 23px;
+    }
+
+    .studi-kasus-content {
+        padding: 20px;
+    }
+}
+
+
+/* DAFTAR KARTU STUDI KASUS */
+
+.studi-kasus-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.studi-kasus-card {
+    background: #243650;
+    border: 1px solid rgba(89, 230, 181, 0.15);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.studi-kasus-card:hover {
+    border-color: #59e6b5;
+    transform: translateY(-3px);
+}
+
+.studi-kasus-nomor,
+.studi-kasus-kategori {
+    display: inline-block;
+    color: #59e6b5;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 10px;
+    margin-bottom: 12px;
+}
+
+.studi-kasus-card h3 {
+    color: #ffffff;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.studi-kasus-card p {
+    color: #aebbd0;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+
+.studi-kasus-card button {
+    background: #59e6b5;
+    color: #101827;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.studi-kasus-detail {
+    background: #1c2940;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: left;
+}
+
+.studi-kasus-detail h2 {
+    color: #ffffff;
+    margin: 20px 0 12px;
+}
+
+.studi-kasus-detail h3 {
+    color: #59e6b5;
+    margin: 25px 0 15px;
+}
+
+.studi-kasus-bacaan {
+    color: #c5d0df;
+    line-height: 1.9;
+    margin-bottom: 15px;
+}
+
+.studi-kasus-detail ol {
+    padding-left: 25px;
+    color: #c5d0df;
+    line-height: 2;
+}
+
+@media (max-width: 768px) {
+    .studi-kasus-list {
+        grid-template-columns: 1fr;
+    }
+
+    .studi-kasus-detail {
+        padding: 20px;
+    }
+}
+
+
+/* KOLOM JAWABAN STUDI KASUS */
+.studi-kasus-question {
+    background: #243650;
+    border: 1px solid rgba(89, 230, 181, 0.15);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.studi-kasus-question h4 {
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.studi-kasus-question textarea {
+    width: 100%;
+    box-sizing: border-box;
+    background: #101827;
+    color: #fff;
+    border: 1px solid #40536d;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    margin-bottom: 12px;
+}
+
+.studi-kasus-question textarea:focus {
+    outline: none;
+    border-color: #59e6b5;
+}
+
+.studi-kasus-question button {
+    background: #59e6b5;
+    color: #101827;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.studi-kasus-question button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.studi-kasus-save-message {
+    color: #59e6b5;
+    font-size: 13px;
+    margin-top: 10px;
+}
