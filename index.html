@@ -92,16 +92,59 @@
         <small>Learn, Explore,<br>Solve the Challenge.</small>
       </a>
 
-      <nav class="nav-menu" aria-label="Navigasi utama">
-        <button class="nav-link active" data-page="Dashboard"><span>⌂</span>Dashboard</button>
-        <button class="nav-link" data-page="Materi"><span>▤</span>Materi</button>
-        <button class="nav-link" data-page="Challenges"><span>🏆</span>Challenges</button>
-        <button class="nav-link" data-page="Studi Kasus"><span>▣</span>Studi Kasus</button>
-        <button class="nav-link" data-page="Simulasi"><span>🎮</span>Simulasi</button>
-        <button class="nav-link" data-page="Quiz"><span>🧠</span>Quiz</button>
-        <button class="nav-link" data-page="Pencapaian"><span>🏅</span>Pencapaian</button>
-        <button class="nav-link" data-page="Leaderboard"><span>▥</span>Leaderboard</button>
-        <button class="nav-link" data-page="Profil"><span>♙</span>Profil</button>
+
+<nav class="nav-menu" aria-label="Navigasi utama">
+
+    <button class="nav-link active" data-page="Dashboard">
+        <span data-lucide="layout-dashboard"></span>
+        Dashboard
+    </button>
+
+    <button class="nav-link" data-page="Materi">
+        <span data-lucide="book-open"></span>
+        Materi
+    </button>
+
+    <button class="nav-link" data-page="Challenges">
+        <span data-lucide="trophy"></span>
+        Challenges
+    </button>
+
+    <button class="nav-link" data-page="Studi Kasus">
+        <span data-lucide="cpu"></span>
+        Studi Kasus
+    </button>
+
+    <button class="nav-link" data-page="Simulasi">
+        <span data-lucide="circuit-board"></span>
+        Simulasi
+    </button>
+
+    <button class="nav-link" data-page="Quiz">
+        <span data-lucide="brain-circuit"></span>
+        Quiz
+    </button>
+
+    <button class="nav-link" data-page="Pencapaian">
+        <span data-lucide="medal"></span>
+        Pencapaian
+    </button>
+
+    <button class="nav-link" data-page="Leaderboard">
+        <span data-lucide="chart-no-axes-column-increasing"></span>
+        Leaderboard
+    </button>
+
+    <button class="nav-link" data-page="Profil">
+        <span data-lucide="user-round"></span>
+        Profil
+    </button>
+
+</nav>
+
+        <button class="nav-link" id="adminMenu" hidden>
+    <span>⚙</span>Admin VEC
+</button>
       </nav>
       <button class="logout" id="logoutBtn"><span>⇥</span> Logout</button>
     </aside>
@@ -126,12 +169,13 @@
         </div>
       </header>
 
-      <section class="hero-grid">
-        <article class="hero-card">
-          <div class="hero-copy">
-            <span class="eyebrow">TANTANGAN MINGGU INI!</span>
-            <h2>Jadilah Inovator Pendidikan Vokasi</h2>
-            <p>Tingkatkan kompetensi Anda dengan menyelesaikan misi: <b>“Inovasi Kurikulum Vokasi”</b>.</p>
+      <section class="dashboard-content">
+        <div id="dashboardHomeContent">
+          <article class="hero-card">
+            <div class="hero-copy">
+              <span class="eyebrow">TANTANGAN MINGGU INI!</span>
+              <h2>Jadilah Inovator Pendidikan Vokasi</h2>
+              <p>Tingkatkan kompetensi Anda dengan menyelesaikan misi: <b>“Inovasi Kurikulum Vokasi”</b>.</p>
             <button class="btn btn-gold" data-go="Challenges">Mulai Challenge <span>➜</span></button>
           </div>
           <div class="hero-art" aria-hidden="true"><div class="city">▥ ▥ ▥</div><div class="robot">🤖</div><div class="orbit"></div></div>
@@ -201,13 +245,256 @@
           <p>Setiap tantangan membawamu lebih dekat pada tujuan.</p>
         </article>
       </section>
+
+
+
+<!-- HALAMAN MATERI -->
+<section id="materiPage" class="content-page" hidden>
+    <div class="panel materi-container">
+        <div class="materi-header">
+            <span class="materi-label">PEMBELAJARAN VEC</span>
+            <h2>Materi Pembelajaran</h2>
+            <p>Pelajari konsep pendidikan vokasi melalui enam bab pembelajaran berikut.</p>
+        </div>
+
+        <!-- DAFTAR BAB -->
+        <div id="materiList" class="materi-list"></div>
+
+        <!-- ISI MATERI -->
+        <div id="materiDetail" class="materi-detail" hidden>
+            <button id="kembaliMateri" class="btn-kembali">
+                <i data-lucide="arrow-left"></i>
+                Kembali ke Daftar Materi
+            </button>
+
+            <div id="materiDetailContent"></div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- HALAMAN STUDI KASUS -->
+<section id="studiKasusPage" class="content-page" hidden>
+
+    <div class="studi-kasus-container">
+
+        <div class="studi-kasus-header">
+            <span class="studi-kasus-label">VEC CASE STUDY</span>
+
+            <h2>Studi Kasus Pendidikan Vokasi</h2>
+
+            <p>
+                Pelajari berbagai permasalahan dalam penyelenggaraan
+                pendidikan vokasi dan kembangkan kemampuan berpikir
+                kritis melalui analisis kasus.
+            </p>
+        </div>
+
+        <!-- DAFTAR STUDI KASUS -->
+        <div id="studiKasusList" class="studi-kasus-list"></div>
+
+        <!-- DETAIL STUDI KASUS -->
+        <div id="studiKasusDetail" class="studi-kasus-detail" hidden>
+
+            <button type="button" id="kembaliStudiKasus"
+                class="btn-kembali">
+                ← Kembali ke Daftar Studi Kasus
+            </button>
+
+            <div id="studiKasusDetailContent"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- HALAMAN CHALLENGES / UJIAN VEC -->
+<section id="challengesPage" class="content-page" hidden>
+    <div class="panel challenges-container">
+
+        <div class="challenges-header">
+            <span class="challenges-label">VEC EXAMINATION</span>
+            <h2>Ujian Challenges</h2>
+            <p>
+                Selesaikan ujian pendidikan vokasi dengan menjawab
+                lima soal pilihan ganda dalam waktu tiga menit.
+            </p>
+        </div>
+
+        <!-- TAMPILAN AWAL -->
+        <div id="examStart">
+            <div class="exam-info">
+                <div class="exam-info-card">
+                    <span>Jumlah Soal</span>
+                    <strong>5 Soal</strong>
+                </div>
+
+                <div class="exam-info-card">
+                    <span>Durasi</span>
+                    <strong>03:00</strong>
+                </div>
+
+                <div class="exam-info-card">
+                    <span>Jenis Soal</span>
+                    <strong>Pilihan Ganda</strong>
+                </div>
+            </div>
+
+            <div class="exam-instructions">
+                <h3>Petunjuk Pengerjaan</h3>
+                <ul>
+                    <li>Setiap mahasiswa mendapatkan satu paket soal A, B, atau C.</li>
+                    <li>Waktu ujian dimulai setelah tombol Mulai Ujian ditekan.</li>
+                    <li>Setiap soal memiliki satu jawaban benar.</li>
+                    <li>Jawaban dapat diubah selama waktu ujian berlangsung.</li>
+                    <li>Setelah dikumpulkan, jawaban tidak dapat diubah.</li>
+                    <li>Nilai ditampilkan setelah waktu berakhir atau admin menyelesaikan ujian.</li>
+                </ul>
+            </div>
+
+            <button type="button" id="mulaiUjianBtn" class="challenge-submit">
+                Mulai Ujian
+            </button>
+        </div>
+
+        <!-- TAMPILAN UJIAN -->
+        <div id="examArea" hidden>
+
+            <div class="exam-top">
+                <div>
+                    <span class="exam-small-label">PAKET UJIAN</span>
+                    <h3 id="examPackage">PAKET A</h3>
+                </div>
+
+                <div class="exam-timer">
+                    <span>Waktu Tersisa</span>
+                    <strong id="examTimer">03:00</strong>
+                </div>
+            </div>
+
+            <div class="exam-progress">
+                <span id="examProgressText">Soal 0 dari 5</span>
+                <div class="exam-progress-track">
+                    <div id="examProgressBar"></div>
+                </div>
+            </div>
+
+            <div id="examQuestions"></div>
+
+            <button type="button" id="kumpulkanUjianBtn"
+                class="challenge-submit">
+                Kumpulkan Jawaban
+            </button>
+
+        </div>
+
+        <!-- TAMPILAN MENUNGGU HASIL -->
+        <div id="examWaiting" hidden>
+            <div class="exam-result-icon">✓</div>
+            <h3>Jawaban Berhasil Dikumpulkan</h3>
+            <p>
+                Jawaban kamu sudah tersimpan.
+                Nilai akan ditampilkan setelah waktu ujian berakhir
+                atau admin menyelesaikan ujian.
+            </p>
+            <strong id="waitingTimer">Menunggu hasil ujian...</strong>
+        </div>
+
+        <!-- TAMPILAN HASIL -->
+        <div id="examResult" hidden>
+            <div class="exam-result-icon">★</div>
+            <h3>Ujian Selesai!</h3>
+            <p>Berikut hasil pengerjaan ujian kamu.</p>
+
+            <div class="exam-score">
+                <span>Nilai Akhir</span>
+                <strong id="examFinalScore">0</strong>
+                <small>dari 100</small>
+            </div>
+
+            <p id="examResultMessage"></p>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+
       <footer>© 2026 VEC — Vocational Education Challenge <span>Learn • Explore • Solve</span></footer>
     </main>
   </div>
+
+  <!-- HALAMAN ADMIN VEC -->
+  <section id="adminScreen" class="admin-screen" hidden>
+    <div class="panel">
+      <h2>Admin VEC</h2>
+      <button type="button" id="adminLogoutBtn">
+          ← Kembali ke Dashboard
+      </button>
+      <p>Kelola akun mahasiswa VEC.</p>
+
+      <div class="admin-search">
+        <input
+          type="text"
+          id="adminSearchNim"
+          placeholder="Masukkan NIM mahasiswa"
+        >
+
+        <button type="button" id="adminSearchBtn">
+          Cari Mahasiswa
+        </button>
+      </div>
+
+      <div class="admin-list-control">
+          <button type="button" id="adminLoadStudentsBtn">
+              Tampilkan Seluruh Mahasiswa
+          </button>
+      </div>
+
+      <div id="adminStudentsList"></div>
+
+      <!-- PEMANTAUAN UJIAN VEC -->
+<div class="admin-exam-monitor">
+    <h3>Pemantauan Ujian VEC</h3>
+    <p>
+        Pantau perkembangan ujian seluruh mahasiswa secara langsung.
+    </p>
+
+    <div class="admin-exam-controls">
+        <button type="button" id="adminRefreshExamBtn">
+            Perbarui Data Ujian
+        </button>
+
+        <button type="button" id="adminFinishExamBtn">
+            Selesaikan Semua Ujian
+        </button>
+    </div>
+
+    <div id="adminExamSummary"></div>
+
+    <div id="adminExamList"></div>
+
+    <p id="adminExamMessage" class="auth-message"></p>
+</div>
+
+      <div id="adminStudentResult"></div>
+      <p id="adminMessage" class="auth-message"></p>
+    </div>
+  </section>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="script.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+      lucide.createIcons();
+  </script>
 </body>
 </html>
