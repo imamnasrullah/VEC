@@ -423,6 +423,63 @@
 </section>
 
 
+<!-- HALAMAN LEADERBOARD VEC -->
+<section id="leaderboardPage" class="content-page" hidden>
+    <div class="panel leaderboard-container">
+
+        <div class="challenges-header">
+            <span class="challenges-label">VEC RANKING</span>
+            <h2>Leaderboard VEC</h2>
+            <p>
+                Lihat peringkat mahasiswa berdasarkan nilai
+                ujian Challenges. Terus tingkatkan prestasimu!
+            </p>
+        </div>
+
+        <!-- TIGA PERINGKAT TERATAS -->
+        <div id="leaderboardTop" class="leaderboard-top">
+            <div class="leaderboard-loading">
+                Memuat peringkat mahasiswa...
+            </div>
+        </div>
+
+        <!-- DAFTAR PERINGKAT -->
+        <div class="leaderboard-table-section">
+            <h3>🏆 Peringkat Mahasiswa</h3>
+
+            <div id="leaderboardMessage"></div>
+
+            <div class="leaderboard-table-wrapper">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Peringkat</th>
+                            <th>Nama Mahasiswa</th>
+                            <th>NIM</th>
+                            <th>Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardList">
+                        <tr>
+                            <td colspan="4">
+                                Memuat data leaderboard...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button
+            type="button"
+            id="refreshLeaderboardBtn"
+            class="challenge-submit">
+            ↻ Perbarui Leaderboard
+        </button>
+
+    </div>
+</section>
+
 
 
 
