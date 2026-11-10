@@ -18,15 +18,15 @@
       <p>Vocational Education Challenge</p>
 
       <form id="loginForm">
-        <label for="loginNim">Nomor Induk Mahasiswa (NIM)</label>
-        <input
+      <label for="loginNim">NIM / NIP</label>
+      <input
           type="text"
           id="loginNim"
-          placeholder="Masukkan NIM"
+          placeholder="Masukkan NIM atau NIP"
           inputmode="numeric"
           autocomplete="username"
           required
-        >
+      >
 
         <label for="loginPassword">Password</label>
         <input
@@ -458,6 +458,43 @@
       </div>
 
       <div id="adminStudentsList"></div>
+
+      <div id="adminMessage"></div>
+      <div id="adminStudentResult"></div>
+
+
+<!-- TAMBAH AKUN DOSEN -->
+<div class="admin-lecturer-section">
+    <h3>Tambah Akun Dosen</h3>
+    <p>Tambahkan dosen dengan hak akses Admin VEC.</p>
+
+    <div class="admin-search">
+        <input
+            type="text"
+            id="lecturerName"
+            placeholder="Masukkan nama lengkap dosen"
+        >
+
+        <input
+            type="text"
+            id="lecturerNip"
+            placeholder="Masukkan NIP (18 angka)"
+            inputmode="numeric"
+        >
+
+        <button type="button" id="addLecturerBtn">
+            Tambahkan Akun Dosen
+        </button>
+    </div>
+
+    <div id="lecturerMessage"></div>
+</div>
+<!-- AKHIR TAMBAH AKUN DOSEN -->
+
+<div id="adminMessage"></div>
+<div id="adminStudentResult"></div>
+
+<!-- Tempel kode tambah akun dosen di sini -->
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
