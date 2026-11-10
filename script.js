@@ -1319,6 +1319,91 @@ async function tampilkanSeluruhMahasiswa() {
 
 
 // ==========================================
+// TAMBAH AKUN DOSEN ADMIN VEC
+// ==========================================
+
+const addLecturerBtn = document.getElementById("addLecturerBtn");
+const lecturerName = document.getElementById("lecturerName");
+const lecturerNip = document.getElementById("lecturerNip");
+const lecturerMessage = document.getElementById("lecturerMessage");
+
+if (addLecturerBtn) {
+    addLecturerBtn.addEventListener("click", tambahAkunDosen);
+}
+
+async function tambahAkunDosen() {
+    if (!currentUser || currentUser.app_metadata?.role !== "admin") {
+        lecturerMessage.textContent = "Akses khusus Admin VEC.";
+        return;
+    }
+
+    const nama = lecturerName.value.trim();
+    const nip = lecturerNip.value.replace(/\s/g, "");
+
+    if (!nama) {
+        lecturerMessage.textContent = "Nama dosen wajib diisi.";
+        return;
+    }
+
+    if (!/^\d{18}$/.test(nip)) {
+        lecturerMessage.textContent = "NIP harus terdiri dari 18 angka.";
+        return;
+    }
+
+    const konfirmasi = confirm(
+        `Tambahkan akun dosen berikut?\n\nNama: ${nama}\nNIP: ${nip}\nHak akses: Admin`
+    );
+
+    if (!konfirmasi) return;
+
+    addLecturerBtn.disabled = true;
+    addLecturerBtn.textContent = "Membuat Akun...";
+    lecturerMessage.textContent = "";
+
+    try {
+        const { data, error } =
+            await supabaseClient.functions.invoke("admin-add-leaturer", {
+                body: {
+                    nama: nama,
+                    nip: nip
+                }
+            });
+
+        if (error) throw error;
+
+        if (!data?.success) {
+            throw new Error(data?.error || "Gagal membuat akun dosen.");
+        }
+
+        lecturerMessage.textContent =
+            "Akun dosen berhasil dibuat. Password awal menggunakan NIP.";
+
+        lecturerName.value = "";
+        lecturerNip.value = "";
+
+        alert(
+            `AKUN DOSEN BERHASIL DIBUAT\n\n` +
+            `Nama: ${data.dosen.nama}\n` +
+            `NIP: ${data.dosen.nip}\n` +
+            `Password awal: ${data.dosen.password_awal}\n` +
+            `Hak akses: Admin\n\n` +
+            `Dosen wajib mengganti password saat login pertama.`
+        );
+
+    } catch (error) {
+        console.error("Tambah akun dosen gagal:", error);
+
+        lecturerMessage.textContent =
+            error.message || "Gagal membuat akun dosen.";
+
+    } finally {
+        addLecturerBtn.disabled = false;
+        addLecturerBtn.textContent = "Tambahkan Akun Dosen";
+    }
+}
+
+
+// ==========================================
 // KEMBALI KE DASHBOARD MAHASISWA
 // ==========================================
 
