@@ -310,6 +310,11 @@ document.querySelectorAll("[data-page]").forEach((button) => {
             document.getElementById("studiKasusPage").hidden = false;
         }
 
+        else if (page === "Leaderboard") {
+            document.getElementById("leaderboardPage").hidden = false;
+            muatLeaderboardVEC();
+        }
+
         else {
             showToast(`Halaman ${page} sedang dalam tahap pengembangan.`);
         }
@@ -2079,3 +2084,104 @@ adminResetExamBtn?.addEventListener("click", async () => {
 
     await muatDataUjianAdmin();
 });
+
+
+// ==========================================
+// LEADERBOARD VEC
+// ==========================================
+
+async function muatLeaderboardVEC() {
+    const topContainer = document.getElementById("leaderboardTop");
+    const listContainer = document.getElementById("leaderboardList");
+    const messageContainer = document.getElementById("leaderboardMessage");
+
+    if (!topContainer || !listContainer) return;
+
+    topContainer.innerHTML = "Memuat leaderboard...";
+    listContainer.innerHTML = `
+        <tr><td colspan="4">Memuat data...</td></tr>
+    `;
+
+    if (messageContainer) messageContainer.textContent = "";
+
+    try {
+        const { data, error } = await supabaseClient.rpc(
+            "get_vec_leaderboard"
+        );
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            topContainer.innerHTML = `
+                <p>Belum ada mahasiswa dengan hasil ujian yang dirilis.</p>
+            `;
+
+            listContainer.innerHTML = `
+                <tr>
+                    <td colspan="4">
+                        Belum ada data leaderboard.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // TIGA PERINGKAT TERATAS
+        const medali = ["🥇", "🥈", "🥉"];
+
+        topContainer.innerHTML = data.slice(0, 3).map((item, index) => `
+            <div class="leaderboard-rank-card">
+                <div class="leaderboard-medal">
+                    ${medali[index]}
+                </div>
+                <h3>${escapeLeaderboardHTML(item.nama)}</h3>
+                <p>${escapeLeaderboardHTML(item.nim)}</p>
+                <strong>${item.skor}</strong>
+                <small>Nilai</small>
+            </div>
+        `).join("");
+
+        // SELURUH DAFTAR PERINGKAT
+        listContainer.innerHTML = data.map(item => `
+            <tr>
+                <td>${item.peringkat}</td>
+                <td>${escapeLeaderboardHTML(item.nama)}</td>
+                <td>${escapeLeaderboardHTML(item.nim)}</td>
+                <td><strong>${item.skor}</strong></td>
+            </tr>
+        `).join("");
+
+    } catch (error) {
+        console.error("Leaderboard gagal dimuat:", error);
+
+        topContainer.innerHTML = "Gagal memuat leaderboard.";
+
+        listContainer.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Terjadi kesalahan saat mengambil data.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Mencegah teks dari database dianggap sebagai HTML
+function escapeLeaderboardHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[char]);
+}
+
+// Muat ketika menu Leaderboard dibuka
+document.querySelector('[data-page="Leaderboard"]')
+    ?.addEventListener("click", muatLeaderboardVEC);
+
+// Tombol perbarui
+document.getElementById("refreshLeaderboardBtn")
+    ?.addEventListener("click", muatLeaderboardVEC);
+
