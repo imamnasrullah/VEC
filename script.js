@@ -133,23 +133,144 @@ loginForm.addEventListener("submit", async (event) => {
     }
 });
 
+// ==========================================
+// SINKRONISASI XP VEC
+// ==========================================
+
+async function sinkronkanXPVEC() {
+    const { data, error } = await supabaseClient.rpc(
+        "sinkronkan_xp_vec"
+    );
+
+    if (error) {
+        console.error("Gagal sinkronisasi XP:", error);
+        return;
+    }
+
+    console.log("XP berhasil disinkronkan:", data);
+
+    return data;
+}
+
 
 // ==========================================
-// MENAMPILKAN DASHBOARD
+// MEMUAT STATISTIK DAN VERIFIKASI MISI
 // ==========================================
+async function muatStatistikMisi(user) {
+    const nim = user.user_metadata?.nim;
+    if (!nim) return;
 
-function masukDashboard(user) {
+    // Periksa apakah Misi 01 sudah memenuhi syarat
+    const { data: hasilMisi, error: errorMisi } =
+        await supabaseClient.rpc("selesaikan_misi_vec");
+
+    if (errorMisi) {
+        console.error("Gagal memeriksa misi:", errorMisi);
+        return;
+    }
+
+    console.log("Hasil verifikasi misi:", hasilMisi);
+
+    // Ambil jumlah misi yang sudah diselesaikan
+    const { count, error } = await supabaseClient
+        .from("vec_mission_progress")
+        .select("id", { count: "exact", head: true })
+        .eq("nim", nim);
+
+    if (error) {
+        console.error("Gagal memuat statistik misi:", error);
+        return;
+    }
+
+    const statsMissionCount =
+        document.getElementById("statsMissionCount");
+
+    if (statsMissionCount) {
+        statsMissionCount.textContent = count ?? 0;
+    }
+
+    console.log("Jumlah misi selesai:", count ?? 0);
+}
+
+
+
+async function masukDashboard(user) {
     currentUser = user;
-
-    // Semua pengguna masuk ke Dashboard Mahasiswa
     showScreen("dashboard");
 
-    // Menu Admin hanya muncul untuk akun Admin
-    const adminMenu = document.getElementById("adminMenu");
+    await muatAvatarVEC(user);
 
+    const adminMenu = document.getElementById("adminMenu");
     if (adminMenu) {
         adminMenu.hidden = user.app_metadata?.role !== "admin";
     }
+
+    // Sinkronkan XP dari aktivitas belajar
+    await sinkronkanXPVEC();
+
+    // Periksa dan catat penyelesaian misi
+    await muatStatistikMisi(user);
+
+    // Sinkronkan kembali XP setelah reward misi diberikan
+    await sinkronkanXPVEC();
+
+    // Muat ulang seluruh data dashboard
+    await Promise.all([
+        muatProgressMahasiswa(user),
+        muatHasilQuizMahasiswa(user),
+        muatProgresMateri(user),
+        muatProgresChallenges(user)
+    ]);
+
+    perbaruiProgressBelajar();
+    perbaruiPencapaian();
+    await muatStreakVEC();
+    await muatNotifikasiVEC(user);
+
+    console.log("Semua progres, XP, misi, dan badge berhasil diperbarui.");
+
+    // Perbarui leaderboard
+    muatDashboardLeaderboard();
+
+
+
+// ==========================================
+// MENGHITUNG TOTAL PROGRES BELAJAR
+// ==========================================
+function perbaruiProgressBelajar() {
+    const ambilJumlah = (id) => {
+        const el = document.getElementById(id);
+        return Number(el?.textContent?.split("/")[0] || 0);
+    };
+
+    const materi = ambilJumlah("materiProgressCount");
+    const challenge = ambilJumlah("challengeProgressCount");
+    const quiz = ambilJumlah("quizProgressCount");
+
+    const totalSelesai = materi + challenge + quiz;
+    const progress = Math.min(100, Math.round((totalSelesai / 27) * 100));
+
+    const progressPercent = document.getElementById("progressPercent");
+    if (progressPercent) {
+        progressPercent.textContent = `${progress}%`;
+    }
+
+    const progressDonut = document.getElementById("progressDonut");
+    if (progressDonut) {
+        progressDonut.style.setProperty("--progress", progress);
+    }
+}
+
+    // Memuat progres secara terpisah
+    muatProgressMahasiswa(user);
+    muatHasilQuizMahasiswa(user);
+    muatProgresMateri(user);
+    muatDashboardLeaderboard();
+
+    // Memuat progres Challenges tanpa mengganggu menu Admin
+    muatProgresChallenges(user).catch(error => {
+        console.error("Gagal memuat progres Challenges:", error);
+    });
 
     const nama =
         user.user_metadata?.nama ||
@@ -157,33 +278,381 @@ function masukDashboard(user) {
         "Mahasiswa";
 
     document.getElementById("userName").textContent = nama;
+    
+    // Mengatur identitas Profil mahasiswa dan dosen
+    const isDosen =
+        user.user_metadata?.account_type === "dosen";
+    console.log("Role akun:", user.app_metadata?.role);
+    console.log("Metadata akun:", user.user_metadata);
 
-    // Data XP masih menggunakan data contoh
-    const demoUser = {
-        level: 3,
-        xp: 650,
-        nextLevelXp: 1000,
-        progress: 68
+    const nomorIdentitas = isDosen
+        ? user.user_metadata?.nip || user.user_metadata?.nim || "-"
+        : user.user_metadata?.nim || "-";
+
+    const jenisIdentitas = isDosen ? "NIP" : "NIM";
+
+    const profileName = document.getElementById("profileName");
+    const profileNIM = document.getElementById("profileNIM");
+    const profileInfoName = document.getElementById("profileInfoName");
+
+    const profileInfoNameLabel =
+    document.getElementById("profileInfoNameLabel");
+
+    const profileAccountStatus =
+    document.getElementById("profileAccountStatus");
+
+    if (profileAccountStatus) {
+        profileAccountStatus.textContent = isDosen
+            ? "Dosen Aktif"
+            : "Mahasiswa Aktif";
+    }
+
+    if (profileInfoNameLabel) {
+        profileInfoNameLabel.textContent = isDosen
+            ? "Nama Dosen"
+            : "Nama Mahasiswa";
+    }
+
+    const profileInfoNIM = document.getElementById("profileInfoNIM");
+    const profileIdLabel = document.getElementById("profileIdLabel");
+
+    const profileTitle = document.getElementById("profileTitle");
+    const profileStatus = document.querySelector(".profile-status");
+
+    if (profileTitle) {
+        profileTitle.textContent = isDosen
+            ? "Profil Dosen"
+            : "Profil Mahasiswa";
+    }
+
+    if (profileStatus) {
+        profileStatus.textContent = isDosen
+            ? "● DOSEN"
+            : "● MAHASISWA AKTIF";
+    }
+
+    if (profileName) profileName.textContent = nama;
+    if (profileInfoName) profileInfoName.textContent = nama;
+
+    if (profileNIM) {
+        profileNIM.textContent = `${jenisIdentitas}: ${nomorIdentitas}`;
+    }
+
+    if (profileInfoNIM) {
+        profileInfoNIM.textContent = nomorIdentitas;
+    }
+
+    if (profileIdLabel) {
+        profileIdLabel.textContent = isDosen
+            ? "Nomor Induk Pegawai (NIP)"
+            : "Nomor Induk Mahasiswa (NIM)";
+    }
+}
+
+
+
+
+// ==========================================
+// MEMPERBARUI BADGE DASHBOARD DAN PENCAPAIAN
+// ==========================================
+function perbaruiPencapaian() {
+
+    const ambilJumlah = (id) => {
+        const el = document.getElementById(id);
+        return Number(el?.textContent?.split("/")[0] || 0);
     };
 
-    document.getElementById("levelNumber").textContent =
-        demoUser.level;
+    const materi = ambilJumlah("materiProgressCount");
+    const challenge = ambilJumlah("challengeProgressCount");
+    const quiz = ambilJumlah("quizProgressCount");
 
-    document.getElementById("xpTotal").textContent =
-        demoUser.xp.toLocaleString("id-ID");
+    // Aturan pembukaan badge
+    const daftarBadge = [
+        {
+            id: "badgeBeginner",
+            dashboardId: "dashboardBadgeBeginner",
+            terbuka: materi >= 1
+        },
+        {
+            id: "badgeTechExplorer",
+            dashboardId: "dashboardBadgeTechExplorer",
+            terbuka: challenge >= 1
+        },
+        {
+            id: "badgeProblemSolver",
+            dashboardId: "dashboardBadgeProblemSolver",
+            terbuka: challenge >= 20
+        },
+        {
+            id: "badgeVocationalExpert",
+            dashboardId: "dashboardBadgeVocationalExpert",
+            terbuka: materi >= 6 && challenge >= 20 && quiz >= 1
+        }
+    ];
 
-    document.getElementById("levelXp").textContent =
-        demoUser.xp.toLocaleString("id-ID");
+    let jumlahTerbuka = 0;
 
-    document.getElementById("levelProgress").style.width =
-        `${Math.min(100, (demoUser.xp / demoUser.nextLevelXp) * 100)}%`;
+    daftarBadge.forEach((badge) => {
 
-    document.getElementById("progressPercent").textContent =
-        `${demoUser.progress}%`;
+        if (badge.terbuka) {
+            jumlahTerbuka++;
+        }
 
-    document.getElementById("progressDonut")
-        .style.setProperty("--progress", demoUser.progress);
+        // Perbarui badge halaman Pencapaian
+        const halaman = document.getElementById(badge.id);
+
+        // Perbarui badge Dashboard
+        const dashboard = document.getElementById(badge.dashboardId);
+
+        [halaman, dashboard].forEach((el) => {
+            if (!el) return;
+
+            const status = el.querySelector(".badge-status");
+
+            if (badge.terbuka) {
+                el.classList.remove("locked");
+                el.classList.add("unlocked");
+
+                if (status) {
+                    status.textContent = "✓ Terbuka";
+                }
+            } else {
+                el.classList.remove("unlocked");
+                el.classList.add("locked");
+
+                if (status) {
+                    status.textContent = "Belum terbuka";
+                }
+            }
+        });
+    });
+
+    // Perbarui jumlah badge di kedua halaman
+    ["achievementBadgeCount", "dashboardBadgeCount"].forEach((id) => {
+        const el = document.getElementById(id);
+
+        if (el) {
+            el.textContent = jumlahTerbuka;
+        }
+    });
+
+    console.log("Jumlah badge terbuka:", jumlahTerbuka);
 }
+
+
+
+
+// MEMUAT PROGRES MATERI MAHASISWA
+async function muatProgresMateri(user) {
+    const nim = user.user_metadata?.nim;
+
+    if (!nim) return;
+
+    const { data, error } = await supabaseClient
+        .from("vec_material_progress")
+        .select("materi_id")
+        .eq("nim", nim);
+
+    if (error) {
+        console.error("Gagal memuat progres materi:", error);
+        return;
+    }
+
+    const jumlahSelesai = data.length;
+    console.log("Jumlah materi selesai:", jumlahSelesai);
+    console.log("Data materi:", data);
+
+    const materiProgressCount =
+        document.getElementById("materiProgressCount");
+
+    if (materiProgressCount) {
+        materiProgressCount.textContent = `${jumlahSelesai}/6`;
+    }
+
+    perbaruiProgressBelajar();
+    perbaruiPencapaian();
+}
+
+// MEMUAT PROGRES CHALLENGES MAHASISWA
+async function muatProgresChallenges(user) {
+    const nim = user.user_metadata?.nim;
+
+    if (!nim) return;
+
+    const { data, error } = await supabaseClient
+        .from("vec_exam_answers")
+        .select("question_id")
+        .eq("nim", nim);
+
+    if (error) {
+        console.error("Gagal memuat progres Challenges:", error);
+        return;
+    }
+
+    const jumlahTerjawab = Math.min(data.length, 20);
+
+    const challengeProgressCount =
+        document.getElementById("challengeProgressCount");
+
+    if (challengeProgressCount) {
+        challengeProgressCount.textContent = `${jumlahTerjawab}/20`;
+    }
+
+    perbaruiProgressBelajar();
+    perbaruiPencapaian();
+}
+
+
+
+// MEMUAT HASIL QUIZ MAHASISWA DARI SUPABASE
+async function muatHasilQuizMahasiswa(user) {
+    const nim = user.user_metadata?.nim;
+
+    if (!nim) return;
+
+    const { data, error } = await supabaseClient
+        .from("vec_quiz_results")
+        .select("id, nilai, completed_at")
+        .eq("nim", nim)
+        .not("completed_at", "is", null);
+
+    if (error) {
+        console.error("Gagal memuat hasil Quiz:", error);
+        return;
+    }
+
+    console.log("Data hasil Quiz:", data);
+
+    // Perbarui progres Quiz
+    const quizProgressCount =
+        document.getElementById("quizProgressCount");
+
+    if (quizProgressCount) {
+        quizProgressCount.textContent =
+            data && data.length > 0 ? "1/1" : "0/1";
+    }
+
+    // Hitung nilai rata-rata seluruh Quiz
+    const nilaiValid = (data || [])
+        .map(item => Number(item.nilai))
+        .filter(nilai => Number.isFinite(nilai));
+
+    const rataRata = nilaiValid.length > 0
+        ? Math.round(
+            nilaiValid.reduce((total, nilai) => total + nilai, 0)
+            / nilaiValid.length
+        )
+        : 0;
+
+    const statsAverageScore =
+        document.getElementById("statsAverageScore");
+
+    if (statsAverageScore) {
+        statsAverageScore.textContent =
+            nilaiValid.length > 0 ? `${rataRata}%` : "--";
+    }
+
+    console.log("Nilai rata-rata Quiz:", rataRata);
+
+    perbaruiProgressBelajar();
+    perbaruiPencapaian();
+}
+
+
+
+// ==========================================
+// MENGHITUNG TOTAL PROGRES BELAJAR
+// ==========================================
+function perbaruiProgressBelajar() {
+    const ambilJumlah = (id) => {
+        const el = document.getElementById(id);
+        return Number(el?.textContent?.split("/")[0] || 0);
+    };
+
+    const materi = ambilJumlah("materiProgressCount");
+    const challenge = ambilJumlah("challengeProgressCount");
+    const quiz = ambilJumlah("quizProgressCount");
+
+    const totalSelesai = materi + challenge + quiz;
+    const progress = Math.min(
+        100,
+        Math.round((totalSelesai / 27) * 100)
+    );
+
+    const progressPercent = document.getElementById("progressPercent");
+    if (progressPercent) {
+        progressPercent.textContent = `${progress}%`;
+    }
+
+    const progressDonut = document.getElementById("progressDonut");
+    if (progressDonut) {
+        progressDonut.style.setProperty("--progress", progress);
+    }
+
+    console.log("Progres VEC:", materi, challenge, quiz, progress + "%");
+}
+
+
+// MEMUAT PROGRESS MAHASISWA DARI SUPABASE
+async function muatProgressMahasiswa(user) {
+    const nim = user.user_metadata?.nim;
+
+    if (!nim) return;
+
+    const { data, error } = await supabaseClient
+        .from("vec_student_progress")
+        .select("total_xp, level")
+        .eq("nim", nim)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Gagal memuat progress:", error);
+        showToast("Data perkembangan gagal dimuat.");
+        return;
+    }
+
+    if (!data) {
+        showToast("Data perkembangan mahasiswa belum tersedia.");
+        return;
+    }
+
+    const xp = Number(data.total_xp);
+    const level = Number(data.level);
+
+    // Perbarui Level
+    ["levelNumber", "achievementLevel", "profileLevel"]
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = level;
+        });
+
+    // Perbarui Total XP
+    ["totalXp", "achievementXP", "profileXP"]
+        .forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = xp.toLocaleString("id-ID");
+        });
+
+    // Perbarui XP dalam level saat ini
+    const xpDalamLevel = xp % 100;
+    const levelXp = document.getElementById("levelXp");
+
+    if (levelXp) {
+        levelXp.textContent = xpDalamLevel;
+    }
+
+    const xpProgress = xpDalamLevel;
+    const levelProgress = document.getElementById("levelProgress");
+
+    if (levelProgress) {
+        levelProgress.style.width = `${xpProgress}%`;
+    }
+
+    // Progress belajar dihitung dari 27 aktivitas
+    perbaruiProgressBelajar();
+}
+
+
 
 // ==========================================
 // GANTI PASSWORD PERTAMA KALI
@@ -266,18 +735,29 @@ changePasswordForm.addEventListener("submit", async (event) => {
 
 
 
+
 // ==========================================
 // NAVIGASI DASHBOARD
 // ==========================================
 
 const dashboardHomeContent = document.getElementById("dashboardHomeContent");
-const materiPage = document.getElementById("materiPage");
 
+const daftarHalaman = [
+    "dashboardHomeContent",
+    "materiPage",
+    "challengesPage",
+    "quizPage",
+    "studiKasusPage",
+    "simulasiPage",
+    "leaderboardPage",
+    "pencapaianPage",
+    "profilPage"
+];
 
 document.querySelectorAll("[data-page]").forEach((button) => {
     button.addEventListener("click", () => {
 
-        // Menghapus status aktif dari semua menu
+        // Hapus status aktif menu
         document.querySelectorAll(".nav-link").forEach((item) => {
             item.classList.remove("active");
         });
@@ -286,40 +766,45 @@ document.querySelectorAll("[data-page]").forEach((button) => {
 
         const page = button.dataset.page;
 
-        // Sembunyikan seluruh halaman terlebih dahulu
-        dashboardHomeContent.hidden = true;
-        materiPage.hidden = true;
-        document.getElementById("challengesPage").hidden = true;
-        document.getElementById("studiKasusPage").hidden = true;
+        // Sembunyikan semua halaman
+        daftarHalaman.forEach((id) => {
+            const halaman = document.getElementById(id);
+            if (halaman) halaman.hidden = true;
+        });
 
-        // Tampilkan halaman sesuai menu
-        if (page === "Dashboard") {
-            dashboardHomeContent.hidden = false;
-            showToast("Kamu sedang berada di Dashboard VEC.");
-        }
+        // Tampilkan halaman tujuan
+        const halamanTujuan = {
+        "Dashboard": "dashboardHomeContent",
+        "Materi": "materiPage",
+        "Challenges": "challengesPage",
+        "Quiz": "quizPage",
+        "Studi Kasus": "studiKasusPage",
+        "Simulasi": "simulasiPage",
+        "Leaderboard": "leaderboardPage",
+        "Pencapaian": "pencapaianPage",
+        "Profil": "profilPage"
+        };
 
-        else if (page === "Materi") {
-            materiPage.hidden = false;
-        }
+        const targetId = halamanTujuan[page];
+        const target = targetId
+            ? document.getElementById(targetId)
+            : null;
 
-        else if (page === "Challenges") {
-            document.getElementById("challengesPage").hidden = false;
-        }
+        if (target) {
+            target.hidden = false;
 
-        else if (page === "Studi Kasus") {
-            document.getElementById("studiKasusPage").hidden = false;
-        }
+            if (page === "Leaderboard") {
+                muatLeaderboardVEC();
+            }
 
-        else if (page === "Leaderboard") {
-            document.getElementById("leaderboardPage").hidden = false;
-            muatLeaderboardVEC();
-        }
-
-        else {
+            if (page === "Dashboard") {
+                showToast("Kamu sedang berada di Dashboard VEC.");
+            }
+        } else {
             showToast(`Halaman ${page} sedang dalam tahap pengembangan.`);
         }
 
-        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("sidebar")?.classList.remove("open");
     });
 });
 
@@ -344,31 +829,31 @@ document.querySelectorAll("[data-go]").forEach((button) => {
 
 const daftarMateri = [
     {
-        judul: "Konsep Dasar Pendidikan Vokasi",
-        ringkasan: "Mengenal pengertian, tujuan, fungsi, dan karakteristik pendidikan vokasi.",
+        judul: "Konsep Dasar Pendidikan Teknik Elektronika",
+        ringkasan: "Mengenal pengertian, tujuan, fungsi, dan karakteristik pendidikan teknik elektronika.",
         tujuan: [
-            "Memahami pengertian pendidikan vokasi.",
-            "Menjelaskan tujuan dan fungsi pendidikan vokasi.",
-            "Mengidentifikasi karakteristik pendidikan vokasi."
+            "Memahami pengertian pendidikan teknik elektronika.",
+            "Menjelaskan tujuan dan fungsi pendidikan teknik elektronika.",
+            "Mengidentifikasi karakteristik pendidikan teknik elektronika."
         ],
         isi: `
-            <h3>A. Pengertian Pendidikan Vokasi</h3>
+            <h3>A. Pengertian Pendidikan Teknik Elektronika</h3>
             <p>
-                Pendidikan vokasi merupakan pendidikan yang berfokus pada
+                Pendidikan teknik elektronika merupakan pendidikan yang berfokus pada
                 penguasaan keterampilan dan keahlian tertentu agar peserta
                 didik memiliki kemampuan untuk memasuki dunia kerja.
                 Pembelajaran menggabungkan pengetahuan teori dengan
                 kegiatan praktik sesuai bidang keahlian.
             </p>
 
-            <h3>B. Tujuan Pendidikan Vokasi</h3>
+            <h3>B. Tujuan Pendidikan Teknik Elektronika</h3>
             <p>
-                Pendidikan vokasi bertujuan menghasilkan lulusan yang
+                Pendidikan teknik elektronika bertujuan menghasilkan lulusan yang
                 kompeten, terampil, mandiri, dan mampu menyesuaikan diri
                 dengan perkembangan teknologi serta kebutuhan dunia kerja.
             </p>
 
-            <h3>C. Fungsi Pendidikan Vokasi</h3>
+            <h3>C. Fungsi Pendidikan Teknik Elektronika</h3>
             <ul>
                 <li>Mempersiapkan tenaga kerja yang memiliki keterampilan.</li>
                 <li>Meningkatkan kompetensi dan produktivitas masyarakat.</li>
@@ -376,7 +861,7 @@ const daftarMateri = [
                 <li>Mendorong kemampuan berwirausaha.</li>
             </ul>
 
-            <h3>D. Karakteristik Pendidikan Vokasi</h3>
+            <h3>D. Karakteristik Pendidikan Teknik Elektronika</h3>
             <ul>
                 <li>Berorientasi pada keterampilan dan kompetensi kerja.</li>
                 <li>Memiliki kegiatan praktik yang terstruktur.</li>
@@ -392,13 +877,13 @@ const daftarMateri = [
                 elektronika.
             </p>
         `,
-        rangkuman: "Pendidikan vokasi adalah pendidikan yang menekankan penguasaan kompetensi dan keterampilan praktis untuk mempersiapkan peserta didik menghadapi dunia kerja."
+        rangkuman: "Pendidikan teknik elektronika adalah pendidikan yang menekankan penguasaan kompetensi dan keterampilan praktis untuk mempersiapkan peserta didik menghadapi dunia kerja."
     },
     {
-        judul: "Kurikulum Pendidikan Vokasi",
+        judul: "Kurikulum Pendidikan Teknik Elektronika",
         ringkasan: "Memahami struktur kurikulum, capaian pembelajaran, dan kompetensi lulusan.",
         tujuan: [
-            "Memahami pengertian kurikulum pendidikan vokasi.",
+            "Memahami pengertian kurikulum pendidikan teknik elektronika.",
             "Menjelaskan komponen kurikulum.",
             "Memahami hubungan kurikulum dengan kompetensi lulusan."
         ],
@@ -410,9 +895,9 @@ const daftarMateri = [
                 digunakan sebagai pedoman penyelenggaraan pembelajaran.
             </p>
 
-            <h3>B. Kurikulum dalam Pendidikan Vokasi</h3>
+            <h3>B. Kurikulum dalam Pendidikan Teknik Elektronika</h3>
             <p>
-                Kurikulum pendidikan vokasi dirancang agar peserta didik
+                Kurikulum pendidikan teknik elektronika dirancang agar peserta didik
                 menguasai pengetahuan, keterampilan, dan sikap kerja yang
                 dibutuhkan sesuai bidang keahliannya. Materi teori harus
                 didukung kegiatan praktik dan pengalaman kerja.
@@ -429,7 +914,7 @@ const daftarMateri = [
 
             <h3>D. Kompetensi Lulusan</h3>
             <p>
-                Lulusan pendidikan vokasi diharapkan memiliki kompetensi
+                Lulusan pendidikan teknik elektronika diharapkan memiliki kompetensi
                 teknis sesuai bidang keahlian, kemampuan komunikasi,
                 kedisiplinan, kerja sama, pemecahan masalah, dan tanggung
                 jawab dalam bekerja.
@@ -443,7 +928,7 @@ const daftarMateri = [
                 rangkaian.
             </p>
         `,
-        rangkuman: "Kurikulum pendidikan vokasi menjadi pedoman pembelajaran untuk membentuk lulusan yang memiliki pengetahuan, keterampilan, dan sikap kerja sesuai kebutuhan bidang keahlian."
+        rangkuman: "Kurikulum pendidikan teknik elektronika menjadi pedoman pembelajaran untuk membentuk lulusan yang memiliki pengetahuan, keterampilan, dan sikap kerja sesuai kebutuhan bidang keahlian."
     },
     {
         judul: "Link and Match dengan Dunia Industri",
@@ -534,10 +1019,10 @@ const daftarMateri = [
         rangkuman: "Teaching Factory adalah model pembelajaran yang menggabungkan kegiatan belajar dengan proses produksi atau jasa berdasarkan prosedur dan standar industri."
     },
     {
-        judul: "Model Pembelajaran Pendidikan Vokasi",
+        judul: "Model Pembelajaran Pendidikan Teknik Elektronika",
         ringkasan: "Mempelajari model pembelajaran yang mendukung keterampilan dan pemecahan masalah.",
         tujuan: [
-            "Mengenal berbagai model pembelajaran vokasi.",
+            "Mengenal berbagai model pembelajaran teknik elektronika.",
             "Menjelaskan karakteristik model pembelajaran.",
             "Menentukan model pembelajaran sesuai kebutuhan praktik."
         ],
@@ -580,7 +1065,7 @@ const daftarMateri = [
                 menguji sensor, dan mengevaluasi hasil proyek.
             </p>
         `,
-        rangkuman: "Model pembelajaran vokasi menekankan pengalaman langsung, pemecahan masalah, penyelesaian proyek, dan pencapaian kompetensi yang dapat diterapkan dalam pekerjaan."
+        rangkuman: "Model pembelajaran teknik elektronika menekankan pengalaman langsung, pemecahan masalah, penyelesaian proyek, dan pencapaian kompetensi yang dapat diterapkan dalam pekerjaan."
     },
     {
         judul: "Penilaian Kompetensi",
@@ -588,7 +1073,7 @@ const daftarMateri = [
         tujuan: [
             "Memahami pengertian penilaian kompetensi.",
             "Membedakan aspek kognitif, afektif, dan psikomotorik.",
-            "Mengetahui teknik penilaian dalam pendidikan vokasi."
+            "Mengetahui teknik penilaian dalam pendidikan teknik elektronika."
         ],
         isi: `
             <h3>A. Pengertian Penilaian Kompetensi</h3>
@@ -624,7 +1109,7 @@ const daftarMateri = [
                 ketepatan proses perakitan dan hasil rangkaian.
             </p>
         `,
-        rangkuman: "Penilaian kompetensi dalam pendidikan vokasi mencakup pengetahuan, sikap, dan keterampilan agar kemampuan peserta didik dapat dinilai secara menyeluruh."
+        rangkuman: "Penilaian kompetensi dalam pendidikan teknik elektronika mencakup pengetahuan, sikap, dan keterampilan agar kemampuan peserta didik dapat dinilai secara menyeluruh."
     }
 ];
 
@@ -688,11 +1173,59 @@ function bukaMateri(index) {
                 <p>${materi.rangkuman}</p>
             </div>
         </article>
+
+        <div class="materi-selesai-area">
+        <button type="button" id="tandaiMateriSelesai" class="btn-materi-selesai">
+        ✓ Tandai Materi Selesai
+        </button>
+        ✓ Tandai Materi Selesai
+    </button>
+</div>
     `;
+
+    const tombolSelesai = document.getElementById("tandaiMateriSelesai");
+
+tombolSelesai.addEventListener("click", async () => {
+    const nim = currentUser?.user_metadata?.nim;
+
+    if (!nim) {
+        showToast("Identitas mahasiswa tidak ditemukan.");
+        return;
+    }
+
+    tombolSelesai.disabled = true;
+    tombolSelesai.textContent = "Menyimpan...";
+
+    const { error } = await supabaseClient
+        .from("vec_material_progress")
+        .upsert(
+            {
+                nim: nim,
+                materi_id: index + 1
+            },
+            {
+                onConflict: "nim,materi_id",
+                ignoreDuplicates: true
+            }
+        );
+
+    if (error) {
+        console.error("Gagal menyimpan materi:", error);
+        tombolSelesai.disabled = false;
+        tombolSelesai.textContent = "✓ Tandai Materi Selesai";
+        showToast("Progres materi gagal disimpan.");
+        return;
+    }
+
+    tombolSelesai.textContent = "✓ Materi Selesai";
+    tombolSelesai.classList.add("selesai");
+    showToast("Progres materi berhasil disimpan!");
+    });
 
     if (window.lucide) {
         lucide.createIcons();
     }
+    
 }
 
 // ==========================================
@@ -728,7 +1261,7 @@ const dataStudiKasusVEC = [
         ]
     },
     {
-        judul: "Penerapan Teaching Factory di Sekolah Vokasi",
+        judul: "Penerapan Teaching Factory di Sekolah Teknik Elektronika",
         kategori: "Teaching Factory",
         bacaan: [
             "SMK Teknologi Mandiri berencana menerapkan Teaching Factory (TEFA) untuk meningkatkan keterampilan siswa. Melalui program ini, siswa diharapkan dapat belajar dengan suasana kerja yang menyerupai dunia industri.",
@@ -736,7 +1269,7 @@ const dataStudiKasusVEC = [
             "Namun, pelaksanaan program belum berjalan optimal. Beberapa guru belum terbiasa dengan sistem pembelajaran berbasis produksi. Peralatan praktik juga belum sepenuhnya memenuhi standar industri. Selain itu, pesanan yang diterima masih sedikit sehingga kegiatan produksi belum berjalan secara konsisten."
         ],
         pertanyaan: [
-            "Apa tujuan utama penerapan Teaching Factory dalam pendidikan vokasi?",
+            "Apa tujuan utama penerapan Teaching Factory dalam pendidikan teknik elektronika?",
             "Apa saja kendala yang dihadapi sekolah dalam menerapkan Teaching Factory?",
             "Bagaimana peran guru dalam mendukung keberhasilan program Teaching Factory?",
             "Apa langkah yang dapat dilakukan agar Teaching Factory berjalan lebih efektif?"
@@ -744,14 +1277,14 @@ const dataStudiKasusVEC = [
     },
     {
         judul: "Kurikulum yang Tidak Sesuai Perkembangan Teknologi",
-        kategori: "Kurikulum Vokasi",
+        kategori: "Kurikulum Teknik Elektronika",
         bacaan: [
-            "Sebuah lembaga pendidikan vokasi masih menggunakan kurikulum yang disusun beberapa tahun lalu. Materi pembelajaran lebih banyak membahas teknologi konvensional, sedangkan dunia industri telah menggunakan sistem otomasi, Internet of Things (IoT), dan teknologi digital.",
+            "Sebuah lembaga pendidikan teknik elektronika masih menggunakan kurikulum yang disusun beberapa tahun lalu. Materi pembelajaran lebih banyak membahas teknologi konvensional, sedangkan dunia industri telah menggunakan sistem otomasi, Internet of Things (IoT), dan teknologi digital.",
             "Mahasiswa mulai mengalami kesulitan ketika mengikuti kegiatan magang karena belum memahami teknologi yang digunakan perusahaan. Mereka membutuhkan waktu lebih lama untuk beradaptasi dengan peralatan dan sistem kerja yang baru.",
             "Pihak lembaga menyadari bahwa kurikulum perlu diperbarui. Namun, perubahan tersebut membutuhkan koordinasi antara pengelola pendidikan, guru atau dosen, serta pihak industri agar materi pembelajaran tetap relevan dengan kebutuhan pekerjaan."
         ],
         pertanyaan: [
-            "Mengapa kurikulum pendidikan vokasi perlu mengikuti perkembangan teknologi?",
+            "Mengapa kurikulum pendidikan teknik elektronika perlu mengikuti perkembangan teknologi?",
             "Apa dampak penggunaan kurikulum yang sudah tidak relevan bagi mahasiswa?",
             "Bagaimana cara melibatkan industri dalam pengembangan kurikulum?",
             "Materi atau kompetensi teknologi apa yang perlu ditambahkan dalam pembelajaran Teknik Elektronika?"
@@ -761,7 +1294,7 @@ const dataStudiKasusVEC = [
         judul: "Keterbatasan Peralatan Praktik di Laboratorium",
         kategori: "Sarana dan Prasarana",
         bacaan: [
-            "Sebuah sekolah vokasi memiliki jumlah siswa yang cukup banyak, tetapi fasilitas laboratorium elektronika masih terbatas. Beberapa alat ukur, seperti multimeter dan osiloskop, harus digunakan secara bergantian oleh banyak siswa.",
+            "Sebuah sekolah teknik elektronika memiliki jumlah siswa yang cukup banyak, tetapi fasilitas laboratorium elektronika masih terbatas. Beberapa alat ukur, seperti multimeter dan osiloskop, harus digunakan secara bergantian oleh banyak siswa.",
             "Kondisi tersebut menyebabkan waktu praktik menjadi kurang efektif. Sebagian siswa hanya mengamati temannya melakukan pengukuran tanpa mendapatkan kesempatan yang cukup untuk mencoba secara langsung.",
             "Pihak sekolah memiliki keterbatasan anggaran untuk membeli peralatan baru. Oleh karena itu, sekolah perlu mengatur jadwal penggunaan laboratorium, melakukan perawatan peralatan, serta mencari alternatif kerja sama dengan industri atau lembaga lain."
         ],
@@ -769,7 +1302,7 @@ const dataStudiKasusVEC = [
             "Apa masalah utama yang terjadi dalam kegiatan praktik tersebut?",
             "Bagaimana keterbatasan peralatan dapat memengaruhi keterampilan siswa?",
             "Apa alternatif yang dapat dilakukan sekolah untuk mengatasi keterbatasan fasilitas?",
-            "Mengapa kegiatan praktik langsung penting dalam pendidikan vokasi?"
+            "Mengapa kegiatan praktik langsung penting dalam pendidikan teknik elektronika?"
         ]
     },
     {
@@ -782,7 +1315,7 @@ const dataStudiKasusVEC = [
         ],
         pertanyaan: [
             "Apa penyebab utama kurang efektifnya kerja kelompok dalam kasus tersebut?",
-            "Mengapa keterampilan kerja sama penting bagi lulusan pendidikan vokasi?",
+            "Mengapa keterampilan kerja sama penting bagi lulusan pendidikan teknik elektronika?",
             "Bagaimana cara membangun komunikasi dan tanggung jawab dalam sebuah tim?",
             "Bagaimana dosen dapat menilai keterampilan kerja sama mahasiswa?"
         ]
@@ -791,14 +1324,14 @@ const dataStudiKasusVEC = [
         judul: "Sertifikasi Kompetensi sebagai Bekal Memasuki Dunia Kerja",
         kategori: "Sertifikasi Kompetensi",
         bacaan: [
-            "Seorang lulusan pendidikan vokasi memiliki kemampuan yang cukup baik dalam merakit dan memperbaiki perangkat elektronika. Selama mengikuti pendidikan, ia telah melakukan berbagai kegiatan praktik dan menyelesaikan beberapa proyek.",
+            "Seorang lulusan pendidikan teknik elektronika memiliki kemampuan yang cukup baik dalam merakit dan memperbaiki perangkat elektronika. Selama mengikuti pendidikan, ia telah melakukan berbagai kegiatan praktik dan menyelesaikan beberapa proyek.",
             "Ketika melamar pekerjaan, perusahaan meminta bukti kompetensi yang dapat menunjukkan bahwa pelamar telah memenuhi standar kemampuan tertentu. Lulusan tersebut belum memiliki sertifikat kompetensi sehingga harus mengikuti proses pengujian untuk membuktikan keterampilannya.",
             "Sekolah kemudian mempertimbangkan untuk bekerja sama dengan Lembaga Sertifikasi Profesi (LSP) agar siswa dapat mengikuti uji kompetensi sesuai bidang keahliannya. Dengan demikian, lulusan tidak hanya memiliki ijazah, tetapi juga bukti kemampuan yang diakui sesuai skema sertifikasi yang diikuti."
         ],
         pertanyaan: [
-            "Apa fungsi sertifikasi kompetensi bagi lulusan pendidikan vokasi?",
+            "Apa fungsi sertifikasi kompetensi bagi lulusan pendidikan teknik elektronika?",
             "Mengapa perusahaan membutuhkan bukti kompetensi calon tenaga kerja?",
-            "Bagaimana peran Lembaga Sertifikasi Profesi dalam pendidikan vokasi?",
+            "Bagaimana peran Lembaga Sertifikasi Profesi dalam pendidikan teknik elektronika?",
             "Apa manfaat sertifikasi kompetensi bagi mahasiswa ketika memasuki dunia kerja?"
         ]
     }
@@ -1039,13 +1572,31 @@ if (adminMenu) {
     });
 }
 
+
 // ==========================================
-// NOTIFIKASI
+// NOTIFIKASI VEC
 // ==========================================
 
-document.getElementById("notificationBtn").addEventListener("click", () => {
-    showToast("Belum ada notifikasi baru. Semangat menyelesaikan misi!");
-});
+const notificationBtn = document.getElementById("notificationBtn");
+const notificationPanel = document.getElementById("notificationPanel");
+
+if (notificationBtn && notificationPanel) {
+
+    notificationBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+
+        notificationPanel.hidden = !notificationPanel.hidden;
+    });
+
+    notificationPanel.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
+
+    document.addEventListener("click", function () {
+        notificationPanel.hidden = true;
+    });
+}
+
 
 // ==========================================
 // LOGOUT
@@ -1576,6 +2127,9 @@ async function simpanJawaban(questionId, answer) {
 
     examAnswers[questionId] = answer;
     perbaruiProgress();
+
+    // Perbarui progres Challenges di Dashboard
+    await muatProgresChallenges(currentUser);
 }
 
 // ==========================================
@@ -2105,9 +2659,9 @@ async function muatLeaderboardVEC() {
     if (messageContainer) messageContainer.textContent = "";
 
     try {
-        const { data, error } = await supabaseClient.rpc(
-            "get_vec_leaderboard"
-        );
+    const { data, error } = await supabaseClient.rpc(
+        "get_vec_xp_leaderboard"
+    );
 
         if (error) throw error;
 
@@ -2166,6 +2720,51 @@ async function muatLeaderboardVEC() {
     }
 }
 
+
+    // MEMUAT 3 JUARA LEADERBOARD DI DASHBOARD
+    async function muatDashboardLeaderboard() {
+        const container = document.getElementById("dashboardLeaderboardList");
+
+        if (!container) return;
+
+        try {
+            const { data, error } = await supabaseClient.rpc(
+                "get_vec_xp_leaderboard"
+            );
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `
+                    <li>Belum ada data peringkat.</li>
+                `;
+                return;
+            }
+
+            const medali = ["gold-rank", "silver-rank", "bronze-rank"];
+            const avatar = ["👨🏻‍🎓", "👩🏻‍🎓", "🧑🏻‍🎓"];
+
+            container.innerHTML = data.slice(0, 3).map((item, index) => `
+                <li>
+                    <span class="rank ${medali[index]}">${index + 1}</span>
+                    <span class="mini-avatar">${avatar[index]}</span>
+                    <span class="leader-name">
+                        ${escapeLeaderboardHTML(item.nama)}
+                    </span>
+                    <b>${Number(item.skor).toLocaleString("id-ID")} XP</b>
+                </li>
+            `).join("");
+
+        } catch (error) {
+            console.error("Gagal memuat leaderboard Dashboard:", error);
+
+            container.innerHTML = `
+                <li>Gagal memuat peringkat.</li>
+            `;
+        }
+    }
+
+
 // Mencegah teks dari database dianggap sebagai HTML
 function escapeLeaderboardHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -2185,3 +2784,339 @@ document.querySelector('[data-page="Leaderboard"]')
 document.getElementById("refreshLeaderboardBtn")
     ?.addEventListener("click", muatLeaderboardVEC);
 
+// ==========================================
+// SIMULASI HUKUM KIRCHHOFF I (KCL)
+// ==========================================
+
+const tombolKCL = document.getElementById("hitungKCL");
+
+if (tombolKCL) {
+    tombolKCL.addEventListener("click", function () {
+
+        const arusMasuk = Number(
+            document.getElementById("arusMasuk").value
+        );
+
+        const arusKeluar1 = Number(
+            document.getElementById("arusKeluar1").value
+        );
+
+        const arusKeluar2 = Number(
+            document.getElementById("arusKeluar2").value
+        );
+
+        const hasilKCL = document.getElementById("hasilKCL");
+
+        const semuaInput = [
+            document.getElementById("arusMasuk"),
+            document.getElementById("arusKeluar1"),
+            document.getElementById("arusKeluar2")
+        ];
+
+        if (semuaInput.some(input =>
+            input.value.trim() === "" ||
+            !Number.isFinite(Number(input.value)) ||
+            Number(input.value) < 0
+        )) {
+            hasilKCL.innerHTML = `
+                <p>Masukkan nilai arus yang valid dan tidak negatif.</p>
+            `;
+            return;
+        }
+
+        const totalArusKeluar = arusKeluar1 + arusKeluar2;
+
+        document.getElementById("labelArusMasuk").textContent =
+            `I₁ = ${arusMasuk} A`;
+
+        document.getElementById("labelArusKeluar1").textContent =
+            `I₂ = ${arusKeluar1} A`;
+
+        document.getElementById("labelArusKeluar2").textContent =
+            `I₃ = ${arusKeluar2} A`;
+
+        const selisih = Math.abs(arusMasuk - totalArusKeluar);
+
+        if (selisih < 0.001) {
+            hasilKCL.classList.remove("status-salah");
+            hasilKCL.classList.add("status-benar");
+            hasilKCL.innerHTML = `
+                <h4>Benar! Arus Seimbang</h4>
+                <p>Arus Masuk = ${arusMasuk} A</p>
+                <p>Total Arus Keluar = ${totalArusKeluar} A</p>
+                <p>ΣI masuk = ΣI keluar</p>
+                <p>Hukum Kirchhoff I terpenuhi.</p>
+            `;
+        } else {
+            hasilKCL.classList.remove("status-benar");
+            hasilKCL.classList.add("status-salah");
+            hasilKCL.innerHTML = `
+                <h4>Belum Seimbang</h4>
+                <p>Arus Masuk = ${arusMasuk} A</p>
+                <p>Total Arus Keluar = ${totalArusKeluar} A</p>
+                <p>Selisih Arus = ${selisih.toFixed(2)} A</p>
+                <p>Ubah nilai arus agar jumlah arus masuk dan keluar sama.</p>
+            `;
+        }
+    });
+}
+
+// ==========================================
+// SIMULASI HUKUM KIRCHHOFF II (KVL)
+// ==========================================
+
+const tombolKVL = document.getElementById("hitungKVL");
+
+if (tombolKVL) {
+    tombolKVL.addEventListener("click", function () {
+
+        const sumber = Number(
+            document.getElementById("teganganSumber").value
+        );
+
+        const R1 = Number(
+            document.getElementById("resistor1").value
+        );
+
+        const R2 = Number(
+            document.getElementById("resistor2").value
+        );
+
+        const hasil = document.getElementById("hasilKVL");
+
+        const inputKVL = [
+            document.getElementById("teganganSumber"),
+            document.getElementById("resistor1"),
+            document.getElementById("resistor2")
+        ];
+
+        if (inputKVL.some(input =>
+            input.value.trim() === "" ||
+            !Number.isFinite(Number(input.value)) ||
+            Number(input.value) <= 0
+        )) {
+            hasil.innerHTML = `
+                <h4>Input Tidak Valid</h4>
+                <p>Masukkan tegangan dan hambatan lebih dari 0.</p>
+            `;
+            return;
+        }
+
+        // Menghitung arus rangkaian seri
+        const hambatanTotal = R1 + R2;
+        const arus = sumber / hambatanTotal;
+
+        // Menghitung tegangan pada resistor
+        const V1 = arus * R1;
+        const V2 = arus * R2;
+
+        // Memperbarui nilai pada diagram KVL
+        document.getElementById("labelSumberKVL").textContent =
+            `Vs = ${sumber} V`;
+
+        document.getElementById("labelR1KVL").textContent =
+            `R₁ = ${R1} Ω`;
+
+        document.getElementById("labelR2KVL").textContent =
+            `R₂ = ${R2} Ω`;
+
+        document.getElementById("labelArusKVL").textContent =
+            `I = ${arus.toFixed(2)} A`;
+
+        // Membuktikan Hukum Kirchhoff II
+        const totalTegangan = V1 + V2;
+        const selisih = Math.abs(sumber - totalTegangan);
+
+        hasil.classList.remove("status-benar", "status-salah");
+        hasil.classList.add(
+            selisih < 0.001 ? "status-benar" : "status-salah"
+        );
+
+        hasil.innerHTML = `
+            <h4>Hasil Perhitungan KVL</h4>
+
+            <p>Hambatan Total = ${hambatanTotal.toFixed(2)} Ω</p>
+            <p>Arus Rangkaian = ${arus.toFixed(2)} A</p>
+
+            <p>Tegangan R₁ = ${V1.toFixed(2)} V</p>
+            <p>Tegangan R₂ = ${V2.toFixed(2)} V</p>
+
+            <p>Tegangan Sumber = ${sumber.toFixed(2)} V</p>
+            <p>Total Tegangan Resistor = ${totalTegangan.toFixed(2)} V</p>
+
+            <h4>
+                ${selisih < 0.001
+                    ? "Benar! Hukum Kirchhoff II Terpenuhi"
+                    : "Perhitungan Belum Seimbang"}
+            </h4>
+
+            <p>ΣV = Vs - V₁ - V₂ = ${selisih < 0.001 ? "0 V" : (sumber - totalTegangan).toFixed(4) + " V"}</p>
+        `;
+    });
+}
+
+// ==========================================
+// MEMUAT STREAK BELAJAR
+// ==========================================
+
+async function muatStreakVEC() {
+    const { data, error } = await supabaseClient.rpc("hitung_streak_vec");
+
+    if (error) {
+        console.error("Gagal memuat streak:", error);
+        return;
+    }
+
+    const statsStreak = document.getElementById("statsStreak");
+
+    if (statsStreak) {
+        statsStreak.textContent = `${data ?? 0} Hari`;
+    }
+
+    console.log("Streak belajar:", data);
+}
+
+// ==========================================
+// MEMUAT NOTIFIKASI VEC
+// ==========================================
+
+async function muatNotifikasiVEC(user) {
+    const nim = user.user_metadata?.nim;
+    const container = document.getElementById("notificationList");
+
+    if (!nim || !container) return;
+
+    container.innerHTML = "<p>Memuat notifikasi...</p>";
+
+    const [materi, challenge, quiz, misi] = await Promise.all([
+        supabaseClient
+            .from("vec_material_progress")
+            .select("materi_id, completed_at")
+            .eq("nim", nim),
+
+        supabaseClient
+            .from("vec_exam_answers")
+            .select("question, updated_at")
+            .eq("nim", nim),
+
+        supabaseClient
+            .from("vec_quiz_results")
+            .select("nilai, completed_at")
+            .eq("nim", nim)
+            .not("completed_at", "is", null),
+
+        supabaseClient
+            .from("vec_mission_progress")
+            .select("mission_id, completed_at")
+            .eq("nim", nim)
+    ]);
+
+    const daftar = [];
+
+    if (materi.data) {
+        materi.data.forEach(item => {
+            daftar.push({
+                icon: "📚",
+                judul: "Materi berhasil diselesaikan",
+                detail: `Materi ${item.materi_id} selesai dipelajari`,
+                waktu: item.completed_at
+            });
+        });
+    }
+
+    if (challenge.data?.length) {
+        const terbaru = challenge.data.reduce((a, b) =>
+            new Date(a.updated_at) > new Date(b.updated_at) ? a : b
+        );
+
+        const jumlah = new Set(
+            challenge.data.map(item => item.question)
+        ).size;
+
+        daftar.push({
+            icon: "🎯",
+            judul: jumlah >= 20
+                ? "Challenge berhasil diselesaikan"
+                : "Aktivitas Challenge",
+            detail: `${jumlah} dari 20 soal telah dijawab`,
+            waktu: terbaru.updated_at
+        });
+    }
+
+    if (quiz.data) {
+        quiz.data.forEach(item => {
+            daftar.push({
+                icon: "📝",
+                judul: "Quiz telah diselesaikan",
+                detail: `Nilai Quiz: ${item.nilai}`,
+                waktu: item.completed_at
+            });
+        });
+    }
+
+    if (misi.data) {
+        misi.data.forEach(item => {
+            daftar.push({
+                icon: "🏆",
+                judul: "Misi berhasil diselesaikan",
+                detail: `Misi ID ${item.mission_id} selesai · 100 XP`,
+                waktu: item.completed_at
+            });
+        });
+    }
+
+    daftar.sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
+
+    const terbaru = daftar.slice(0, 10);
+
+    if (!terbaru.length) {
+        container.innerHTML = `
+            <div class="notification-empty">
+                <div style="font-size:40px;">🔔</div>
+                <b>Belum ada notifikasi</b>
+                <p>Aktivitas belajar kamu akan muncul di sini.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = terbaru.map(item => `
+        <div class="notification-item">
+            <span>${item.icon}</span>
+            <div>
+                <b>${item.judul}</b>
+                <p>${item.detail}</p>
+                <small>${new Date(item.waktu).toLocaleString("id-ID")}</small>
+            </div>
+        </div>
+    `).join("");
+}
+
+// ==========================================
+// AVATAR BERDASARKAN JENIS KELAMIN
+// ==========================================
+
+async function muatAvatarVEC(user) {
+    const nim = user.user_metadata?.nim;
+    const avatar = document.getElementById("dashboardAvatar");
+
+    if (!nim || !avatar) return;
+
+    const { data, error } = await supabaseClient
+        .from("allowed_student")
+        .select("jenis_kelamin")
+        .eq("nim", nim)
+        .maybeSingle();
+
+    console.log("NIM akun:", nim);
+    console.log("Data jenis kelamin:", data);
+    console.log("Error jenis kelamin:", error);
+
+    if (error || !data) return;
+
+    if (data?.jenis_kelamin === "Laki-laki") {
+        avatar.textContent = "👨🏻‍🎓";
+    } else if (data?.jenis_kelamin === "Perempuan") {
+        avatar.textContent = "👩🏻‍🎓";
+    }
+}
