@@ -95,6 +95,11 @@
 
 <nav class="nav-menu" aria-label="Navigasi utama">
 
+    <button class="nav-link" data-page="Profil">
+        <span data-lucide="user-round"></span>
+        Profil
+    </button>
+
     <button class="nav-link active" data-page="Dashboard">
         <span data-lucide="layout-dashboard"></span>
         Dashboard
@@ -118,7 +123,7 @@
     <button class="nav-link" data-page="Simulasi">
         <span data-lucide="circuit-board"></span>
         Simulasi
-    </button>
+    </button>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
     <button class="nav-link" data-page="Quiz">
         <span data-lucide="brain-circuit"></span>
@@ -135,11 +140,6 @@
         Leaderboard
     </button>
 
-    <button class="nav-link" data-page="Profil">
-        <span data-lucide="user-round"></span>
-        Profil
-    </button>
-
 </nav>
 
         <button class="nav-link" id="adminMenu" hidden>
@@ -153,29 +153,57 @@
       <header class="topbar">
         <button class="menu-toggle" id="menuToggle" aria-label="Buka navigasi">☰</button>
         <div class="welcome">
-          <div class="avatar">👨🏻‍🎓</div>
+        <div class="avatar" id="dashboardAvatar"
+            data-go="Profil"
+            style="cursor:pointer;"
+            title="Buka Profil">
+            👨🏻‍🎓
+        </div>
           <div>
             <h1>Halo, <span id="userName">Imam Nasrullah</span>! <span class="wave">👋</span></h1>
             <p>Siap menghadapi tantangan baru di VEC?</p>
           </div>
         </div>
         <div class="top-stats">
-          <div class="level-card">
+          <div class="level-card" data-go="Profil" style="cursor:pointer;">
             <div class="level-icon">★</div>
-            <div class="level-info"><b>Level <span id="levelNumber">3</span></b><small>Vocational Explorer</small><div class="level-track"><i id="levelProgress"></i></div><small class="xp-caption"><span id="levelXp">650</span> / 1.000 XP</small></div>
+            <div class="level-info"><b>Level <span id="levelNumber">3</span></b><small>Vocational Explorer</small><div class="level-track"><i id="levelProgress"></i></div><small class="xp-caption"><span id="levelXp">650</span> / 100 XP</small></div>
           </div>
-          <div class="xp-card"><span class="coin">＄</span><div><b id="xpTotal">650</b><small>XP</small></div></div>
-          <button class="notification" id="notificationBtn" aria-label="Notifikasi">♧<i>3</i></button>
+         <div class="xp-card" data-go="Pencapaian" style="cursor:pointer;">
+            <div class="xp-icon">🪙</div>
+            <div class="xp-info"><b><span id="totalXp">650</span> XP</b><small>Total XP</small></div>
+          </div>
+          <div class="notification-wrap">
+    <button class="notification" id="notificationBtn"
+            aria-label="Notifikasi" type="button">
+        <i data-lucide="bell"></i>
+    </button>
+
+    <div class="notification-panel" id="notificationPanel" hidden>
+        <div class="notification-header">
+            <h3>Notifikasi</h3>
+            <span>Aktivitas VEC</span>
+        </div>
+
+    <div class="notification-list" id="notificationList">
+        <div class="notification-empty">
+            <div style="font-size:40px;">🔔</div>
+            <b>Memuat notifikasi...</b>
+            <p>Informasi aktivitas belajar kamu akan muncul di sini.</p>
+        </div>
+    </div>
+</div>
         </div>
       </header>
 
-      <section class="dashboard-content">
-        <div id="dashboardHomeContent">
+      <div id="dashboardHomeContent">
+        <section class="dashboard-content">
+
           <article class="hero-card">
             <div class="hero-copy">
               <span class="eyebrow">TANTANGAN MINGGU INI!</span>
-              <h2>Jadilah Inovator Pendidikan Vokasi</h2>
-              <p>Tingkatkan kompetensi Anda dengan menyelesaikan misi: <b>“Inovasi Kurikulum Vokasi”</b>.</p>
+              <h2>Jadilah Teknisi Elektronika Profesional</h2>
+              <p>Tingkatkan kompetensi Anda dengan menyelesaikan misi: <b>“Inovasi Kurikulum Teknik Elektronika”</b>.</p>
             <button class="btn btn-gold" data-go="Challenges">Mulai Challenge <span>➜</span></button>
           </div>
           <div class="hero-art" aria-hidden="true"><div class="city">▥ ▥ ▥</div><div class="robot">🤖</div><div class="orbit"></div></div>
@@ -185,9 +213,13 @@
           <div class="progress-content">
             <div class="donut" id="progressDonut" style="--progress:68"><span id="progressPercent">68%</span></div>
             <div class="progress-list">
-              <div><i class="dot cyan"></i><span>Materi</span><b>5/7</b></div>
-              <div><i class="dot blue"></i><span>Challenge</span><b>2/5</b></div>
-              <div><i class="dot gold"></i><span>Quiz</span><b>1/3</b></div>
+             <div><i class="dot cyan"></i><span>Materi</span><b id="materiProgressCount">0/6</b></div>
+              <div>
+                <i class="dot blue"></i>
+                <span>Challenges</span>
+                <b id="challengeProgressCount">0/20</b>
+                </div>          
+             <div><i class="dot gold"></i><span>Quiz</span><b id="quizProgressCount">0/1</b></div>
             </div>
           </div>
         </article>
@@ -200,61 +232,155 @@
             <div class="mission-art">📚<span>🎓</span><small>VEC MISSION</small></div>
             <div class="mission-info">
               <span class="pill">Mission 01</span>
-              <h4>Mengenali Tantangan<br>Kurikulum Vokasi</h4>
+              <h4>Mengenali Tantangan<br>Kurikulum Teknik Elektronika</h4>
               <p>Pelajari materi dan jawab kuis untuk mendapatkan 100 XP!</p>
               <strong class="reward">🪙 100 XP</strong>
             </div>
-            <button class="btn btn-cyan" data-go="Challenges">Kerjakan <span>➜</span></button>
+            <button class="btn btn-cyan" data-go="Quiz">
+            Kerjakan <span>➜</span>
+            </button>
           </div>
         </article>
 
-        <article class="panel badges-panel">
-          <div class="panel-heading"><h3><span class="heading-icon">🏆</span>Badge Pencapaian</h3><button class="text-link" data-go="Pencapaian">Lihat Semua →</button></div>
-          <div class="badge-list">
-            <div class="achievement"><div class="badge-shield green">▤</div><b>Beginner</b><small>✓</small></div>
-            <div class="achievement"><div class="badge-shield blue">⚙</div><b>Tech Explorer</b><small>✓</small></div>
-            <div class="achievement"><div class="badge-shield purple">🏆</div><b>Problem Solver</b><small>✓</small></div>
-            <div class="achievement locked"><div class="badge-shield bronze">♛</div><b>Vocational<br>Expert</b><small>Belum terbuka</small></div>
-          </div>
-        </article>
+
+<!-- BADGE PENCAPAIAN DASHBOARD -->
+<article class="panel badges-panel"
+         data-go="Pencapaian"
+         style="cursor:pointer;">
+
+    <div class="panel-heading">
+        <h3>
+            <span class="heading-icon">🏆</span>
+            Badge Pencapaian
+        </h3>
+        <button class="text-link" data-go="Pencapaian">
+            Lihat Semua →
+        </button>
+    </div>
+
+    <div class="badge-list">
+
+        <!-- BEGINNER -->
+        <div class="achievement locked" id="dashboardBadgeBeginner">
+            <div class="badge-shield green">▤</div>
+            <b>Beginner</b>
+            <small class="badge-status">Belum terbuka</small>
+        </div>
+
+        <!-- TECH EXPLORER -->
+        <div class="achievement locked" id="dashboardBadgeTechExplorer">
+            <div class="badge-shield blue">⚙</div>
+            <b>Tech Explorer</b>
+            <small class="badge-status">Belum terbuka</small>
+        </div>
+
+        <!-- PROBLEM SOLVER -->
+        <div class="achievement locked" id="dashboardBadgeProblemSolver">
+            <div class="badge-shield purple">🏆</div>
+            <b>Problem Solver</b>
+            <small class="badge-status">Belum terbuka</small>
+        </div>
+
+        <!-- VOCATIONAL EXPERT -->
+        <div class="achievement locked" id="dashboardBadgeVocationalExpert">
+            <div class="badge-shield bronze">♛</div>
+            <b>Vocational<br>Expert</b>
+            <small class="badge-status">Belum terbuka</small>
+        </div>
+
+    </div>
+</article>
+
       </section>
 
       <section class="bottom-grid">
         <article class="panel leaderboard-panel">
           <div class="panel-heading"><h3><span class="heading-icon">📊</span>Leaderboard</h3><button class="text-link" data-go="Leaderboard">Lihat Semua →</button></div>
-          <ol class="leader-list">
-            <li><span class="rank gold-rank">1</span><span class="mini-avatar">👩🏻‍🎓</span><span class="leader-name">Budi Santoso</span><b>2.450 XP</b></li>
-            <li><span class="rank silver-rank">2</span><span class="mini-avatar">👨🏻‍🎓</span><span class="leader-name">Siti Nurhaliza</span><b>2.180 XP</b></li>
-            <li><span class="rank bronze-rank">3</span><span class="mini-avatar">🧑🏻‍🎓</span><span class="leader-name">Rizky Maulana</span><b>1.950 XP</b></li>
-          </ol>
+
+        <ol class="leader-list" id="dashboardLeaderboardList">
+            <li>
+                <span class="rank gold-rank">1</span>
+                <span class="mini-avatar">👨🏻‍🎓</span>
+                <span class="leader-name">Memuat...</span>
+                <b>...</b>
+            </li>
+            <li>
+                <span class="rank silver-rank">2</span>
+                <span class="mini-avatar">👨🏻‍🎓</span>
+                <span class="leader-name">Memuat...</span>
+                <b>...</b>
+            </li>
+            <li>
+                <span class="rank bronze-rank">3</span>
+                <span class="mini-avatar">👨🏻‍🎓</span>
+                <span class="leader-name">Memuat...</span>
+                <b>...</b>
+            </li>
+        </ol>
+
         </article>
 
-        <article class="panel statistics-panel">
-          <div class="panel-heading"><h3><span class="heading-icon">▥</span>Statistik Kamu</h3></div>
-          <div class="stat-list">
-            <div class="stat-box"><span>⭐</span><b>5</b><small>Misi Selesai</small></div>
-            <div class="stat-box"><span>🏅</span><b>3</b><small>Badge</small></div>
-            <div class="stat-box"><span>🟢</span><b>85%</b><small>Nilai Rata-rata</small></div>
-            <div class="stat-box"><span>🔥</span><b>7</b><small>Streak</small></div>
-          </div>
-        </article>
 
-        <article class="motivation-card">
+<!-- STATISTIK KAMU -->
+<article class="panel statistics-panel"
+         data-go="Pencapaian"
+         style="cursor:pointer;">
+
+    <div class="panel-heading">
+        <h3>
+            <span class="heading-icon">▥</span>
+            Statistik Kamu
+        </h3>
+    </div>
+
+    <div class="stat-list">
+
+        <div class="stat-box">
+            <span>⭐</span>
+            <b id="statsMissionCount">--</b>
+            <small>Misi Selesai</small>
+        </div>
+
+        <div class="stat-box">
+            <span>🏅</span>
+            <b id="dashboardBadgeCount">0</b>
+            <small>Badge</small>
+        </div>
+
+        <div class="stat-box">
+            <span>🟢</span>
+            <b id="statsAverageScore">--</b>
+            <small>Nilai Rata-rata</small>
+        </div>
+
+        <div class="stat-box">
+            <span>🔥</span>
+            <b id="statsStreak">--</b>
+            <small>Streak</small>
+        </div>
+
+    </div>
+</article>
+
+
+        <article class="motivation-card"
+                data-go="Challenges"
+                style="cursor:pointer;">
           <div class="trophy">🏆</div>
           <h3>Terus Belajar,<br>Raih Prestasi!</h3>
           <p>Setiap tantangan membawamu lebih dekat pada tujuan.</p>
         </article>
-      </section>
+           </section> <!-- penutup bottom-grid -->
 
-
+    </div> <!-- penutup dashboardHomeContent -->
 
 <!-- HALAMAN MATERI -->
 <section id="materiPage" class="content-page" hidden>
     <div class="panel materi-container">
         <div class="materi-header">
-            <span class="materi-label">PEMBELAJARAN VEC</span>
-            <h2>Materi Pembelajaran</h2>
-            <p>Pelajari konsep pendidikan vokasi melalui enam bab pembelajaran berikut.</p>
+            <span class="materi-label">PEMBELAJARAN TEKNIK ELEKTRONIKA</span>
+            <h2>Materi Pendidikan Teknik Elektronika</h2>
+<p>Pelajari konsep dasar dan penerapan teknik elektronika melalui enam bab pembelajaran berikut.</p>
         </div>
 
         <!-- DAFTAR BAB -->
@@ -272,7 +398,198 @@
     </div>
 </section>
 
+<!-- HALAMAN SIMULASI -->
+<section id="simulasiPage" class="content-page" hidden>
 
+    <div class="page-header">
+        <h2>Simulasi Hukum Kirchhoff</h2>
+        <p>
+            Pelajari hubungan arus dan tegangan melalui
+            simulasi rangkaian listrik interaktif.
+        </p>
+    </div>
+
+    <div class="simulation-container">
+
+        <div class="simulation-card">
+            <h3>Hukum Kirchhoff I (KCL)</h3>
+            <p>Hukum arus pada titik percabangan.</p>
+           <div class="kcl-simulation">
+
+    <h4>Simulasi Titik Percabangan</h4>
+    <p>Masukkan nilai arus listrik untuk membuktikan Hukum Kirchhoff I.</p>
+
+    <div class="kcl-circuit">
+
+        <svg viewBox="0 0 320 220" width="100%" role="img"
+     aria-label="Diagram arus masuk dan dua arus keluar pada titik percabangan">
+
+    <defs>
+        <marker id="panahKCL" markerWidth="8" markerHeight="8"
+                refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6" fill="none"
+                  stroke="#59e6b5" stroke-width="1.5"/>
+        </marker>
+    </defs>
+
+    <!-- Arus masuk -->
+    <path d="M20 110 H145"
+          stroke="#59e6b5" stroke-width="3"
+          fill="none" marker-end="url(#panahKCL)"/>
+
+    <!-- Arus keluar atas -->
+    <path d="M175 100 L275 40"
+          stroke="#59e6b5" stroke-width="3"
+          fill="none" marker-end="url(#panahKCL)"/>
+
+    <!-- Arus keluar bawah -->
+    <path d="M175 120 L275 180"
+          stroke="#59e6b5" stroke-width="3"
+          fill="none" marker-end="url(#panahKCL)"/>
+
+    <!-- Titik percabangan -->
+    <circle cx="160" cy="110" r="10" fill="#59e6b5"/>
+
+    <!-- Label -->
+    <g fill="currentColor" font-size="12" text-anchor="middle">
+        <text x="65" y="92" id="labelArusMasuk">I₁ = 5 A</text>
+        <text x="250" y="25" id="labelArusKeluar1">I₂ = 2 A</text>
+        <text x="250" y="205" id="labelArusKeluar2">I₃ = 3 A</text>
+        <text x="160" y="145">Titik Cabang</text>
+    </g>
+</svg>
+
+        <div class="kcl-node">●</div>
+        <p>Arus Masuk (I₁)</p>
+        <input type="number" id="arusMasuk" value="5" min="0" step="0.1">
+
+        <p>Arus Keluar (I₂)</p>
+        <input type="number" id="arusKeluar1" value="2" min="0" step="0.1">
+
+        <p>Arus Keluar (I₃)</p>
+        <input type="number" id="arusKeluar2" value="3" min="0" step="0.1">
+    </div>
+
+    <button type="button" id="hitungKCL">
+        Hitung Arus
+    </button>
+
+    <div id="hasilKCL">
+        <p>Hasil perhitungan akan muncul di sini.</p>
+    </div>
+
+</div>
+        </div>
+
+        <div class="simulation-card">
+            <h3>Hukum Kirchhoff II (KVL)</h3>
+            <p>Hukum tegangan pada rangkaian tertutup.</p>
+            <div class="kvl-simulation">
+
+    <h4>Simulasi Rangkaian Tertutup</h4>
+    <p>
+        Masukkan tegangan sumber dan nilai hambatan
+        untuk menghitung tegangan pada setiap resistor.
+    </p>
+
+    <div class="kvl-circuit">
+
+    <svg viewBox="0 0 340 230" width="100%"
+         role="img" aria-label="Rangkaian tertutup KVL dengan baterai dan dua resistor">
+
+        <defs>
+            <marker id="panahKVL" markerWidth="8" markerHeight="8"
+                    refX="6" refY="3" orient="auto">
+                <path d="M0 0 L6 3 L0 6"
+                      fill="none" stroke="#59e6b5"
+                      stroke-width="1.5"/>
+            </marker>
+        </defs>
+
+        <!-- Kabel rangkaian tanpa melewati simbol resistor -->
+        <path d="M70 45 H125
+         M185 45 H270 V90
+         M270 150 V185 H70 V45"
+         fill="none" stroke="#59e6b5" stroke-width="3"/>
+
+        <!-- Baterai -->
+        <path d="M70 100 V115 M55 115 H85 M60 125 H80 M70 125 V185"
+              stroke="#ffffff" stroke-width="3" fill="none"/>
+
+        <!-- Resistor R1: 3 puncak zig-zag horizontal -->
+        <path d="M125 45
+                L135 32
+                L145 58
+                L155 32
+                L165 58
+                L175 32
+                L185 45"
+            fill="none"
+            stroke="#59e6b5"
+            stroke-width="3"
+            stroke-linejoin="round"/>
+
+        <!-- Resistor R2: 3 puncak zig-zag vertikal -->
+        <path d="M270 90
+                L283 100
+                L257 110
+                L283 120
+                L257 130
+                L283 140
+                L270 150"
+        fill="none"
+        stroke="#59e6b5"
+        stroke-width="3"
+        stroke-linejoin="round"/>
+
+        <!-- Arah arus -->
+        <path d="M100 25 H220"
+              stroke="#59e6b5" stroke-width="2"
+              fill="none" marker-end="url(#panahKVL)"/>
+
+        <!-- Label -->
+        <g fill="#ffffff" font-size="12" text-anchor="middle">
+           <text x="70" y="88" id="labelSumberKVL">Vs = 12 V</text>
+            <text x="155" y="22" id="labelR1KVL">R₁ = 2 Ω</text>
+            <text x="305" y="122" id="labelR2KVL">R₂ = 4 Ω</text>
+            <text x="160" y="215">Rangkaian Tertutup</text>
+            <text x="160" y="10" fill="#59e6b5" id="labelArusKVL">I = 2 A</text>
+        </g>
+
+    </svg>
+
+</div>
+
+    <div class="kvl-inputs">
+
+        <label>Tegangan Sumber (Vs)</label>
+        <input type="number" id="teganganSumber"
+               value="12" min="0.1" step="0.1">
+
+        <label>Resistor R₁ (Ω)</label>
+        <input type="number" id="resistor1"
+               value="2" min="0.1" step="0.1">
+
+        <label>Resistor R₂ (Ω)</label>
+        <input type="number" id="resistor2"
+               value="4" min="0.1" step="0.1">
+
+    </div>
+
+    <button type="button" id="hitungKVL">
+        Hitung Tegangan
+    </button>
+
+    <div id="hasilKVL">
+        <p>Hasil perhitungan akan muncul di sini.</p>
+    </div>
+
+</div>
+        </div>
+
+    </div>
+
+</section>
 
 <!-- HALAMAN STUDI KASUS -->
 <section id="studiKasusPage" class="content-page" hidden>
@@ -280,13 +597,13 @@
     <div class="studi-kasus-container">
 
         <div class="studi-kasus-header">
-            <span class="studi-kasus-label">VEC CASE STUDY</span>
+            <span class="studi-kasus-label">TEKNIK ELEKTRONIKA CASE STUDY</span>
 
-            <h2>Studi Kasus Pendidikan Vokasi</h2>
+            <h2>Studi Kasus Pendidikan Teknik Elektronika</h2>
 
             <p>
                 Pelajari berbagai permasalahan dalam penyelenggaraan
-                pendidikan vokasi dan kembangkan kemampuan berpikir
+                pendidikan teknik elektronika dan kembangkan kemampuan berpikir
                 kritis melalui analisis kasus.
             </p>
         </div>
@@ -317,10 +634,10 @@
     <div class="panel challenges-container">
 
         <div class="challenges-header">
-            <span class="challenges-label">VEC EXAMINATION</span>
+            <span class="challenges-label">TEKNIK ELEKTRONIKA EXAMINATION</span>
             <h2>Ujian Challenges</h2>
             <p>
-                Selesaikan ujian pendidikan vokasi dengan menjawab
+                Selesaikan ujian pendidikan teknik elektronika dengan menjawab
                 lima soal pilihan ganda dalam waktu tiga menit.
             </p>
         </div>
@@ -423,13 +740,46 @@
 </section>
 
 
+<!-- HALAMAN QUIZ WAYGROUND -->
+<section id="quizPage" class="content-page" hidden>
+    <div class="panel challenges-container">
+
+        <div class="challenges-header">
+            <span class="challenges-label">TEKNIK ELEKTRONIKA LEARNING QUIZ</span>
+            <h2>Quiz Pendidikan Teknik Elektronika</h2>
+            <p>
+                Uji pemahaman kamu melalui 20 soal pendidikan teknik elektronika.
+                Kerjakan kuis secara langsung melalui Wayground.
+            </p>
+        </div>
+
+
+        <div style="width:100%;display:flex;flex-direction:column;gap:8px;min-height:635px;">
+            <iframe
+                src="https://wayground.com/embed/quiz/6af73cddeecbd61c764389c7"
+                title="Quiz VEC - Wayground"
+                style="flex:1;"
+                frameBorder="0"
+                allowfullscreen>
+            </iframe>
+            <a href="https://wayground.com/admin?source=embedFrame" target="_blank">
+                Explore more at Wayground.
+            </a>
+        </div>
+            
+
+    </div>
+</section>
+
+
 <!-- HALAMAN LEADERBOARD VEC -->
 <section id="leaderboardPage" class="content-page" hidden>
+
     <div class="panel leaderboard-container">
 
         <div class="challenges-header">
-            <span class="challenges-label">VEC RANKING</span>
-            <h2>Leaderboard VEC</h2>
+            <span class="challenges-label">TEKNIK ELEKTRONIKA RANKING</span>
+            <h2>Leaderboard Teknik Elektronika</h2>
             <p>
                 Lihat peringkat mahasiswa berdasarkan nilai
                 ujian Challenges. Terus tingkatkan prestasimu!
@@ -480,6 +830,170 @@
     </div>
 </section>
 
+
+
+<!-- HALAMAN PENCAPAIAN VEC -->
+<section id="pencapaianPage" class="content-page" hidden>
+    <div class="panel achievement-panel" style="padding:24px;">
+
+        <div class="challenges-header">
+            <span class="challenges-label">TECHNICAL ELECTRONICS ACHIEVEMENTS</span>
+            <h2>Pencapaian Saya 🏆</h2>
+            <p>Lihat perkembangan belajar, badge yang telah diperoleh, dan target pencapaian berikutnya.</p>
+        </div>
+
+        <!-- STATISTIK -->
+        <div class="stat-list">
+            <div class="stat-box">
+                <span>⭐</span>
+                <b id="achievementLevel">3</b>
+                <small>Level Saat Ini</small>
+            </div>
+
+            <div class="stat-box">
+                <span>🪙</span>
+                <b id="achievementXP">650</b>
+                <small>Total XP</small>
+            </div>
+
+            <div class="stat-box">
+                <span>🏅</span>
+                <b id="achievementBadgeCount">3</b>
+                <small>Badge Terbuka</small>
+            </div>
+        </div>
+
+ 
+        <!-- BADGE -->
+        <h3 class="achievement-section-title">Badge Saya</h3>
+        <p class="achievement-description">
+            Setiap badge menunjukkan kemampuan dan aktivitas belajar
+            yang telah berhasil diselesaikan.
+        </p>
+
+        <div class="badge-list">
+
+            <!-- BADGE 1 -->
+            <div class="achievement locked" id="badgeBeginner">
+                <div class="badge-shield green">▤</div>
+                <b>Beginner</b>
+                <small class="badge-status">Belum terbuka</small>
+                <p>
+                    Berhasil menyelesaikan materi pembelajaran pertama
+                    dan mulai mengikuti kegiatan belajar di VEC.
+                </p>
+            </div>
+
+            <!-- BADGE 2 -->
+            <div class="achievement locked" id="badgeTechExplorer">
+                <div class="badge-shield blue">⚙</div>
+                <b>Tech Explorer</b>
+                <small class="badge-status">Belum terbuka</small>
+                <p>
+                    Berhasil mengikuti tantangan teknologi untuk
+                    mengembangkan pemahaman tentang pendidikan vokasi.
+                </p>
+            </div>
+
+            <!-- BADGE 3 -->
+            <div class="achievement locked" id="badgeProblemSolver">
+                <div class="badge-shield purple">🏆</div>
+                <b>Problem Solver</b>
+                <small class="badge-status">Belum terbuka</small>
+                <p>
+                    Berhasil menyelesaikan kegiatan studi kasus
+                    dan melatih kemampuan memecahkan masalah.
+                </p>
+            </div>
+
+            <!-- BADGE 4 -->
+            <div class="achievement locked" id="badgeVocationalExpert">
+                <div class="badge-shield bronze">♛</div>
+                <b>Vocational Expert</b>
+                <small class="badge-status">Belum terbuka</small>
+                <p>
+                    Target pencapaian tertinggi. Diperoleh setelah
+                    menyelesaikan seluruh aktivitas pembelajaran VEC.
+                </p>
+            </div>
+
+        </div>
+        </div>
+        </section>
+
+
+
+
+
+<!-- HALAMAN PROFIL MAHASISWA -->
+<section id="profilPage" class="content-page" hidden>
+
+    <div class="profile-container">
+
+        <div class="profile-banner">
+            <span class="profile-label">MY TEKNIK ELEKTRONIKA PROFILE</span>
+            <h2 id="profileTitle">Profil Mahasiswa</h2>
+            <p>Kenali identitas dan perkembangan belajarmu di VEC.</p>
+        </div>
+
+        <div class="profile-main-card">
+
+            <div class="profile-avatar">👨🏻‍🎓</div>
+
+            <div class="profile-identity">
+                <span class="profile-status">● MAHASISWA AKTIF</span>
+                <h2 id="profileName">Mahasiswa VEC</h2>
+                <p id="profileNIM">NIM: -</p>
+                <span class="profile-role">Vocational Explorer</span>
+            </div>
+
+        </div>
+
+        <div class="profile-stats">
+
+            <div class="profile-stat-card">
+                <div class="profile-stat-icon">⭐</div>
+                <div>
+                    <small>LEVEL SAAT INI</small>
+                    <h3 id="profileLevel">3</h3>
+                    <p>Vocational Explorer</p>
+                </div>
+            </div>
+
+            <div class="profile-stat-card">
+                <div class="profile-stat-icon">🪙</div>
+                <div>
+                    <small>TOTAL PENGALAMAN</small>
+                    <h3><span id="profileXP">650</span> XP</h3>
+                    <p>Pengalaman belajar</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="profile-information">
+            <h3>Informasi Akun</h3>
+
+            <div class="profile-info-row">
+                <span id="profileInfoNameLabel">Nama Mahasiswa</span>
+                <b id="profileInfoName">Mahasiswa VEC</b>
+            </div>
+
+            <div class="profile-info-row">
+                <span id="profileIdLabel">Nomor Induk Mahasiswa</span>
+                <b id="profileInfoNIM">-</b>
+            </div>
+
+            <div class="profile-info-row">
+                <span>Status Akun</span>
+                <b class="profile-active" id="profileAccountStatus">Mahasiswa Aktif</b>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
 
 
