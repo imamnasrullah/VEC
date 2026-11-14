@@ -51,6 +51,63 @@ button { font: inherit; cursor: pointer; }
 .xp-card small { font-weight: 700; }
 .notification { width: 60px; color: white; font-size: 28px; position: relative; }
 .notification i { position: absolute; right: 9px; top: 6px; width: 18px; height: 18px; border-radius: 50%; background: #ff315c; color: white; font-size: 11px; font-style: normal; display: grid; place-items: center; }
+
+/* PANEL NOTIFIKASI VEC */
+.notification-wrap {
+    position: relative;
+}
+
+.notification-panel {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 320px;
+    background: linear-gradient(145deg, #0b1e3e, #10294d);
+    border: 1px solid #167ce1;
+    border-radius: 16px;
+    box-shadow: 0 10px 35px #0009, 0 0 18px #00cfff33;
+    z-index: 100000;
+    overflow: hidden;
+}
+
+.notification-panel[hidden] {
+    display: none;
+}
+
+.notification-header {
+    padding: 16px;
+    border-bottom: 1px solid #24517c;
+}
+
+.notification-header h3 {
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.notification-header span {
+    color: #8bc9ed;
+    font-size: 11px;
+}
+
+.notification-empty {
+    padding: 28px 18px;
+    text-align: center;
+}
+
+.notification-empty b {
+    display: block;
+    color: #ffffff;
+    margin: 12px 0 7px;
+    font-size: 14px;
+}
+
+.notification-empty p {
+    color: #b8cbe0;
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0;
+}
+
 .menu-toggle { display: none; }
 .hero-grid { display: grid; grid-template-columns: minmax(0,2fr) minmax(270px,.85fr); gap: 18px; }
 .hero-card { min-height: 220px; position: relative; overflow: hidden; display: flex; align-items: center; border: 2px solid #167ce1; border-radius: 20px; padding: 25px 28px; background: linear-gradient(100deg,#111c66 0%,#152c75 47%,#09274b 100%); box-shadow: 0 0 16px #087eff55,inset 0 0 35px #7e38ff22; }
@@ -72,7 +129,7 @@ button { font: inherit; cursor: pointer; }
 .progress-panel { padding: 18px 20px; border-color: #235a91; }
 h3 { margin: 0; font-size: 18px; }
 .progress-content { display: flex; align-items: center; justify-content: space-around; gap: 15px; height: 155px; }
-.donut { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(#00e2b0 calc(var(--progress)*1%),#10c5e8 0 68%,#1b477b 68%); position: relative; flex: 0 0 auto; }
+.donut { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(#00e2b0 calc(var(--progress)*1%), #1b477b 0); position: relative; flex: 0 0 auto; }
 .donut:before { content:""; position:absolute; inset: 13px; background: #0b1b38; border-radius: 50%; }
 .donut span { position: relative; font-size: 24px; font-weight: 800; }
 .progress-list { width: 48%; display: grid; gap: 13px; }
@@ -119,7 +176,7 @@ h3 { margin: 0; font-size: 18px; }
 .motivation-card h3 { color: #ffe16a; font-size: 17px; font-style: italic; line-height: 1.35; }
 .motivation-card p { color: #d1d9ee; font-size: 10px; line-height: 1.4; margin-bottom: 0; }
 footer { color: #7890b1; font-size: 10px; display: flex; justify-content: space-between; padding: 20px 3px 0; }
-.toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%,20px); opacity: 0; pointer-events: none; background: #0b2d50; color: white; border: 1px solid #00cfff; border-radius: 12px; padding: 12px 18px; box-shadow: 0 0 20px #00cfff55; transition: .25s; z-index: 20; font-size: 13px; }
+.toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%,20px); opacity: 0; pointer-events: none; background: #0b2d50; color: white; border: 1px solid #00cfff; border-radius: 12px; padding: 12px 18px; box-shadow: 0 0 20px #00cfff55; transition: .25s; z-index: 99999; font-size: 13px; }
 .toast.show { opacity: 1; transform: translate(-50%,0); }
 @media (max-width: 1150px) {
   .sidebar { width: 220px; flex-basis: 220px; }.main-content { width: calc(100% - 220px); padding: 22px 18px; }
@@ -240,6 +297,56 @@ footer { color: #7890b1; font-size: 10px; display: flex; justify-content: space-
   margin-top: 12px;
 }
 
+
+/* DEKORASI BACKGROUND ELEKTRONIKA */
+.auth-screen {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+  background:
+    linear-gradient(rgba(3, 15, 35, 0.45), rgba(3, 15, 35, 0.45)),
+    url("images/background-login1.jpg") center center / cover no-repeat;
+}
+
+.auth-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(90deg, transparent 49%, #00cfff22 50%, transparent 51%),
+        linear-gradient(0deg, transparent 49%, #00cfff18 50%, transparent 51%);
+
+    background-size: 85px 85px;
+    opacity: 0.35;
+
+    mask-image: linear-gradient(
+        to bottom,
+        transparent,
+        black 20%,
+        black 80%,
+        transparent
+    );
+}
+
+.auth-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background-image:
+        radial-gradient(circle, #00dfff 2px, transparent 3px),
+        radial-gradient(circle, #1688ff 2px, transparent 3px);
+
+    background-size: 120px 120px, 170px 170px;
+    background-position: 20px 25px, 80px 70px;
+    opacity: 0.35;
+}
 
 
 /* ==========================================
@@ -1678,3 +1785,776 @@ button#adminLogoutBtn:hover {
     }
 }
 
+
+/* ===== PROFIL MAHASISWA VEC ===== */
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.profile-banner {
+    padding: 25px;
+    border: 1px solid #14528e;
+    border-radius: 18px;
+    background: linear-gradient(120deg, #0b1e3e, #123b68);
+    box-shadow: 0 0 22px #0875c522;
+}
+
+.profile-label {
+    color: #00e2b0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.profile-banner h2 {
+    color: #ffffff;
+    margin: 10px 0 6px;
+    font-size: 25px;
+}
+
+.profile-banner p {
+    color: #b8cbe0;
+    font-size: 13px;
+}
+
+.profile-main-card {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 28px;
+    border: 1px solid #1762a0;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #10294d, #0b1e3e);
+    box-shadow: 0 0 22px #00cfff18;
+}
+
+.profile-avatar {
+    width: 95px;
+    height: 95px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #164c7c, #087b9e);
+    border: 3px solid #00dcb5;
+    font-size: 48px;
+    box-shadow: 0 0 20px #00dcb544;
+}
+
+.profile-status {
+    color: #00e2b0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.profile-identity h2 {
+    color: #ffffff;
+    font-size: 22px;
+    margin: 8px 0;
+}
+
+.profile-identity p {
+    color: #b8cbe0;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.profile-role {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #087b9e33;
+    border: 1px solid #00cfff66;
+    color: #65eaff;
+    font-size: 11px;
+}
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.profile-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid #14528e;
+    border-radius: 17px;
+    background: linear-gradient(145deg, #0b1e3e, #10294d);
+}
+
+.profile-stat-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #087b9e33;
+    font-size: 25px;
+}
+
+.profile-stat-card small {
+    color: #8bc9ed;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.profile-stat-card h3 {
+    color: #ffffff;
+    font-size: 25px;
+    margin: 5px 0;
+}
+
+.profile-stat-card p {
+    color: #a9bfd6;
+    font-size: 11px;
+}
+
+.profile-information {
+    padding: 24px;
+    border: 1px solid #14528e;
+    border-radius: 18px;
+    background: #0b1e3e;
+}
+
+.profile-information h3 {
+    color: #ffffff;
+    margin-bottom: 18px;
+}
+
+.profile-info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #24517c;
+    font-size: 13px;
+}
+
+.profile-info-row:last-child {
+    border-bottom: none;
+}
+
+.profile-info-row span {
+    color: #9db8d2;
+}
+
+.profile-info-row b {
+    color: #ffffff;
+    text-align: right;
+}
+
+.profile-active {
+    color: #00e2b0 !important;
+}
+
+@media (max-width: 600px) {
+    .profile-main-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-info-row {
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .profile-info-row b {
+        text-align: left;
+    }
+}
+
+/* =================================
+   SIMULASI KCL - VEC
+================================= */
+
+.kcl-simulation {
+    width: 100%;
+    max-width: 750px;
+    margin: 25px auto;
+    padding: 24px;
+    border: 1px solid rgba(89, 230, 181, 0.2);
+    border-radius: 18px;
+    background: rgba(15, 35, 65, 0.75);
+    box-sizing: border-box;
+}
+
+.kcl-simulation h4 {
+    text-align: center;
+    color: #59e6b5;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.kcl-simulation > p {
+    text-align: center;
+    color: #b8c8dc;
+    margin-bottom: 22px;
+}
+
+.kcl-circuit {
+    width: 100%;
+    max-width: 520px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(5, 18, 42, 0.8);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.kcl-circuit svg {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    margin: 0 auto 15px;
+    overflow: visible;
+}
+
+.kcl-circuit svg text {
+    fill: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kcl-circuit input {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    margin: 8px auto 18px;
+    padding: 12px;
+    border: 1px solid rgba(89, 230, 181, 0.4);
+    border-radius: 10px;
+    background: #07152f;
+    color: #ffffff;
+    text-align: center;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.kcl-circuit input:focus {
+    outline: none;
+    border-color: #59e6b5;
+    box-shadow: 0 0 10px rgba(89, 230, 181, 0.2);
+}
+
+.kcl-simulation button {
+    display: block;
+    margin: 20px auto;
+    padding: 13px 28px;
+    border: none;
+    border-radius: 10px;
+    background: #59e6b5;
+    color: #07152f;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.kcl-simulation button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 18px rgba(89, 230, 181, 0.25);
+}
+
+#hasilKCL {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 12px;
+    background: rgba(89, 230, 181, 0.08);
+    border: 1px solid rgba(89, 230, 181, 0.25);
+    text-align: center;
+    color: #ffffff;
+}
+
+#hasilKCL h4 {
+    color: #59e6b5;
+}
+
+#hasilKCL p {
+    margin: 8px 0;
+    color: #d4e3f2;
+}
+
+@media (max-width: 600px) {
+    .kcl-simulation {
+        padding: 15px;
+    }
+
+    .kcl-circuit {
+        padding: 12px;
+    }
+
+    .kcl-circuit svg {
+        max-width: 100%;
+    }
+}
+
+/* =====================================
+   HALAMAN SIMULASI KIRCHHOFF
+===================================== */
+
+#simulasiPage {
+    padding: 24px;
+}
+
+#simulasiPage .page-header {
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #102b4c, #07152f);
+    border: 1px solid rgba(89, 230, 181, 0.2);
+}
+
+#simulasiPage .page-header h2 {
+    color: #59e6b5;
+    font-size: 26px;
+    margin: 0 0 10px;
+}
+
+#simulasiPage .page-header p {
+    color: #c4d3e5;
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.7;
+}
+
+#simulasiPage .simulation-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    align-items: start;
+}
+
+#simulasiPage .simulation-card {
+    min-width: 0;
+    padding: 22px;
+    border-radius: 16px;
+    background: #10213c;
+    border: 1px solid rgba(89, 230, 181, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+#simulasiPage .simulation-card h3 {
+    color: #59e6b5;
+    font-size: 19px;
+    margin: 0 0 8px;
+}
+
+#simulasiPage .simulation-card > p {
+    color: #c4d3e5;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    #simulasiPage {
+        padding: 14px;
+    }
+
+    #simulasiPage .simulation-container {
+        grid-template-columns: 1fr;
+    }
+
+    #simulasiPage .page-header h2 {
+        font-size: 22px;
+    }
+}
+
+/* VISUALISASI KVL */
+
+.kvl-circuit {
+    max-width: 480px;
+    margin: 20px auto;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(5, 18, 42, 0.8);
+    border: 1px solid rgba(89, 230, 181, 0.2);
+    text-align: center;
+}
+
+.kvl-circuit svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: auto;
+}
+
+.kvl-circuit svg text {
+    fill: #ffffff;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .kvl-circuit {
+        padding: 10px;
+    }
+}
+
+/* ANIMASI ALIRAN ARUS LISTRIK */
+
+.kcl-circuit svg path[marker-end],
+.kvl-circuit svg path[marker-end] {
+    stroke-dasharray: 8 6;
+    animation: aliranArus 1s linear infinite;
+}
+
+@keyframes aliranArus {
+    from {
+        stroke-dashoffset: 28;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Efek titik percabangan KCL */
+.kcl-circuit svg circle {
+    filter: drop-shadow(0 0 7px #59e6b5);
+}
+
+/* Efek cahaya rangkaian KVL */
+.kvl-circuit svg path {
+    filter: drop-shadow(0 0 2px rgba(89, 230, 181, 0.4));
+}
+
+/* INDIKATOR HASIL SIMULASI */
+
+#hasilKCL,
+#hasilKVL {
+    transition: 0.3s ease;
+}
+
+#hasilKCL.status-benar,
+#hasilKVL.status-benar {
+    background: rgba(89, 230, 181, 0.12);
+    border: 1px solid #59e6b5;
+    box-shadow: 0 0 15px rgba(89, 230, 181, 0.12);
+}
+
+#hasilKCL.status-salah,
+#hasilKVL.status-salah {
+    background: rgba(255, 90, 90, 0.10);
+    border: 1px solid #ff6464;
+}
+
+#hasilKCL.status-benar h4,
+#hasilKVL.status-benar h4 {
+    color: #59e6b5;
+}
+
+#hasilKCL.status-salah h4,
+#hasilKVL.status-salah h4 {
+    color: #ff7777;
+}
+
+/* =================================
+   PERBAIKAN FORM SIMULASI KVL
+================================= */
+
+#simulasiPage .kvl-simulation {
+    width: 100%;
+    max-width: 520px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(5, 18, 42, 0.8);
+    border: 1px solid rgba(89, 230, 181, 0.2);
+    box-sizing: border-box;
+}
+
+#simulasiPage .kvl-simulation > h4 {
+    color: #59e6b5;
+    text-align: center;
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
+#simulasiPage .kvl-simulation > p {
+    color: #c4d3e5;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+#simulasiPage .kvl-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#simulasiPage .kvl-inputs label {
+    display: block;
+    color: #dce9f5;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+#simulasiPage .kvl-inputs input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border-radius: 9px;
+    border: 1px solid rgba(89, 230, 181, 0.35);
+    background: #07152f;
+    color: white;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+#simulasiPage .kvl-inputs input:focus {
+    outline: none;
+    border-color: #59e6b5;
+    box-shadow: 0 0 8px rgba(89, 230, 181, 0.2);
+}
+
+/* Tombol KVL */
+#simulasiPage #hitungKVL {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+    padding: 12px;
+    border: none;
+    border-radius: 9px;
+    background: #59e6b5;
+    color: #07152f;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Hasil perhitungan */
+#simulasiPage #hasilKVL {
+    width: 100%;
+    padding: 18px;
+    border-radius: 12px;
+    background: rgba(89, 230, 181, 0.07);
+    box-sizing: border-box;
+    text-align: left;
+}
+
+#simulasiPage #hasilKVL h4 {
+    font-size: 17px;
+    margin: 8px 0 16px;
+    text-align: center;
+}
+
+#simulasiPage #hasilKVL p {
+    color: #dce9f5;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+#simulasiPage #hasilKVL hr {
+    border: 0;
+    border-top: 1px solid rgba(89, 230, 181, 0.25);
+    margin: 16px 0;
+}
+
+@media (max-width: 600px) {
+    #simulasiPage .kvl-simulation {
+        padding: 14px;
+    }
+}
+
+/* TOMBOL MATERI SELESAI */
+.btn-materi-selesai {
+    background: #1d3557;
+    color: #ffffff;
+    border: 1px solid #59e6b5;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.btn-materi-selesai:hover {
+    background: #24466d;
+}
+
+.btn-materi-selesai.selesai {
+    background: #59e6b5;
+    color: #07152f;
+    border: 1px solid #59e6b5;
+    cursor: default;
+}
+
+.btn-materi-selesai:disabled {
+    opacity: 1;
+}
+
+/* HALAMAN PENCAPAIAN */
+.achievement-section-title {
+    margin: 28px 0 8px;
+    color: #59e6b5;
+}
+
+.achievement-description {
+    color: #aebfd3;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.badge-list .achievement {
+    padding: 20px;
+    border-radius: 14px;
+    background: #10213c;
+    border: 1px solid rgba(89, 230, 181, 0.15);
+    text-align: center;
+}
+
+.badge-list .achievement p {
+    color: #aebfd3;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
+}
+
+.badge-list .achievement .badge-status {
+    display: block;
+    margin-top: 6px;
+    color: #59e6b5;
+}
+
+.badge-list .achievement.locked {
+    opacity: 0.55;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.badge-list .achievement.locked .badge-status {
+    color: #f0b45b;
+}
+
+/* BADGE TERBUKA */
+.achievement.unlocked {
+    opacity: 1;
+    filter: none;
+    border-color: #59e6b5;
+}
+
+.achievement.unlocked .badge-status {
+    color: #59e6b5;
+}
+
+/* BADGE TERKUNCI */
+.achievement.locked {
+    opacity: 0.55;
+    filter: grayscale(0.7);
+}
+
+/* ==========================================
+   NOTIFICATION VEC - MODERN DESIGN
+========================================== */
+
+.notification-panel {
+    width: 360px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.notification-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.notification-header span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #9aaac5;
+}
+
+.notification-list {
+    padding: 8px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: 0.2s ease;
+}
+
+.notification-item:hover {
+    background: rgba(89,230,181,0.08);
+    border-color: rgba(89,230,181,0.2);
+}
+
+.notification-item > span {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: rgba(89,230,181,0.12);
+    font-size: 19px;
+}
+
+.notification-item > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.notification-item b {
+    display: block;
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.notification-item p {
+    margin: 4px 0;
+    color: #b5c2d8;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.notification-item small {
+    color: #8293ad;
+    font-size: 10px;
+}
+
+.notification-empty {
+    text-align: center;
+    padding: 35px 20px;
+    color: #b5c2d8;
+}
+
+.notification-empty b {
+    display: block;
+    margin-top: 12px;
+    color: #ffffff;
+}
+
+.notification-empty p {
+    font-size: 12px;
+    line-height: 1.6;
+}
