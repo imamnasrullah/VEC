@@ -579,6 +579,17 @@ footer { color: #7890b1; font-size: 10px; display: flex; justify-content: space-
     white-space: nowrap;
 }
 
+/* Warna teks tabel Admin VEC */
+.admin-students-table th {
+    color: #59e6b5;
+    background: #102544;
+}
+
+.admin-students-table td {
+    color: #ffffff;
+    background: #0b1b35;
+}
+
 .admin-students-table th {
     background: #101827;
     color: #59e6b5;
@@ -1344,6 +1355,24 @@ button#adminLogoutBtn:hover {
 .admin-screen .admin-exam-controls button:hover {
     background: #36c99a !important;
     background-color: #36c99a !important;
+}
+
+.admin-exam-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#adminResetExamNim {
+    flex: 1;
+    min-width: 180px;
+}
+
+#adminResetExamBtn,
+#adminResetAllExamsBtn {
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 
@@ -2557,4 +2586,209 @@ button#adminLogoutBtn:hover {
 .notification-empty p {
     font-size: 12px;
     line-height: 1.6;
+}
+
+/* FIX TOTAL WARNA TEKS EMAIL PEMULIHAN */
+#adminRecoveryList,
+#adminRecoveryList *,
+#adminRecoveryMessage {
+    color: #dce6f2 !important;
+}
+
+#adminRecoveryList th {
+    color: #59e6b5 !important;
+}
+
+#adminRecoveryList td {
+    color: #dce6f2 !important;
+}
+
+#adminRecoveryList table {
+    background-color: #0b1b35 !important;
+}
+
+#adminRecoveryList th,
+#adminRecoveryList td {
+    background-color: #102544 !important;
+    border: 1px solid #435671;
+}
+
+/* FIX JUDUL MANAJEMEN EMAIL PEMULIHAN */
+#adminScreen .admin-lecturer-section h3 {
+    color: #59e6b5 !important;
+}
+
+/* FIX TOMBOL TAMPILKAN SEMUA EMAIL */
+#adminLoadRecoveryEmailsBtn {
+    border-radius: 5px !important;
+    color: #07152f !important;
+    background: #59e6b5 !important;
+    border: 1px solid #59e6b5 !important;
+}
+
+/* FIX TEKS DESKRIPSI */
+#adminScreen .admin-lecturer-section p {
+    color: #dce6f2 !important;
+}
+
+/* Posisi tombol Reset Email di tengah kolom Aksi */
+#adminRecoveryList th:last-child,
+#adminRecoveryList td:last-child {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+#adminRecoveryList td:last-child button {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* Reset Ujian Mahasiswa */
+#adminResetExamNim {
+    color: #dce6f2 !important;
+    background: #102544 !important;
+    border: 1px solid #59e6b5 !important;
+}
+
+#adminResetExamNim::placeholder {
+    color: #aabbd0 !important;
+    opacity: 1;
+}
+
+#adminResetAllExamsBtn {
+    color: #07152f !important;
+    background: #59e6b5 !important;
+    border: 1px solid #59e6b5 !important;
+}
+
+/* Samakan ukuran kontrol Reset Ujian */
+.admin-exam-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#adminResetExamNim {
+    flex: 1;
+    min-width: 180px;
+    height: 46px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+#adminResetExamBtn,
+#adminResetAllExamsBtn {
+    height: 46px;
+    min-width: 130px;
+    padding: 0 18px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* Samakan ukuran kotak pencarian Admin */
+#adminSearchNim,
+#adminRecoverySearch {
+    min-height: 46px;
+    box-sizing: border-box;
+    padding: 0 14px;
+    font-size: 14px;
+    color: #dce6f2 !important;
+    background: #102544 !important;
+    border: 1px solid #59e6b5 !important;
+    border-radius: 8px;
+}
+
+#adminSearchNim::placeholder,
+#adminRecoverySearch::placeholder {
+    color: #aabbd0 !important;
+    opacity: 1;
+}
+
+/* Garis pembatas putih antarbagian Admin VEC */
+#adminScreen .admin-lecturer-section {
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 22px;
+}
+
+/* Garis pembatas bagian Reset Ujian */
+#examAdminContainer {
+    border-top: 1px solid rgba(255, 255, 255, 0.75);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+/* Kotak Pemantauan dan Reset Ujian VEC */
+#examAdminContainer > h3,
+#examAdminContainer > p,
+#examAdminContainer > .admin-exam-controls,
+#examAdminContainer > #adminResetAllExamsMessage,
+#examAdminContainer > #adminResetExamMessage,
+#examAdminContainer > #adminExamSummary,
+#examAdminContainer > #adminExamList {
+    position: relative;
+}
+
+/* Garis pembatas bagian ujian */
+#examAdminContainer {
+    border: none;
+}
+
+/* Kotak Pemantauan Ujian */
+#examAdminContainer > h3:first-of-type {
+    border: 1px solid white;
+    border-radius: 10px 10px 0 0;
+    padding: 18px;
+    margin-bottom: 0;
+}
+
+#adminLoadRecoveryEmailsBtn {
+    min-height: 46px;
+    padding: 0 20px;
+    color: #07152f !important;
+    background: #59e6b5 !important;
+    border: 1px solid #59e6b5 !important;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#adminLoadRecoveryEmailsBtn:hover {
+    background: #45d9a6 !important;
+    border-color: #45d9a6 !important;
+}
+
+#adminLoadRecoveryEmailsBtn {
+    min-width: 220px;
+    width: auto;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#adminLoadRecoveryEmailsBtn {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+#adminResetExamBtn,
+#adminResetAllExamsBtn {
+    color: #07152f !important;
+    background: #59e6b5 !important;
+    border: 1px solid #59e6b5 !important;
+    font-weight: 600;
+}
+
+#adminResetExamBtn:hover,
+#adminResetAllExamsBtn:hover {
+    background: #45d9a6 !important;
+    border-color: #45d9a6 !important;
 }
