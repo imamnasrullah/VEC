@@ -42,46 +42,209 @@
         </button>
 
         <p id="loginMessage" class="auth-message"></p>
-      </form>
-    </div>
-  </section>
-
-  <!-- HALAMAN GANTI PASSWORD -->
-  <section id="changePasswordScreen" class="auth-screen" hidden>
-    <div class="auth-card">
-      <div class="auth-logo">VEC<span>✦</span></div>
-      <h1>Ganti Password</h1>
-      <p>Silakan buat password baru sebelum masuk ke Dashboard.</p>
-
-      <form id="changePasswordForm">
-        <label for="newPassword">Password Baru</label>
-        <input
-          type="password"
-          id="newPassword"
-          placeholder="Minimal 8 karakter"
-          minlength="8"
-          autocomplete="new-password"
-          required
+        <button
+            type="button"
+            id="forgotPasswordBtn"
+            class="auth-button"
+            style="margin-top:10px;"
         >
-
-        <label for="confirmPassword">Konfirmasi Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          placeholder="Ulangi password baru"
-          minlength="8"
-          autocomplete="new-password"
-          required
-        >
-
-        <button type="submit" class="auth-button">
-          Simpan Password Baru
+            Lupa Password?
         </button>
 
-        <p id="changePasswordMessage" class="auth-message"></p>
+        <button
+            type="button"
+            id="registerRecoveryEmailBtn"
+            class="auth-button"
+            style="margin-top:10px;"
+        >
+            Daftarkan Email Pemulihan
+        </button>
+
+<p id="loginMessage" class="auth-message"></p>
+</form>
+
       </form>
     </div>
   </section>
+
+
+<!-- HALAMAN GANTI PASSWORD PERTAMA KALI -->
+<section id="changePasswordScreen" class="auth-screen" hidden>
+    <div class="auth-card">
+        <div class="auth-logo">VEC<span>✦</span></div>
+        <h1>Ganti Password</h1>
+        <p>Silakan buat password baru sebelum masuk ke Dashboard.</p>
+
+        <form id="changePasswordForm">
+            <label for="newPassword">Password Baru</label>
+            <input
+                type="password"
+                id="newPassword"
+                placeholder="Minimal 8 karakter"
+                minlength="8"
+                required
+            >
+
+            <label for="confirmPassword">Konfirmasi Password</label>
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Ulangi password baru"
+                minlength="8"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Simpan Password Baru
+            </button>
+
+            <p id="changePasswordMessage" class="auth-message"></p>
+        </form>
+    </div>
+</section>
+<!-- AKHIR HALAMAN GANTI PASSWORD -->
+
+
+<!-- HALAMAN RESET PASSWORD -->
+<section id="resetPasswordScreen" class="auth-screen" hidden>
+    <div class="auth-card">
+        <div class="auth-logo">VEC<span>✦</span></div>
+        <h1>Reset Password</h1>
+        <p>Verifikasi email untuk membuat password baru.</p>
+
+        <form id="sendResetOtpForm">
+            <label for="resetNim">NIM / NIP</label>
+            <input
+                type="text"
+                id="resetNim"
+                placeholder="Masukkan NIM atau NIP"
+                inputmode="numeric"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Kirim Kode OTP
+            </button>
+            <p id="sendOtpMessage" class="auth-message"></p>
+        </form>
+
+        <form id="verifyResetOtpForm" hidden>
+            <label for="resetOtp">Kode OTP</label>
+            <input
+                type="text"
+                id="resetOtp"
+                placeholder="Masukkan 6 digit OTP"
+                inputmode="numeric"
+                maxlength="6"
+                required
+            >
+
+            <label for="resetNewPassword">Password Baru</label>
+            <input
+                type="password"
+                id="resetNewPassword"
+                placeholder="Minimal 8 karakter"
+                minlength="8"
+                required
+            >
+
+            <label for="resetConfirmPassword">Konfirmasi Password</label>
+            <input
+                type="password"
+                id="resetConfirmPassword"
+                placeholder="Ulangi password baru"
+                minlength="8"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Verifikasi dan Ganti Password
+            </button>
+
+            <p id="verifyOtpMessage" class="auth-message"></p>
+        </form>
+
+        <button
+            type="button"
+            id="backToLoginBtn"
+            class="auth-button"
+            style="margin-top:10px;"
+        >
+            Kembali ke Login
+        </button>
+    </div>
+</section>
+
+
+<!-- HALAMAN PENDAFTARAN EMAIL PEMULIHAN -->
+<section id="registerRecoveryEmailScreen" class="auth-screen" hidden>
+    <div class="auth-card">
+        <div class="auth-logo">VEC<span>✦</span></div>
+        <h1>Email Pemulihan</h1>
+        <p>Daftarkan email pribadi untuk kebutuhan reset password.</p>
+
+        <form id="registerRecoveryEmailForm">
+            <label for="recoveryNim">NIM / NIP</label>
+            <input
+                type="text"
+                id="recoveryNim"
+                placeholder="Masukkan NIM atau NIP"
+                inputmode="numeric"
+                required
+            >
+
+            <label for="recoveryPassword">Password Akun</label>
+            <input
+                type="password"
+                id="recoveryPassword"
+                placeholder="Masukkan password akun"
+                required
+            >
+
+            <label for="recoveryEmail">Email Pemulihan</label>
+            <input
+                type="email"
+                id="recoveryEmail"
+                placeholder="Masukkan email aktif"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Kirim Kode OTP
+            </button>
+
+            <p id="registerRecoveryMessage" class="auth-message"></p>
+        </form>
+
+        <form id="verifyRecoveryEmailForm" hidden>
+            <label for="recoveryOtp">Kode OTP</label>
+            <input
+                type="text"
+                id="recoveryOtp"
+                placeholder="Masukkan 6 digit OTP"
+                inputmode="numeric"
+                maxlength="6"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Verifikasi Email
+            </button>
+
+            <p id="verifyRecoveryMessage" class="auth-message"></p>
+        </form>
+
+        <button
+            type="button"
+            id="backFromRecoveryBtn"
+            class="auth-button"
+            style="margin-top:10px;"
+        >
+            Kembali ke Login
+        </button>
+    </div>
+</section>
+
 
   <div class="app-shell" id="dashboardScreen" hidden>
     
@@ -806,7 +969,7 @@
                             <th>Peringkat</th>
                             <th>Nama Mahasiswa</th>
                             <th>NIM</th>
-                            <th>Nilai</th>
+                            <th>XP</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboardList">
@@ -1008,36 +1171,11 @@
       <button type="button" id="adminLogoutBtn">
           ← Kembali ke Dashboard
       </button>
-      <p>Kelola akun mahasiswa VEC.</p>
-
-      <div class="admin-search">
-        <input
-          type="text"
-          id="adminSearchNim"
-          placeholder="Masukkan NIM mahasiswa"
-        >
-
-        <button type="button" id="adminSearchBtn">
-          Cari Mahasiswa
-        </button>
-      </div>
-
-      <div class="admin-list-control">
-          <button type="button" id="adminLoadStudentsBtn">
-              Tampilkan Seluruh Mahasiswa
-          </button>
-      </div>
-
-      <div id="adminStudentsList"></div>
-
-      <div id="adminMessage"></div>
-      <div id="adminStudentResult"></div>
-
 
 <!-- TAMBAH AKUN DOSEN -->
 <div class="admin-lecturer-section">
-    <h3>Tambah Akun Dosen</h3>
-    <p>Tambahkan dosen dengan hak akses Admin VEC.</p>
+    <h3>Tambah Akun Dosen/Mahasiswa</h3>
+    <p>Tambahkan dosen/mahasiswa dengan hak akses Admin VEC.</p>
 
     <div class="admin-search">
         <input
@@ -1061,6 +1199,47 @@
     <div id="lecturerMessage"></div>
 </div>
 <!-- AKHIR TAMBAH AKUN DOSEN -->
+
+
+<!-- MANAJEMEN EMAIL PEMULIHAN -->
+<div class="admin-lecturer-section">
+    <h3>Manajemen Email Pemulihan</h3>
+    <p>
+        Lihat dan kelola email pemulihan akun mahasiswa dan dosen.
+    </p>
+
+    <div class="admin-search">
+        <input
+            type="text"
+            id="adminRecoverySearch"
+            placeholder="Cari NIM / NIP atau nama akun"
+        >
+
+        <button
+            type="button"
+            id="adminRecoverySearchBtn"
+        >
+            Cari Akun
+        </button>
+    </div>
+
+    <div class="admin-list-control">
+        <button
+            type="button"
+            id="adminLoadRecoveryEmailsBtn"
+        >
+            Tampilkan Semua Email Pemulihan
+        </button>
+    </div>
+
+    <div id="adminRecoveryMessage"></div>
+
+    <div id="adminRecoveryList"></div>
+
+
+</div>
+<!-- AKHIR MANAJEMEN EMAIL PEMULIHAN -->
+
 
 <div id="adminMessage"></div>
 <div id="adminStudentResult"></div>
