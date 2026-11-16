@@ -6,4 +6,6 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_KEY
 );
 
+window.supabaseClient = supabaseClient;
+
 console.log("Supabase client berhasil dibuat!");
