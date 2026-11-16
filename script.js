@@ -138,6 +138,8 @@ loginForm.addEventListener("submit", async (event) => {
 // ==========================================
 
 async function sinkronkanXPVEC() {
+     console.log("MULAI FUNGSI SINKRONISASI XP");
+
     const { data, error } = await supabaseClient.rpc(
         "sinkronkan_xp_vec"
     );
@@ -202,26 +204,30 @@ async function masukDashboard(user) {
 
     await muatAvatarVEC(user);
 
-    const adminMenu = document.getElementById("adminMenu");
-    if (adminMenu) {
-        adminMenu.hidden = user.app_metadata?.role !== "admin";
-    }
+const adminMenu = document.getElementById("adminMenu");
+
+if (adminMenu) {
+    const role = user.app_metadata?.role;
+    const isAdmin = user.app_metadata?.is_admin === true;
+
+    adminMenu.hidden = !(role === "admin" || isAdmin);
+}
 
     // Atur akses panel pemantauan dan reset ujian
     const adminExamPanel = document.getElementById("adminExamPanel");
 
-    if (adminExamPanel) {
-        adminExamPanel.hidden = user.app_metadata?.role !== "admin";
-    }
+if (adminExamPanel) {
+    const role = user.app_metadata?.role;
+    const isAdmin = user.app_metadata?.is_admin === true;
 
-    // Sinkronkan XP dari aktivitas belajar
-    await sinkronkanXPVEC();
+    adminExamPanel.hidden = !(role === "admin" || isAdmin);
+}
 
-    // Periksa dan catat penyelesaian misi
-    await muatStatistikMisi(user);
+// Sinkronkan XP dari aktivitas belajar
+await sinkronkanXPVEC();
 
-    // Sinkronkan kembali XP setelah reward misi diberikan
-    await sinkronkanXPVEC();
+// Periksa dan catat penyelesaian misi
+await muatStatistikMisi(user);
 
     // Muat ulang seluruh data dashboard
     await Promise.all([
@@ -1032,7 +1038,9 @@ const daftarHalaman = [
     "studiKasusPage",
     "simulasiPage",
     "leaderboardPage",
+    "racingPage",
     "pencapaianPage",
+    "adminScreen",
     "profilPage"
 ];
 
@@ -1063,8 +1071,10 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         "Studi Kasus": "studiKasusPage",
         "Simulasi": "simulasiPage",
         "Leaderboard": "leaderboardPage",
+        "VEC Racing": "racingPage",
         "Pencapaian": "pencapaianPage",
-        "Profil": "profilPage"
+        "Profil": "profilPage",
+        "Admin VEC": "adminScreen"
         };
 
         const targetId = halamanTujuan[page];
@@ -1074,6 +1084,11 @@ document.querySelectorAll("[data-page]").forEach((button) => {
 
         if (target) {
             target.hidden = false;
+
+            if (page === "Admin VEC") {
+    showScreen("admin");
+    return;
+}
 
             if (page === "Leaderboard") {
                 muatLeaderboardVEC();
@@ -1951,15 +1966,18 @@ if (adminSearchBtn) {
 }
 
 async function cariMahasiswaAdmin() {
-    if (!currentUser || currentUser.app_metadata?.role !== "admin") {
-        adminMessage.textContent = "Akses khusus Admin VEC.";
-        return;
-    }
+const role = currentUser?.app_metadata?.role;
+const isAdmin = currentUser?.app_metadata?.is_admin === true;
+
+if (!currentUser || (role !== "admin" && !isAdmin)) {
+    adminMessage.textContent = "Akses khusus Admin VEC.";
+    return;
+}
 
     const nim = adminSearchNim.value.trim();
 
-    if (!/^\d{8}$/.test(nim)) {
-        adminMessage.textContent = "Masukkan NIM yang terdiri dari 8 angka.";
+    if (!/^\d{8,20}$/.test(nim)) {
+    adminMessage.textContent = "Masukkan NIM/NIP yang terdiri dari 8–20 angka.";
         adminStudentResult.innerHTML = "";
         return;
     }
@@ -2068,7 +2086,13 @@ if (adminLoadStudentsBtn) {
 }
 
 async function tampilkanSeluruhMahasiswa() {
-    if (!currentUser || currentUser.app_metadata?.role !== "admin") {
+      if (
+        !currentUser ||
+        (
+            currentUser.app_metadata?.role !== "admin" &&
+            currentUser.app_metadata?.is_admin !== true
+        )
+    ) {
         adminMessage.textContent = "Akses khusus Admin VEC.";
         return;
     }
@@ -2227,7 +2251,9 @@ if (addLecturerBtn) {
 }
 
 async function tambahAkunDosen() {
-    if (!currentUser || currentUser.app_metadata?.role !== "admin") {
+   
+
+    if (!currentUser || (role !== "admin" && isAdmin !== true)) {
         lecturerMessage.textContent = "Akses khusus Admin VEC.";
         return;
     }
@@ -2245,8 +2271,15 @@ async function tambahAkunDosen() {
         return;
     }
 
+const isAdmin = document.getElementById("lecturerAccess").value === "true";
+
+const hakAkses = isAdmin
+    ? "Dosen + Admin VEC"
+    : "Dosen Biasa";
+
     const konfirmasi = confirm(
-        `Tambahkan akun dosen berikut?\n\nNama: ${nama}\nNIP: ${nip}\nHak akses: Admin`
+        
+        `Tambahkan akun dosen berikut?\n\nNama: ${nama}\nNIP: ${nip}\nHak akses: ${hakAkses}`
     );
 
     if (!konfirmasi) return;
@@ -2258,10 +2291,11 @@ async function tambahAkunDosen() {
     try {
         const { data, error } =
             await supabaseClient.functions.invoke("admin-add-leaturer", {
-                body: {
-                    nama: nama,
-                    nip: nip
-                }
+ body: {
+    nama: nama,
+    nip: nip,
+    is_admin: document.getElementById("lecturerAccess").value === "true"
+}
             });
 
         if (error) throw error;
@@ -2281,7 +2315,7 @@ async function tambahAkunDosen() {
             `Nama: ${data.dosen.nama}\n` +
             `NIP: ${data.dosen.nip}\n` +
             `Password awal: ${data.dosen.password_awal}\n` +
-            `Hak akses: Admin\n\n` +
+`Hak akses: ${hakAkses}\n\n` +
             `Dosen wajib mengganti password saat login pertama.`
         );
 
@@ -2306,11 +2340,27 @@ const adminLogoutBtn = document.getElementById("adminLogoutBtn");
 
 if (adminLogoutBtn) {
     adminLogoutBtn.addEventListener("click", () => {
-
         if (currentUser) {
             showScreen("dashboard");
-        }
 
+            // Tampilkan kembali halaman utama Dashboard
+            const dashboardHome = document.getElementById("dashboardHomeContent");
+
+            if (dashboardHome) {
+                dashboardHome.hidden = false;
+            }
+
+            // Aktifkan menu Dashboard
+            document.querySelectorAll(".nav-link").forEach(item => {
+                item.classList.remove("active");
+            });
+
+            const dashboardMenu = document.querySelector('[data-page="Dashboard"]');
+
+            if (dashboardMenu) {
+                dashboardMenu.classList.add("active");
+            }
+        }
     });
 }
 
