@@ -298,6 +298,11 @@
         Pencapaian
     </button>
 
+    <button class="nav-link" data-page="VEC Racing">
+        <span data-lucide="flag-triangle-right"></span>
+        VEC Racing
+    </button>
+
     <button class="nav-link" data-page="Leaderboard">
         <span data-lucide="chart-no-axes-column-increasing"></span>
         Leaderboard
@@ -305,7 +310,7 @@
 
 </nav>
 
-        <button class="nav-link" id="adminMenu" hidden>
+<button class="nav-link" id="adminMenu" data-page="Admin VEC" hidden>
     <span>⚙</span>Admin VEC
 </button>
       </nav>
@@ -1160,6 +1165,147 @@
 
 
 
+      
+<!-- HALAMAN VEC RACING 3D -->
+<section id="racingPage" class="content-page vec-racing-page" hidden>
+
+  <div class="racing-heading">
+    <div>
+      <span class="racing-eyebrow">VEC COMPETITIVE RACING</span>
+      <h2>VEC Racing 3D</h2>
+      <p>Berkompetisi melawan 9 pembalap AI di arena fantasi.</p>
+    </div>
+    <span class="racing-stage">RACE MODE</span>
+  </div>
+
+  <!-- INFORMASI BALAP -->
+  <div class="racing-toolbar">
+    <div class="racing-stat">
+      <small>POSISI</small>
+      <strong id="racingPosition">1 / 10</strong>
+    </div>
+    <div class="racing-stat">
+      <small>LAP</small>
+      <strong id="racingLap">0 / 3</strong>
+    </div>
+    <div class="racing-stat">
+      <small>WAKTU</small>
+      <strong id="racingTimer">00:00.000</strong>
+    </div>
+    <div class="racing-stat">
+      <small>KECEPATAN</small>
+      <strong id="racingSpeed">0 <small>km/j</small></strong>
+    </div>
+    <div class="racing-stat">
+      <small>NITRO</small>
+      <strong id="racingNitro">100%</strong>
+    </div>
+    <div class="racing-stat">
+      <small>KAMERA</small>
+      <strong id="racingCameraLabel">ORANG KETIGA</strong>
+    </div>
+    <button type="button" id="racingCameraBtn" class="racing-action">
+      Ganti Kamera
+    </button>
+    <button type="button" id="racingNitroBtn" class="racing-action racing-nitro-button">
+      NITRO · SHIFT
+    </button>
+  </div>
+
+  <!-- ARENA -->
+  <div class="racing-game-shell">
+    <div id="racingViewport" class="racing-viewport">
+
+      <div id="racingLoading" class="racing-loading">
+        Menyiapkan arena balapan...
+      </div>
+
+      <div class="racing-hud-top">
+        <span id="racingRaceState">VEC GRAND PRIX</span>
+        <span>WASD / PANAH · SHIFT NITRO</span>
+      </div>
+
+      <!-- COUNTDOWN -->
+      <div id="racingCountdown" hidden
+           style="position:absolute;inset:0;display:grid;place-items:center;
+           font-size:clamp(70px,15vw,150px);font-weight:900;
+           color:#59e6b5;text-shadow:0 0 30px #00dfff;
+           pointer-events:none;z-index:5;">
+        3
+      </div>
+
+      <!-- LEADERBOARD BALAP -->
+      <div id="racingLeaderboard"
+           style="position:absolute;top:55px;left:12px;z-index:4;
+           width:min(210px,45%);padding:10px;border-radius:12px;
+           background:rgba(4,15,35,.82);color:white;
+           font-size:12px;pointer-events:none;">
+        <b>🏁 POSISI PEMBALAP</b>
+        <ol id="racingLeaderboardList" style="padding-left:22px;margin:8px 0;">
+          <li>Memuat pembalap...</li>
+        </ol>
+      </div>
+
+      <div class="racing-hud-bottom">
+        <span id="racingStatus">Menunggu balapan</span>
+        <span id="racingCheckpointStatus">CHECKPOINT 0 / 4</span>
+      </div>
+    </div>
+
+    <!-- KONTROL HP -->
+    <div class="racing-mobile-controls">
+      <div class="racing-steer-controls">
+        <button type="button" data-racing-key="ArrowLeft">◀</button>
+        <button type="button" data-racing-key="ArrowRight">▶</button>
+      </div>
+      <div class="racing-drive-controls">
+        <button type="button" data-racing-key="ArrowUp">▲</button>
+        <button type="button" data-racing-key="ArrowDown">▼</button>
+      </div>
+    </div>
+  </div>
+
+
+<!-- PANEL PERTANYAAN VEC RACING -->
+<div id="racingQuestionPanel" class="racing-question-panel" hidden>
+  <div class="racing-question-header">
+    <strong id="racingQuestionNumber">SOAL 1 / 9</strong>
+    <strong id="racingQuestionTimer">15</strong>
+  </div>
+
+  <div class="racing-question-progress">
+    <div id="racingQuestionProgressBar"></div>
+  </div>
+
+  <h3 id="racingQuestionText">Memuat pertanyaan...</h3>
+
+  <div id="racingAnswerOptions" class="racing-answer-options"></div>
+
+  <p id="racingQuestionFeedback" aria-live="polite"></p>
+</div>
+
+
+  <!-- HASIL BALAP -->
+  <div id="racingResult" hidden
+       style="margin-top:20px;padding:24px;border-radius:16px;
+       background:#102849;color:white;">
+    <h2 id="racingResultTitle">BALAPAN SELESAI!</h2>
+    <p id="racingResultTime">Waktu: --</p>
+    <p id="racingResultPosition">Posisi: --</p>
+    <h3>🏆 HASIL AKHIR</h3>
+    <ol id="racingFinalLeaderboard"></ol>
+    <button type="button" id="racingRestartBtn" class="racing-action">
+      BALAP LAGI
+    </button>
+  </div>
+
+  <p class="racing-note">
+    Selesaikan 3 lap dan lewati seluruh checkpoint secara berurutan.
+    Gunakan nitro untuk menyalip lawan.
+  </p>
+</section>
+
+
       <footer>© 2026 VEC — Vocational Education Challenge <span>Learn • Explore • Solve</span></footer>
     </main>
   </div>
@@ -1172,33 +1318,7 @@
           ← Kembali ke Dashboard
       </button>
 
-<!-- TAMBAH AKUN DOSEN -->
-<div class="admin-lecturer-section">
-    <h3>Tambah Akun Dosen/Mahasiswa</h3>
-    <p>Tambahkan dosen/mahasiswa dengan hak akses Admin VEC.</p>
 
-    <div class="admin-search">
-        <input
-            type="text"
-            id="lecturerName"
-            placeholder="Masukkan nama lengkap dosen"
-        >
-
-        <input
-            type="text"
-            id="lecturerNip"
-            placeholder="Masukkan NIP (18 angka)"
-            inputmode="numeric"
-        >
-
-        <button type="button" id="addLecturerBtn">
-            Tambahkan Akun Dosen
-        </button>
-    </div>
-
-    <div id="lecturerMessage"></div>
-</div>
-<!-- AKHIR TAMBAH AKUN DOSEN -->
 
 
 <!-- MANAJEMEN EMAIL PEMULIHAN -->
@@ -1238,18 +1358,97 @@
 
 
 </div>
+
 <!-- AKHIR MANAJEMEN EMAIL PEMULIHAN -->
 
 
-<div id="adminMessage"></div>
-<div id="adminStudentResult"></div>
+<!-- RESET PASSWORD MAHASISWA / DOSEN -->
+<div
+    class="panel"
+    style="
+        margin-top:20px;
+        padding:28px;
+        background:#1b2a43;
+        border:1px solid #cbd5e1;
+        border-radius:16px;
+    "
+>
+    <h3 style="
+        color:#50dfb5;
+        font-size:20px;
+        font-weight:700;
+        margin:0 0 20px 0;
+    ">
+        Reset Password Mahasiswa / Dosen
+    </h3>
 
-<!-- Tempel kode tambah akun dosen di sini -->
+    <p style="
+        color:#f1f5f9;
+        font-size:16px;
+        margin:0 0 24px 0;
+    ">
+        Masukkan NIM mahasiswa atau NIP dosen untuk mencari akun.
+    </p>
+
+    <div style="
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+        align-items:center;
+    ">
+        <input
+            type="text"
+            id="adminSearchNim"
+            placeholder="Masukkan NIM / NIP"
+            inputmode="numeric"
+            maxlength="20"
+            style="
+                flex:1;
+                min-width:200px;
+                height:56px;
+                padding:0 18px;
+                box-sizing:border-box;
+                color:#dbeafe;
+                background:#102849;
+                border:1px solid #50dfb5;
+                border-radius:12px;
+                font-size:16px;
+            "
+        >
+
+        <button
+            type="button"
+            id="adminSearchBtn"
+            style="
+                min-width:150px;
+                height:56px;
+                padding:0 22px;
+                color:#07152f;
+                background:#50dfb5;
+                border:none;
+                border-radius:15px;
+                font-size:16px;
+                font-weight:600;
+                cursor:pointer;
+            "
+        >
+            Cari Akun
+        </button>
+    </div>
+
+    <div id="adminMessage"></div>
+    <div id="adminStudentResult"></div>
+</div>
+</div>
+</section>
+
+
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="script.js"></script>
+  <script type="module" src="racing.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
       lucide.createIcons();
