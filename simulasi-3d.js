@@ -1,135 +1,169 @@
 
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
-
-console.log("SIMULASI 3D BERHASIL DIMUAT");
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 (() => {
-const viewport = document.getElementById("sim3DViewport");
+    const $ = id => document.getElementById(id);
 
-if (!viewport) return;
+    const viewport = $("sim3DViewport");
+    if (!viewport || viewport.dataset.initialized === "true") return;
 
-    const status = document.getElementById("sim3DStatus");
-    const loading = document.getElementById("sim3DLoading");
-    const switchButton = document.getElementById("sim3DSwitch");
-    const resetButton = document.getElementById("sim3DReset");
+    viewport.dataset.initialized = "true";
 
+    const status = $("sim3DStatus");
+    const loading = $("sim3DLoading");
+    const switchButton = $("sim3DSwitch");
+    const resetButton = $("sim3DReset");
+
+    let renderer;
+
+    // ==========================================
+    // WEBGL
+    // ==========================================
+
+    try {
+        renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: false,
+            powerPreference: "default"
+        });
+    } catch (error) {
+        console.error("WebGL gagal:", error);
+
+        if (loading) {
+            loading.textContent =
+                "WebGL tidak tersedia pada perangkat ini.";
+        }
+
+        if (status) status.textContent = "WEBGL ERROR";
+        return;
+    }
+
+    renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio || 1, 1.5)
+    );
+
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.domElement.style.display = "block";
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
+
+    viewport.appendChild(renderer.domElement);
+
+    // ==========================================
     // SCENE
+    // ==========================================
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x07152d);
 
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-    camera.position.set(8, 7, 10);
+    const camera = new THREE.PerspectiveCamera(
+        45, 1, 0.1, 1000
+    );
 
+    const hemiLight = new THREE.HemisphereLight(
+        0xb8ddff, 0x18243b, 2
+    );
+    scene.add(hemiLight);
 
-let renderer;
+    const mainLight = new THREE.DirectionalLight(
+        0xffffff, 2.5
+    );
+    mainLight.position.set(5, 10, 7);
+    scene.add(mainLight);
 
-try {
-    renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        powerPreference: "default"
-    });
+    const fillLight = new THREE.PointLight(
+        0x59e6b5, 1.2, 20
+    );
+    fillLight.position.set(-5, 5, 4);
+    scene.add(fillLight);
 
-    console.log("WEBGL BERHASIL DIBUAT");
-} catch (error) {
-    console.error("WEBGL GAGAL:", error);
-
-    if (loading) {
-        loading.textContent =
-            "WebGL tidak didukung atau gagal dijalankan pada perangkat ini.";
-    }
-
-    if (status) {
-        status.textContent = "WEBGL TIDAK TERSEDIA";
-    }
-
-    return;
-}
-
-
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    viewport.appendChild(renderer.domElement);
-
-    scene.add(new THREE.HemisphereLight(0xb8ddff, 0x18243b, 2));
-
-    const light = new THREE.DirectionalLight(0xffffff, 2.5);
-    light.position.set(5, 10, 7);
-    scene.add(light);
-
+    // ==========================================
     // MATERIAL
+    // ==========================================
+
     const materials = {
         table: new THREE.MeshStandardMaterial({
             color: 0x142b43,
             roughness: 0.8
         }),
+
         board: new THREE.MeshStandardMaterial({
             color: 0xe4eaf0,
             roughness: 0.65
         }),
+
         red: new THREE.MeshStandardMaterial({
             color: 0xe43b48
         }),
+
         black: new THREE.MeshStandardMaterial({
             color: 0x202b38
         }),
+
         metal: new THREE.MeshStandardMaterial({
             color: 0xc5d4df,
-            metalness: 0.8,
-            roughness: 0.25
+            metalness: 0.7,
+            roughness: 0.3
         }),
+
         resistor: new THREE.MeshStandardMaterial({
             color: 0xd9b77c
         }),
+
         wireRed: new THREE.MeshStandardMaterial({
             color: 0xff344d,
             emissive: 0x44000a
         }),
+
         wireBlack: new THREE.MeshStandardMaterial({
             color: 0x161c28
         })
     };
 
-    // HELPERS
-    function box(width, height, depth, material, x, y, z) {
+    // ==========================================
+    // HELPER
+    // ==========================================
+
+    function box(w, h, d, material, x, y, z) {
         const mesh = new THREE.Mesh(
-            new THREE.BoxGeometry(width, height, depth),
+            new THREE.BoxGeometry(w, h, d),
             material
         );
 
         mesh.position.set(x, y, z);
         scene.add(mesh);
-
         return mesh;
     }
 
-    function cylinder(radius, height, material, x, y, z) {
+    function cylinder(r, h, material, x, y, z) {
         const mesh = new THREE.Mesh(
-            new THREE.CylinderGeometry(radius, radius, height, 24),
+            new THREE.CylinderGeometry(r, r, h, 24),
             material
         );
 
         mesh.position.set(x, y, z);
         scene.add(mesh);
-
         return mesh;
     }
 
-    function wire(points, color) {
+    function wire(points, material) {
         const curve = new THREE.CatmullRomCurve3(
             points.map(p => new THREE.Vector3(...p))
         );
 
         const mesh = new THREE.Mesh(
             new THREE.TubeGeometry(curve, 32, 0.045, 8, false),
-            color
+            material
         );
 
         scene.add(mesh);
         return mesh;
     }
 
+    // ==========================================
     // MEJA PRAKTIK
+    // ==========================================
+
     box(14, 0.45, 10, materials.table, 0, -0.4, 0);
 
     // BREADBOARD
@@ -150,7 +184,10 @@ try {
         }
     }
 
-    // BATTERY 9V
+    // ==========================================
+    // BATERAI 9V
+    // ==========================================
+
     const battery = new THREE.Group();
     scene.add(battery);
 
@@ -173,7 +210,10 @@ try {
     battery.position.set(-4.5, 0, 0);
     battery.rotation.y = -0.3;
 
+    // ==========================================
     // RESISTOR
+    // ==========================================
+
     const resistor = new THREE.Group();
     scene.add(resistor);
 
@@ -203,7 +243,10 @@ try {
 
     resistor.position.set(-1.8, 0, 0);
 
+    // ==========================================
     // LED
+    // ==========================================
+
     const led = new THREE.Group();
     scene.add(led);
 
@@ -231,11 +274,17 @@ try {
 
     led.position.set(1, 0, 0);
 
-    const ledLight = new THREE.PointLight(0xff2222, 0, 4);
+    const ledLight = new THREE.PointLight(
+        0xff2222, 0, 4
+    );
+
     ledLight.position.set(1, 1, 0);
     scene.add(ledLight);
 
+    // ==========================================
     // SAKELAR
+    // ==========================================
+
     const switchGroup = new THREE.Group();
     scene.add(switchGroup);
 
@@ -258,7 +307,10 @@ try {
 
     switchGroup.position.set(3.2, 0, 0);
 
+    // ==========================================
     // KABEL
+    // ==========================================
+
     wire(
         [[-3.8, 0.3, 0], [-3, 0.35, -1], [-2, 0.35, -1]],
         materials.wireRed
@@ -275,11 +327,17 @@ try {
     );
 
     // LANTAI
-    const floor = new THREE.GridHelper(30, 30, 0x17628a, 0x17304c);
+    const floor = new THREE.GridHelper(
+        30, 30, 0x17628a, 0x17304c
+    );
+
     floor.position.y = -0.15;
     scene.add(floor);
 
+    // ==========================================
     // SAKELAR INTERAKTIF
+    // ==========================================
+
     let switchOn = false;
 
     function setSwitch(value) {
@@ -290,33 +348,30 @@ try {
         );
 
         ledMaterial.emissiveIntensity = switchOn ? 2.5 : 0;
-
         ledLight.intensity = switchOn ? 3 : 0;
 
         switchLever.rotation.z = switchOn ? 0.35 : -0.35;
 
-        switchButton.textContent = switchOn
-            ? "Sakelar OFF"
-            : "Sakelar ON";
+        if (switchButton) {
+            switchButton.textContent = switchOn
+                ? "Sakelar OFF"
+                : "Sakelar ON";
+        }
 
-        status.textContent = switchOn
-            ? "SAKELAR AKTIF - LED MENYALA"
-            : "SAKELAR TERBUKA - LED MATI";
+        if (status) {
+            status.textContent = switchOn
+                ? "SAKELAR AKTIF - LED MENYALA"
+                : "SAKELAR TERBUKA - LED MATI";
+        }
     }
 
-    switchButton.addEventListener("click", () => {
+    switchButton?.addEventListener("click", () => {
         setSwitch(!switchOn);
     });
 
-    // KLIK MODEL SAKELAR
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
-
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let previousX = 0;
-    let previousY = 0;
+    // ==========================================
+    // KAMERA
+    // ==========================================
 
     let cameraAngle = Math.PI / 4;
     let cameraElevation = 0.55;
@@ -332,21 +387,53 @@ try {
         camera.lookAt(0, 0.3, 0);
     }
 
+    function resetCamera() {
+        cameraAngle = Math.PI / 4;
+        cameraElevation = 0.55;
+        cameraDistance = 14;
+        updateCamera();
+    }
+
+    resetButton?.addEventListener("click", resetCamera);
+
+    // ==========================================
+    // SENTUH DAN MOUSE
+    // ==========================================
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let previousX = 0;
+    let previousY = 0;
+    let activePointer = null;
+
     function pointerDown(event) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+
         isDragging = true;
+        activePointer = event.pointerId;
+
         startX = previousX = event.clientX;
         startY = previousY = event.clientY;
 
-        viewport.setPointerCapture(event.pointerId);
+        try {
+            viewport.setPointerCapture(event.pointerId);
+        } catch (error) {
+            console.warn("Pointer capture tidak tersedia", error);
+        }
     }
 
     function pointerMove(event) {
-        if (!isDragging) return;
+        if (!isDragging || event.pointerId !== activePointer) return;
 
         const dx = event.clientX - previousX;
         const dy = event.clientY - previousY;
 
         cameraAngle -= dx * 0.008;
+
         cameraElevation = THREE.MathUtils.clamp(
             cameraElevation + dy * 0.006,
             0.15,
@@ -360,39 +447,44 @@ try {
     }
 
     function pointerUp(event) {
-        if (!isDragging) return;
+        if (!isDragging || event.pointerId !== activePointer) return;
 
         isDragging = false;
+        activePointer = null;
 
         const moved = Math.hypot(
             event.clientX - startX,
             event.clientY - startY
         );
 
-        if (moved < 6) {
+        if (moved < 8) {
             const rect = renderer.domElement.getBoundingClientRect();
 
-            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            if (!rect.width || !rect.height) return;
+
+            pointer.x =
+                ((event.clientX - rect.left) / rect.width) * 2 - 1;
+
+            pointer.y =
+                -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
             raycaster.setFromCamera(pointer, camera);
 
             const hits = raycaster.intersectObjects(
-                switchGroup.children,
-                true
+                switchGroup.children, true
             );
 
-            if (hits.length) {
-                setSwitch(!switchOn);
-            }
+            if (hits.length) setSwitch(!switchOn);
         }
     }
 
     viewport.addEventListener("pointerdown", pointerDown);
     viewport.addEventListener("pointermove", pointerMove);
     viewport.addEventListener("pointerup", pointerUp);
+
     viewport.addEventListener("pointercancel", () => {
         isDragging = false;
+        activePointer = null;
     });
 
     viewport.addEventListener("wheel", event => {
@@ -407,59 +499,91 @@ try {
         updateCamera();
     }, { passive: false });
 
-    // RESET KAMERA
-    resetButton.addEventListener("click", () => {
-        cameraAngle = Math.PI / 4;
-        cameraElevation = 0.55;
-        cameraDistance = 14;
-        updateCamera();
-    });
-
+    // ==========================================
     // RESIZE
+    // ==========================================
+
     function resize() {
         const width = viewport.clientWidth;
         const height = viewport.clientHeight;
 
-        if (!width || !height) return;
+        if (width <= 0 || height <= 0) return false;
 
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
-        renderer.setSize(width, height);
+        renderer.setSize(width, height, false);
+
+        return true;
     }
 
-    new ResizeObserver(resize).observe(viewport);
+    const resizeObserver = new ResizeObserver(() => {
+        resize();
+    });
+
+    resizeObserver.observe(viewport);
     window.addEventListener("resize", resize);
 
-// ANIMATION
-function animate() {
-    requestAnimationFrame(animate);
+    // ==========================================
+    // ANIMATION
+    // ==========================================
 
-    const rect = viewport.getBoundingClientRect();
-    const visible = rect.width > 0 && rect.height > 0;
+    let animationStarted = false;
+    let animationFrame = null;
 
-    if (visible) {
-        resize();
+    function animate() {
+        animationFrame = requestAnimationFrame(animate);
+
+        if (document.hidden) return;
+
+        const rect = viewport.getBoundingClientRect();
+
+        if (rect.width <= 0 || rect.height <= 0) return;
+
         renderer.render(scene, camera);
     }
-}
 
-updateCamera();
+    function startSimulation() {
+        if (animationStarted) return;
 
-function tungguViewportAktif() {
-    const width = viewport.clientWidth;
-    const height = viewport.clientHeight;
+        if (!resize()) return;
 
-    if (width === 0 || height === 0) {
-        requestAnimationFrame(tungguViewportAktif);
-        return;
+        animationStarted = true;
+
+        if (loading) loading.remove();
+
+        setSwitch(false);
+
+        updateCamera();
+
+        if (status) {
+            status.textContent = "LABORATORIUM SIAP";
+        }
+
+        animate();
     }
 
-    resize();
-    loading?.remove();
-    setSwitch(false);
-    requestAnimationFrame(animate);
-}
+    function checkViewport() {
+        if (animationStarted) return;
 
-requestAnimationFrame(tungguViewportAktif);
+        if (startSimulation()) return;
+
+        requestAnimationFrame(checkViewport);
+    }
+
+    updateCamera();
+    requestAnimationFrame(checkViewport);
+
+    // ==========================================
+    // CLEANUP SAAT HALAMAN DITUTUP
+    // ==========================================
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && animationStarted) {
+            resize();
+        }
+    });
+
+    console.log("LABORATORIUM 3D SIAP");
+
 })();
