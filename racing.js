@@ -4,9 +4,10 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 (() => {
   const $ = id => document.getElementById(id);
 
-  const viewport = $("racingViewport");
-  const racingPage = $("racingPage");
-  if (!viewport) return;
+const viewport = $("racingViewport");
+const racingPage = $("racingPage");
+
+if (!viewport) return;
 
   // ==========================================
   // ELEMENT HTML
@@ -479,7 +480,8 @@ obstacleAngles.forEach((angle, index) => {
     });
   }
 
-  // ==========================================
+
+// ==========================================
 // SOUND MESIN ARCADE
 // ==========================================
 
@@ -493,121 +495,83 @@ let turboOscillator = null;
 let turboGain = null;
 
 function initRacingAudio() {
-
-  window.addEventListener("keydown", event => {
-  if (racingPage?.hidden) return;
-
-  initRacingAudio();
-
-  if ([
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-    " "
-  ].includes(event.key)) {
-    event.preventDefault();
-  }
-
-  keys.add(event.key.toLowerCase());
-
-  if (event.key === "Shift" || event.key === " ") {
-    nitroHeld = true;
-  }
-}, { passive: false });
-
-  if (engineAudio) {
-    if (engineAudio.state === "suspended") {
-      engineAudio.resume();
-    }
-    return;
-  }
-
   const AudioContextClass =
     window.AudioContext || window.webkitAudioContext;
 
   if (!AudioContextClass) return;
 
-  engineAudio = new AudioContextClass();
+  if (!engineAudio) {
+    engineAudio = new AudioContextClass();
 
-  // Suara mesin utama
-  engineOscillator = engineAudio.createOscillator();
-  engineOscillator.type = "sawtooth";
+    engineOscillator = engineAudio.createOscillator();
+    engineHarmonic = engineAudio.createOscillator();
+    engineFilter = engineAudio.createBiquadFilter();
+    engineGain = engineAudio.createGain();
 
-  engineHarmonic = engineAudio.createOscillator();
-  engineHarmonic.type = "triangle";
+    engineOscillator.type = "sawtooth";
+    engineHarmonic.type = "triangle";
 
-  engineFilter = engineAudio.createBiquadFilter();
-  engineFilter.type = "lowpass";
-  engineFilter.frequency.value = 450;
+    engineFilter.type = "lowpass";
+    engineFilter.frequency.value = 350;
 
-  engineGain = engineAudio.createGain();
-  engineGain.gain.value = 0;
+    engineGain.gain.value = 0;
 
-  engineOscillator.connect(engineFilter);
-  engineHarmonic.connect(engineFilter);
+    engineOscillator.connect(engineFilter);
+    engineHarmonic.connect(engineFilter);
+    engineFilter.connect(engineGain);
+    engineGain.connect(engineAudio.destination);
 
-  engineFilter.connect(engineGain);
-  engineGain.connect(engineAudio.destination);
+    turboOscillator = engineAudio.createOscillator();
 
-  // Suara turbo
-  turboOscillator = engineAudio.createOscillator();
-  turboOscillator.type = "sawtooth";
-  turboOscillator.frequency.value = 180;
+    const turboFilter = engineAudio.createBiquadFilter();
+    turboFilter.type = "highpass";
+    turboFilter.frequency.value = 500;
 
-  const turboFilter = engineAudio.createBiquadFilter();
-  turboFilter.type = "highpass";
-  turboFilter.frequency.value = 700;
+    turboOscillator.type = "sawtooth";
+    turboGain = engineAudio.createGain();
+    turboGain.gain.value = 0;
 
-  turboGain = engineAudio.createGain();
-  turboGain.gain.value = 0;
+    turboOscillator.connect(turboFilter);
+    turboFilter.connect(turboGain);
+    turboGain.connect(engineAudio.destination);
 
-  turboOscillator.connect(turboFilter);
-  turboFilter.connect(turboGain);
-  turboGain.connect(engineAudio.destination);
+    engineOscillator.start();
+    engineHarmonic.start();
+    turboOscillator.start();
+  }
 
-  engineOscillator.start();
-  engineHarmonic.start();
-  turboOscillator.start();
-
-  engineAudio.resume();
+  if (engineAudio.state === "suspended") {
+    engineAudio.resume().catch(error => {
+      console.error("Gagal mengaktifkan audio:", error);
+    });
+  }
 }
 
 function updateEngineSound(currentSpeed, accelerating, boosting) {
-  if (!engineAudio || !engineGain) return;
+  if (
+    !engineAudio ||
+    engineAudio.state !== "running" ||
+    !engineGain ||
+    !engineOscillator ||
+    !engineHarmonic ||
+    !engineFilter ||
+    !turboOscillator ||
+    !turboGain
+  ) return;
 
   const now = engineAudio.currentTime;
-  const speed = Math.abs(currentSpeed);
-
+  const speed = Math.abs(Number(currentSpeed) || 0);
   const rpm = 65 + speed * 5.5;
 
-  engineOscillator.frequency.setTargetAtTime(
-    rpm,
-    now,
-    0.08
-  );
-
-  engineHarmonic.frequency.setTargetAtTime(
-    rpm * 2.01,
-    now,
-    0.08
-  );
-
-  engineFilter.frequency.setTargetAtTime(
-    350 + speed * 65,
-    now,
-    0.1
-  );
+  engineOscillator.frequency.setTargetAtTime(rpm, now, 0.08);
+  engineHarmonic.frequency.setTargetAtTime(rpm * 2.01, now, 0.08);
+  engineFilter.frequency.setTargetAtTime(350 + speed * 65, now, 0.1);
 
   const volume = accelerating || speed > 1
     ? 0.045 + Math.min(speed / 400, 0.09)
     : 0.012;
 
-  engineGain.gain.setTargetAtTime(
-    volume,
-    now,
-    0.12
-  );
+  engineGain.gain.setTargetAtTime(volume, now, 0.12);
 
   turboOscillator.frequency.setTargetAtTime(
     boosting ? 420 + speed * 8 : 180,
@@ -623,13 +587,27 @@ function updateEngineSound(currentSpeed, accelerating, boosting) {
 }
 
 function stopRacingAudio() {
-  if (!engineAudio || !engineGain) return;
+  if (!engineAudio) return;
 
   const now = engineAudio.currentTime;
 
-  engineGain.gain.setTargetAtTime(0, now, 0.08);
-  turboGain.gain.setTargetAtTime(0, now, 0.08);
+  if (engineGain) {
+    engineGain.gain.setTargetAtTime(0, now, 0.08);
+  }
+
+  if (turboGain) {
+    turboGain.gain.setTargetAtTime(0, now, 0.08);
+  }
 }
+
+// Aktifkan audio hanya setelah interaksi pengguna
+viewport.addEventListener("pointerdown", initRacingAudio);
+
+
+
+
+
+
 
   // ==========================================
   // INPUT DAN KAMERA
@@ -663,38 +641,50 @@ function stopRacingAudio() {
     });
   });
 
-  window.addEventListener("keydown", event => {
-    if (racingPage?.hidden) return;
 
-    if ([
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight",
-      " "
-    ].includes(event.key)) {
-      event.preventDefault();
-    }
+window.addEventListener("keydown", event => {
+  if (racingPage && racingPage.hidden) return;
 
-    keys.add(event.key.toLowerCase());
+  const key = event.key.toLowerCase();
 
-    if (event.key === "Shift" || event.key === " ") {
-      nitroHeld = true;
-    }
-  }, { passive: false });
+  const controlKeys = [
+    "w", "a", "s", "d",
+    "arrowup", "arrowdown",
+    "arrowleft", "arrowright",
+    " ", "shift"
+  ];
 
-  window.addEventListener("keyup", event => {
-    keys.delete(event.key.toLowerCase());
+  if (!controlKeys.includes(key)) return;
 
-    if (event.key === "Shift" || event.key === " ") {
-      nitroHeld = false;
-    }
-  });
+  event.preventDefault();
 
-  window.addEventListener("blur", () => {
-    keys.clear();
+  // Aktifkan audio setelah interaksi keyboard
+  initRacingAudio();
+
+  // Simpan tombol yang sedang ditekan
+  keys.add(key);
+
+  if (key === "shift" || key === " ") {
+    nitroHeld = true;
+  }
+});
+
+
+window.addEventListener("keyup", event => {
+  if (!event.key) return;
+
+  keys.delete(event.key.toLowerCase());
+
+  if (event.key === "Shift" || event.key === " ") {
     nitroHeld = false;
-  });
+  }
+});
+
+window.addEventListener("blur", () => {
+  keys.clear();
+  nitroHeld = false;
+});
+
 
 
 
@@ -1276,6 +1266,8 @@ else if (checkObstacleCollision(car.position.x, car.position.z)) {
   return boosting;
 }
 
+
+
   // ==========================================
   // KAMERA
   // ==========================================
@@ -1390,4 +1382,19 @@ else if (checkObstacleCollision(car.position.x, car.position.z)) {
   }
 
   requestAnimationFrame(animate);
+})();
+
+
+const supabase = window.supabaseClient;
+
+(async () => {
+  if (!supabase) {
+    console.error("Supabase client tidak ditemukan!");
+    return;
+  }
+
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  console.log("USER MULTIPLAYER:", user?.id);
+  console.log("ERROR AUTH:", error);
 })();
