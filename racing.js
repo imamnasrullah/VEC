@@ -857,10 +857,10 @@ function stopRacingAudio() {
   }
 
 
+
 function updateCountdown(dt) {
   countdownTime += dt;
 
-  // Countdown setiap 0,6 detik
   if (countdownTime < 0.6) return;
 
   countdownTime -= 0.6;
@@ -877,17 +877,9 @@ function updateCountdown(dt) {
   raceStartTime = performance.now();
   raceElapsed = 0;
 
-  if (countdownEl) {
-    countdownEl.textContent = "GO!";
-  }
-
-  if (raceStateEl) {
-    raceStateEl.textContent = "BALAPAN BERLANGSUNG";
-  }
-
-  if (statusEl) {
-    statusEl.textContent = "GO! GAS POLL!";
-  }
+  if (countdownEl) countdownEl.textContent = "GO!";
+  if (raceStateEl) raceStateEl.textContent = "BALAPAN BERLANGSUNG";
+  if (statusEl) statusEl.textContent = "GO! GAS POLL!";
 
   setTimeout(() => {
     if (raceState === "racing" && countdownEl) {
@@ -895,6 +887,7 @@ function updateCountdown(dt) {
     }
   }, 500);
 }
+
 
   // ==========================================
   // PERGERAKAN AI
