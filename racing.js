@@ -698,31 +698,40 @@ function stopRacingAudio() {
 
 
 
+
   // ==========================================
-  // KONTROL TOUCHSCREEN HP
+  // KONTROL HP - TOUCHSCREEN
   // ==========================================
 
-  viewport.querySelectorAll("[data-racing-key]").forEach(button => {
+  document.querySelectorAll(
+    ".racing-mobile-controls [data-racing-key]"
+  ).forEach(button => {
     const key = button.dataset.racingKey.toLowerCase();
 
     button.addEventListener("pointerdown", event => {
       event.preventDefault();
 
-      button.setPointerCapture(event.pointerId);
       keys.add(key);
-
       button.classList.add("control-active");
+
+      try {
+        button.setPointerCapture(event.pointerId);
+      } catch (error) {}
     });
 
-    const release = event => {
+    const releaseButton = event => {
       keys.delete(key);
       button.classList.remove("control-active");
     };
 
-    button.addEventListener("pointerup", release);
-    button.addEventListener("pointercancel", release);
-    button.addEventListener("lostpointercapture", release);
+    button.addEventListener("pointerup", releaseButton);
+    button.addEventListener("pointercancel", releaseButton);
+    button.addEventListener("lostpointercapture", releaseButton);
+    button.addEventListener("contextmenu", event => {
+      event.preventDefault();
+    });
   });
+
 
 
 
