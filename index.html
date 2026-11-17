@@ -288,6 +288,11 @@
         Simulasi
     </button>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
+    <button class="nav-link" data-page="Laboratorium 3D">
+    <span data-lucide="cpu"></span>
+    Laboratorium 3D
+    </button>
+
     <button class="nav-link" data-page="Quiz">
         <span data-lucide="brain-circuit"></span>
         Quiz
@@ -540,8 +545,55 @@
         </article>
            </section> <!-- penutup bottom-grid -->
 
+
+
+
     </div> <!-- penutup dashboardHomeContent -->
 
+
+<!-- HALAMAN LABORATORIUM ELEKTRONIKA 3D -->
+<section id="laboratorium3DPage" class="content-page" hidden>
+
+    <div class="simulation-card vec-3d-card">
+
+        <h3>Laboratorium Elektronika 3D</h3>
+        <p>
+            Praktikum rangkaian dasar DC menggunakan komponen
+            elektronika virtual.
+        </p>
+
+        <div class="vec-3d-toolbar">
+            <span id="sim3DStatus">LABORATORIUM SIAP</span>
+
+            <div>
+                <button type="button" id="sim3DReset">
+                    Reset Kamera
+                </button>
+
+                <button type="button" id="sim3DSwitch">
+                    Sakelar ON
+                </button>
+            </div>
+        </div>
+
+        <div id="sim3DViewport">
+            <div id="sim3DLoading">
+                Menyiapkan Laboratorium 3D...
+            </div>
+        </div>
+
+        <div class="vec-3d-instructions">
+            <span>🖱️ Geser mouse: Putar kamera</span>
+            <span>🔍 Scroll: Zoom</span>
+            <span>💡 Klik sakelar: Hidupkan LED</span>
+        </div>
+
+    </div>
+
+</section>
+<!-- AKHIR LABORATORIUM 3D -->
+
+    
 <!-- HALAMAN MATERI -->
 <section id="materiPage" class="content-page" hidden>
     <div class="panel materi-container">
@@ -566,6 +618,8 @@
     </div>
 </section>
 
+
+
 <!-- HALAMAN SIMULASI -->
 <section id="simulasiPage" class="content-page" hidden>
 
@@ -576,6 +630,7 @@
             simulasi rangkaian listrik interaktif.
         </p>
     </div>
+    
 
     <div class="simulation-container">
 
@@ -758,6 +813,10 @@
     </div>
 
 </section>
+
+
+
+
 
 <!-- HALAMAN STUDI KASUS -->
 <section id="studiKasusPage" class="content-page" hidden>
@@ -1449,6 +1508,7 @@
   <script src="supabase-config.js"></script>
   <script src="script.js"></script>
   <script type="module" src="racing.js"></script>
+  <script type="module" src="simulasi-3d.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
       lucide.createIcons();
