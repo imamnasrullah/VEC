@@ -2895,6 +2895,7 @@ button#adminLogoutBtn:hover {
 }
 
 
+
 /* ==========================================
    VEC RACING - QUESTION PANEL
 ========================================== */
@@ -3160,4 +3161,58 @@ button#adminLogoutBtn:hover {
     height: 54px !important;
     touch-action: none !important;
   }
+}
+
+
+/* FIX TOUCH CONTROL VEC RACING */
+
+.racing-mobile-controls {
+  position: fixed !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  isolation: isolate;
+}
+
+.racing-steer-controls,
+.racing-drive-controls {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 999999 !important;
+}
+
+.racing-mobile-controls button {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 999999 !important;
+  touch-action: none !important;
+}
+
+/* FIX KONTROL MOBILE VEC RACING */
+.racing-mobile-controls {
+  position: fixed !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+  display: flex !important;
+  justify-content: space-between;
+  bottom: 25px;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+}
+
+.racing-mobile-controls button {
+  pointer-events: auto !important;
+  touch-action: none !important;
+  position: relative;
+  z-index: 999999 !important;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.racing-steer-controls,
+.racing-drive-controls {
+  display: flex !important;
+  gap: 10px;
+  pointer-events: auto !important;
 }
