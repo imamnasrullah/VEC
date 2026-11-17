@@ -1037,6 +1037,7 @@ const daftarHalaman = [
     "quizPage",
     "studiKasusPage",
     "simulasiPage",
+    "laboratorium3DPage",
     "leaderboardPage",
     "racingPage",
     "pencapaianPage",
@@ -1070,6 +1071,7 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         "Quiz": "quizPage",
         "Studi Kasus": "studiKasusPage",
         "Simulasi": "simulasiPage",
+        "Laboratorium 3D": "laboratorium3DPage",
         "Leaderboard": "leaderboardPage",
         "VEC Racing": "racingPage",
         "Pencapaian": "pencapaianPage",
@@ -2209,6 +2211,14 @@ accounts.forEach((account, index) => {
     row.appendChild(actionCell);
 
     tbody.appendChild(row);
+});
+
+console.log("CEK ELEMEN LAB 3D:", {
+    viewport,
+    status,
+    loading,
+    switchButton,
+    resetButton
 });
 
 const heading = document.createElement("h3");
