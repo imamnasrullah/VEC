@@ -3071,3 +3071,93 @@ button#adminLogoutBtn:hover {
 #racingViewport {
   touch-action: pan-y;
 }
+
+
+/* ==========================================
+   VEC RACING - MOBILE LANDSCAPE CONTROLS
+========================================== */
+
+@media (max-width: 1024px) and (orientation: landscape) {
+
+  .racing-mobile-controls {
+    display: flex !important;
+    position: fixed !important;
+
+    left: 15px !important;
+    right: 15px !important;
+    bottom: 20px !important;
+
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+
+    z-index: 99999 !important;
+
+    pointer-events: none;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+
+  .racing-steer-controls,
+  .racing-drive-controls {
+    display: flex !important;
+    gap: 12px;
+    align-items: center;
+    pointer-events: auto;
+  }
+
+  .racing-mobile-controls button {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+
+    width: 65px !important;
+    height: 65px !important;
+
+    border-radius: 16px !important;
+    border: 2px solid #59e6b5 !important;
+
+    background: rgba(7, 21, 45, 0.88) !important;
+    color: white !important;
+
+    font-size: 25px !important;
+    font-weight: bold;
+
+    touch-action: none !important;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .racing-mobile-controls button.control-active {
+    background: #59e6b5 !important;
+    color: #07152d !important;
+    transform: scale(0.93);
+  }
+}
+
+/* HP posisi portrait */
+@media (max-width: 767px) and (orientation: portrait) {
+  .racing-mobile-controls {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 10px !important;
+    right: 10px !important;
+    justify-content: space-between !important;
+    z-index: 99999 !important;
+    pointer-events: none;
+  }
+
+  .racing-steer-controls,
+  .racing-drive-controls {
+    display: flex !important;
+    gap: 8px;
+    pointer-events: auto;
+  }
+
+  .racing-mobile-controls button {
+    width: 54px !important;
+    height: 54px !important;
+    touch-action: none !important;
+  }
+}
