@@ -856,38 +856,45 @@ function stopRacingAudio() {
     }
   }
 
-  function updateCountdown(dt) {
-    countdownTime += dt;
 
-    if (countdownTime < 1) return;
+function updateCountdown(dt) {
+  countdownTime += dt;
 
-    countdownTime -= 1;
-    countdownValue--;
+  // Countdown setiap 0,6 detik
+  if (countdownTime < 0.6) return;
 
-    if (countdownValue > 0) {
-      if (countdownEl) {
-        countdownEl.textContent = String(countdownValue);
-      }
-      return;
-    }
+  countdownTime -= 0.6;
+  countdownValue--;
 
-    raceState = "racing";
-    raceStartTime = performance.now();
-    raceElapsed = 0;
-
+  if (countdownValue > 0) {
     if (countdownEl) {
-      countdownEl.textContent = "GO!";
+      countdownEl.textContent = String(countdownValue);
     }
-
-    if (raceStateEl) raceStateEl.textContent = "BALAPAN BERLANGSUNG";
-    if (statusEl) statusEl.textContent = "GO! GAS POLL!";
-
-    setTimeout(() => {
-      if (raceState === "racing" && countdownEl) {
-        countdownEl.hidden = true;
-      }
-    }, 700);
+    return;
   }
+
+  raceState = "racing";
+  raceStartTime = performance.now();
+  raceElapsed = 0;
+
+  if (countdownEl) {
+    countdownEl.textContent = "GO!";
+  }
+
+  if (raceStateEl) {
+    raceStateEl.textContent = "BALAPAN BERLANGSUNG";
+  }
+
+  if (statusEl) {
+    statusEl.textContent = "GO! GAS POLL!";
+  }
+
+  setTimeout(() => {
+    if (raceState === "racing" && countdownEl) {
+      countdownEl.hidden = true;
+    }
+  }, 500);
+}
 
   // ==========================================
   // PERGERAKAN AI
