@@ -127,9 +127,8 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
   const roadShape = new THREE.Shape();
   roadShape.absellipse(0, 0, 62, 41, 0, Math.PI * 2, false, 0);
 
-  const roadHole = new THREE.Path();
-  roadHole.absellipse(0, 0, 48, 27, 0, Math.PI * 2, true, 0);
-
+const roadHole = new THREE.Path();
+roadHole.absellipse(0, 0, 43, 22, 0, Math.PI * 2, true, 0);
   roadShape.holes.push(roadHole);
 
   const road = new THREE.Mesh(
@@ -177,13 +176,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 
 // Garis neon lintasan
 makeRing(62, 41, 0x19d9f2, 0.32, 0.5);
-makeRing(48, 27, 0x9b6cff, 0.3, 0.48);
+makeRing(43, 22, 0x9b6cff, 0.3, 0.48);
 
 // DINDING PEMBATAS LUAR
 makeRing(61.5, 40.5, 0x19d9f2, 1.0, 0.85);
 
 // DINDING PEMBATAS DALAM
-makeRing(48.5, 27.5, 0x9b6cff, 1.0, 0.85);
+makeRing(43.5, 22.5, 0x9b6cff, 1.0, 0.85);
 
   const island = new THREE.Mesh(
     new THREE.CylinderGeometry(19, 21, 1.1, 64),
@@ -247,6 +246,49 @@ makeRing(48.5, 27.5, 0x9b6cff, 1.0, 0.85);
     orb.position.set(x, 13 + (i % 3) * 3, z);
     scene.add(orb);
   }
+
+  // ==========================================
+// RINTANGAN LINTASAN
+// ==========================================
+
+const trackObstacles = [];
+
+const obstacleMaterial = new THREE.MeshStandardMaterial({
+  color: 0xff7438,
+  emissive: 0x9c2700,
+  emissiveIntensity: 0.6,
+  roughness: 0.5
+});
+
+const obstacleAngles = [
+  1.05,
+  0.25,
+  -0.65,
+  -1.45,
+  -2.35,
+  -2.95
+];
+
+obstacleAngles.forEach((angle, index) => {
+  const lane = index % 2 === 0 ? -2 : 2;
+
+  const obstacle = new THREE.Mesh(
+    new THREE.ConeGeometry(1.15, 2.2, 8),
+    obstacleMaterial
+  );
+
+  obstacle.position.set(
+    Math.cos(angle) * (TRACK_RX + lane),
+    1.1,
+    Math.sin(angle) * (TRACK_RZ + lane * 0.62)
+  );
+
+  obstacle.castShadow = true;
+  obstacle.receiveShadow = true;
+
+  scene.add(obstacle);
+  trackObstacles.push(obstacle);
+});
 
   // ==========================================
   // MODEL MOBIL
@@ -324,8 +366,9 @@ makeRing(48.5, 27.5, 0x9b6cff, 1.0, 0.85);
 
   scene.add(car);
 
+
   // ==========================================
-  // GARIS START
+  // GERBANG START / FINISH
   // ==========================================
 
   const arch = new THREE.Group();
@@ -336,6 +379,7 @@ makeRing(48.5, 27.5, 0x9b6cff, 1.0, 0.85);
     emissiveIntensity: 1.1
   });
 
+  // Tiang kiri dan kanan
   const leftPost = new THREE.Mesh(
     new THREE.BoxGeometry(0.6, 7, 0.6),
     archMat
@@ -343,18 +387,25 @@ makeRing(48.5, 27.5, 0x9b6cff, 1.0, 0.85);
 
   const rightPost = leftPost.clone();
 
-  leftPost.position.set(-5, 3.5, 0);
-  rightPost.position.set(5, 3.5, 0);
+  leftPost.position.set(-8.5, 3.5, 0);
+  rightPost.position.set(8.5, 3.5, 0);
 
+  // Palang atas
   const beam = new THREE.Mesh(
-    new THREE.BoxGeometry(10.6, 0.65, 0.7),
+    new THREE.BoxGeometry(18, 0.65, 0.7),
     archMat
   );
 
   beam.position.y = 7;
+
   arch.add(leftPost, rightPost, beam);
-  arch.position.set(0, 0, 34);
+
+  // Gerbang melintang mengikuti lebar jalan
+  arch.rotation.y = Math.PI / 2;
+  arch.position.set(0, 0, 31.5);
+
   scene.add(arch);
+
 
   // ==========================================
   // 9 MOBIL AI
@@ -645,18 +696,35 @@ function stopRacingAudio() {
     nitroHeld = false;
   });
 
+
+
+  // ==========================================
+  // KONTROL TOUCHSCREEN HP
+  // ==========================================
+
   viewport.querySelectorAll("[data-racing-key]").forEach(button => {
     const key = button.dataset.racingKey.toLowerCase();
 
     button.addEventListener("pointerdown", event => {
       event.preventDefault();
+
+      button.setPointerCapture(event.pointerId);
       keys.add(key);
+
+      button.classList.add("control-active");
     });
 
-    ["pointerup", "pointerleave", "pointercancel"].forEach(type => {
-      button.addEventListener(type, () => keys.delete(key));
-    });
+    const release = event => {
+      keys.delete(key);
+      button.classList.remove("control-active");
+    };
+
+    button.addEventListener("pointerup", release);
+    button.addEventListener("pointercancel", release);
+    button.addEventListener("lostpointercapture", release);
   });
+
+
 
   // ==========================================
   // RESIZE
@@ -1031,10 +1099,9 @@ function checkWallCollision(x, z) {
   );
 
   const innerDistance = Math.sqrt(
-    (x / 48) ** 2 + (z / 27) ** 2
+    (x / 43) ** 2 + (z / 22) ** 2
   );
 
-  // Menabrak dinding luar atau bagian tengah arena
   return outerDistance > 0.97 || innerDistance < 1.06;
 }
 
@@ -1046,6 +1113,21 @@ function checkCarCollision(x, z) {
     const distance = Math.sqrt(dx * dx + dz * dz);
 
     if (distance < 3.7) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function checkObstacleCollision(x, z) {
+  for (const obstacle of trackObstacles) {
+    const dx = x - obstacle.position.x;
+    const dz = z - obstacle.position.z;
+
+    const distance = Math.sqrt(dx * dx + dz * dz);
+
+    if (distance < 2.8) {
       return true;
     }
   }
@@ -1128,17 +1210,29 @@ function updatePlayer(dt) {
     }
   }
 
-  // COLLISION MOBIL AI
-  else if (checkCarCollision(car.position.x, car.position.z)) {
-    car.position.x = oldX;
-    car.position.z = oldZ;
+// COLLISION MOBIL AI
+else if (checkCarCollision(car.position.x, car.position.z)) {
+  car.position.x = oldX;
+  car.position.z = oldZ;
 
-    velocity *= -0.35;
+  velocity *= -0.35;
 
-    if (statusEl) {
-      statusEl.textContent = "DUARR! MENABRAK MOBIL!";
-    }
+  if (statusEl) {
+    statusEl.textContent = "DUARR! MENABRAK MOBIL!";
   }
+}
+
+// COLLISION RINTANGAN
+else if (checkObstacleCollision(car.position.x, car.position.z)) {
+  car.position.x = oldX;
+  car.position.z = oldZ;
+
+  velocity *= -0.45;
+
+  if (statusEl) {
+    statusEl.textContent = "BRAKK! MENABRAK RINTANGAN!";
+  }
+}
 
   wheels.forEach(wheel => {
     wheel.rotation.x += velocity * dt * 0.8;
