@@ -21,10 +21,31 @@ if (!viewport) return;
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
     camera.position.set(8, 7, 10);
 
-    const renderer = new THREE.WebGLRenderer({
+
+let renderer;
+
+try {
+    renderer = new THREE.WebGLRenderer({
         antialias: true,
-        powerPreference: "high-performance"
+        powerPreference: "default"
     });
+
+    console.log("WEBGL BERHASIL DIBUAT");
+} catch (error) {
+    console.error("WEBGL GAGAL:", error);
+
+    if (loading) {
+        loading.textContent =
+            "WebGL tidak didukung atau gagal dijalankan pada perangkat ini.";
+    }
+
+    if (status) {
+        status.textContent = "WEBGL TIDAK TERSEDIA";
+    }
+
+    return;
+}
+
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
