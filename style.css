@@ -132,10 +132,10 @@ h3 { margin: 0; font-size: 18px; }
 .donut { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(#00e2b0 calc(var(--progress)*1%), #1b477b 0); position: relative; flex: 0 0 auto; }
 .donut:before { content:""; position:absolute; inset: 13px; background: #0b1b38; border-radius: 50%; }
 .donut span { position: relative; font-size: 24px; font-weight: 800; }
-.progress-list { width: 48%; display: grid; gap: 13px; }
-.progress-list div { display: grid; grid-template-columns: 13px 1fr auto; align-items: center; gap: 9px; font-size: 13px; padding-bottom: 9px; border-bottom: 1px solid #203a5e; }
+.progress-list { width: 58%; display: grid; gap: 8px; }
+.progress-list div { display: grid; grid-template-columns: 11px minmax(0,1fr) auto; align-items: center; gap: 8px; font-size: 12px; padding-bottom: 6px; border-bottom: 1px solid #203a5e; }
 .progress-list b { font-size: 13px; }
-.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
 .cyan { background: #00e1bd; }.blue { background: #17c8f2; }.gold { background: #ffbd37; }
 .middle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
 .mission-panel,.badges-panel,.leaderboard-panel,.statistics-panel { padding: 17px 18px; }
@@ -3315,4 +3315,399 @@ button#adminLogoutBtn:hover {
         align-items: flex-start;
         flex-direction: column;
     }
+}
+
+
+/* =====================================================
+   AKTIVITAS BAB 7 - PENDIDIKAN TEKNIK ELEKTRONIKA
+===================================================== */
+.bab7-page-header {
+    padding: 26px;
+    margin: 0 0 22px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #102b4c, #07152f 75%);
+    border: 1px solid rgba(89, 230, 181, .22);
+}
+.bab7-eyebrow {
+    display: inline-block;
+    color: #59e6b5;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+.bab7-page-header h2 { color: #fff; margin: 0 0 10px; font-size: clamp(22px, 3vw, 30px); }
+.bab7-page-header p { color: #c4d3e5; line-height: 1.75; margin: 0; max-width: 900px; }
+.bab7-intro-strip, .bab7-game-topbar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.bab7-intro-strip > div, .bab7-game-stat {
+    padding: 15px 18px;
+    border-radius: 13px;
+    background: #10213c;
+    border: 1px solid rgba(89, 230, 181, .14);
+}
+.bab7-intro-strip strong, .bab7-intro-strip span { display: block; }
+.bab7-intro-strip strong { color: #59e6b5; font-size: 20px; margin-bottom: 4px; }
+.bab7-intro-strip span { color: #aebfd3; font-size: 12px; }
+.bab7-sim-layout { display: grid; grid-template-columns: minmax(220px, .75fr) minmax(0, 2fr); gap: 18px; align-items: start; }
+.bab7-case-list, .bab7-sim-panel, .bab7-game-stage {
+    min-width: 0; padding: 21px; border-radius: 16px;
+    background: #10213c; border: 1px solid rgba(89, 230, 181, .16);
+}
+.bab7-case-list h3 { color: #59e6b5; margin: 0 0 14px; }
+.bab7-scenario-list { display: grid; gap: 9px; }
+.bab7-scenario-btn {
+    width: 100%; text-align: left; padding: 12px 13px; border-radius: 10px;
+    border: 1px solid #30445f; background: #172b47; color: #dce8f5;
+    cursor: pointer; line-height: 1.45; font-weight: 600;
+}
+.bab7-scenario-btn:hover, .bab7-scenario-btn.active { border-color: #59e6b5; background: rgba(89,230,181,.12); color: #59e6b5; }
+.bab7-scenario-btn small { display: block; color: #91a8c2; font-size: 10px; margin-bottom: 4px; }
+.bab7-sim-panel h3, .bab7-game-stage h3 { color: #59e6b5; margin: 0 0 12px; }
+.bab7-case-context { color: #c5d3e4; line-height: 1.8; padding: 16px; border-radius: 12px; background: #0a1930; border-left: 3px solid #59e6b5; margin: 14px 0 20px; }
+.bab7-question { color: #fff; font-weight: 700; line-height: 1.65; margin: 18px 0 12px; }
+.bab7-options { display: grid; gap: 10px; }
+.bab7-option {
+    width: 100%; text-align: left; padding: 13px 15px; border-radius: 10px;
+    color: #dce8f5; background: #172b47; border: 1px solid #344a67; cursor: pointer;
+    line-height: 1.6;
+}
+.bab7-option:hover:not(:disabled) { border-color: #59e6b5; }
+.bab7-option:disabled { cursor: default; opacity: .92; }
+.bab7-option.correct { border-color: #59e6b5; background: rgba(89,230,181,.14); }
+.bab7-option.incorrect { border-color: #ef8c8c; background: rgba(239,140,140,.10); }
+.bab7-feedback { margin-top: 16px; padding: 15px; border-radius: 11px; line-height: 1.7; background: rgba(89,230,181,.09); border: 1px solid rgba(89,230,181,.35); color: #d9f9ee; }
+.bab7-feedback strong { color: #59e6b5; }
+.bab7-next-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+.bab7-primary-btn, .bab7-secondary-btn { border: 0; border-radius: 10px; padding: 12px 18px; font-weight: 800; cursor: pointer; }
+.bab7-primary-btn { color: #07152f; background: #59e6b5; }
+.bab7-secondary-btn { color: #dce8f5; background: #263e5e; border: 1px solid #48617e; }
+.bab7-empty-state { text-align: center; padding: 35px 15px; color: #b9c9dc; }
+.bab7-empty-state h3 { color: #59e6b5; margin: 10px 0; }
+.bab7-empty-state p { line-height: 1.7; }
+.bab7-empty-icon { font-size: 42px; }
+.bab7-game-stat span, .bab7-game-stat strong { display: block; }
+.bab7-game-stat span { color: #9fb2c9; font-size: 10px; font-weight: 800; letter-spacing: 1px; }
+.bab7-game-stat strong { color: #59e6b5; font-size: 21px; margin-top: 5px; }
+.bab7-progress-track { height: 9px; background: #1c304b; border-radius: 99px; overflow: hidden; margin: -8px 0 20px; }
+.bab7-progress-track span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #59e6b5, #36a9d8); transition: width .25s ease; }
+.bab7-game-stage { min-height: 300px; }
+.bab7-game-kicker { color: #91a8c2; font-size: 11px; font-weight: 800; letter-spacing: 1px; margin-bottom: 8px; }
+.bab7-game-stage .bab7-question { font-size: 18px; }
+.bab7-game-summary { text-align: center; padding: 24px 12px; }
+.bab7-game-summary .score-big { font-size: 48px; font-weight: 900; color: #59e6b5; margin: 12px 0; }
+#simulasiPage, #gamePage { padding: 22px; }
+@media (max-width: 800px) {
+    .bab7-sim-layout { grid-template-columns: 1fr; }
+    .bab7-scenario-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+    #simulasiPage, #gamePage { padding: 12px; }
+    .bab7-page-header, .bab7-case-list, .bab7-sim-panel, .bab7-game-stage { padding: 16px; }
+    .bab7-intro-strip, .bab7-game-topbar { gap: 7px; }
+    .bab7-intro-strip > div, .bab7-game-stat { padding: 11px 9px; }
+    .bab7-intro-strip strong, .bab7-game-stat strong { font-size: 16px; }
+    .bab7-intro-strip span { font-size: 10px; }
+    .bab7-scenario-list { grid-template-columns: 1fr; }
+}
+
+.bab7-muted-note { color: #91a8c2; font-size: 12px; line-height: 1.6; margin: 14px 0 0; }
+
+/* Pengayaan analisis studi kasus BAB 7 */
+.studi-kasus-enrichment {
+    margin: 26px 0;
+    padding: 22px;
+    border: 1px solid rgba(89, 230, 181, .22);
+    border-radius: 16px;
+    background: rgba(7, 21, 47, .42);
+}
+.studi-kasus-enrichment-section + .studi-kasus-enrichment-section {
+    margin-top: 20px;
+    padding-top: 17px;
+    border-top: 1px solid rgba(148, 163, 184, .16);
+}
+.studi-kasus-enrichment-section h3 {
+    margin: 0 0 9px;
+    color: #59e6b5;
+    font-size: 1rem;
+}
+.studi-kasus-enrichment-section p,
+.studi-kasus-enrichment-section li {
+    color: var(--text-secondary, #cbd5e1);
+    line-height: 1.75;
+}
+.studi-kasus-enrichment-section ul {
+    margin: 8px 0 0;
+    padding-left: 22px;
+}
+.studi-kasus-enrichment-section li + li { margin-top: 7px; }
+.bab7-practice-card {
+    margin: 18px 0;
+    padding: 17px 19px;
+    border: 1px solid rgba(89, 230, 181, .28);
+    border-left: 4px solid #59e6b5;
+    border-radius: 12px;
+    background: rgba(89, 230, 181, .07);
+}
+.bab7-practice-card strong {
+    display: block;
+    margin-bottom: 7px;
+    color: #59e6b5;
+}
+.bab7-practice-card p {
+    margin: 0;
+    color: var(--text-secondary, #dbeafe);
+    line-height: 1.75;
+}
+@media (max-width: 640px) {
+    .studi-kasus-enrichment { padding: 16px; }
+    .bab7-practice-card { padding: 14px; }
+}
+
+/* =========================================================
+   SOAL SIMULASI BERTAHAP + MEDIA PENERAPAN (ss-*)
+   ========================================================= */
+.ss-sub { color: #59e6b5; margin: 18px 0 10px; font-size: 14px; letter-spacing: .04em; }
+.ss-meters { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+.ss-meter { background: #0a1930; border: 1px solid #1f3a5c; border-radius: 10px; padding: 10px 12px; }
+.ss-meter-label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: #c5d3e4; margin-bottom: 6px; }
+.ss-meter-label strong { color: #59e6b5; }
+.ss-meter-track { height: 8px; border-radius: 99px; background: #17304f; overflow: hidden; }
+.ss-meter-track span { display: block; height: 100%; width: 30%; border-radius: 99px; background: linear-gradient(90deg, #08d9f5, #59e6b5); transition: width .5s ease; }
+.ss-dots { display: flex; gap: 8px; margin: 6px 0 4px; }
+.ss-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; background: #17304f; color: #91a8c2; border: 1px solid #30445f; }
+.ss-dot.now { border-color: #08d9f5; color: #08d9f5; }
+.ss-dot.done { background: #59e6b5; color: #062018; border-color: #59e6b5; }
+.ss-body { display: grid; gap: 10px; }
+.ss-toggle.active { border-color: #08d9f5; background: rgba(8,217,245,.10); }
+.ss-order { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; counter-reset: ssorder; }
+.ss-order-item { counter-increment: ssorder; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 13px; border-radius: 10px; background: #172b47; border: 1px solid #30445f; color: #dce8f5; }
+.ss-order-item::before { content: counter(ssorder); flex: 0 0 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #0a1930; color: #59e6b5; font-weight: 700; font-size: 13px; }
+.ss-order-text { flex: 1; line-height: 1.5; }
+.ss-order-ctrl { display: flex; gap: 6px; }
+.ss-mini { width: 34px; height: 34px; border-radius: 8px; border: 1px solid #30445f; background: #0a1930; color: #dce8f5; cursor: pointer; }
+.ss-mini:disabled { opacity: .35; cursor: default; }
+.ss-order-item.ok, .ss-alloc-row.ok, .ss-assign-row.ok { border-color: #59e6b5; background: rgba(89,230,181,.12); }
+.ss-order-item.bad, .ss-alloc-row.bad, .ss-assign-row.bad { border-color: #ef8c8c; background: rgba(239,140,140,.10); }
+.ss-alloc-row, .ss-assign-row { display: grid; grid-template-columns: 1.4fr 1.6fr 44px; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid #30445f; border-radius: 10px; background: #172b47; color: #dce8f5; }
+.ss-assign-row { grid-template-columns: 1.4fr 1.6fr; }
+.ss-alloc-row label, .ss-assign-row label { line-height: 1.45; font-size: 14px; }
+.ss-alloc-row strong { text-align: right; color: #59e6b5; }
+.ss-alloc-row input[type=range] { width: 100%; }
+.ss-assign-row select { padding: 9px 10px; border-radius: 8px; background: #0a1930; color: #fff; border: 1px solid #30445f; }
+.ss-alloc-total { font-weight: 800; color: #ffc329; text-align: right; }
+.ss-alloc-total.ok { color: #59e6b5; }
+.ss-people { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ss-person { padding: 12px; border-radius: 10px; background: #0a1930; border: 1px solid #1f3a5c; display: grid; gap: 4px; }
+.ss-person strong { color: #08d9f5; }
+.ss-person span { color: #c5d3e4; font-size: 13px; line-height: 1.5; }
+.ss-ldr, .ss-lab { display: grid; gap: 10px; padding: 14px; border-radius: 12px; background: #0a1930; border: 1px solid #1f3a5c; }
+.ss-led { text-align: center; padding: 16px; border-radius: 12px; font-weight: 800; letter-spacing: .08em; background: #17304f; color: #91a8c2; border: 2px dashed #30445f; transition: all .25s; }
+.ss-led.on { background: #ffe066; color: #5a4300; border: 2px solid #ffc329; box-shadow: 0 0 28px rgba(255,195,41,.65); }
+.ss-ldr-info { color: #c5d3e4; font-size: 13px; }
+.ss-tests { display: grid; gap: 6px; }
+.ss-test { padding: 8px 10px; border-radius: 8px; font-size: 13px; }
+.ss-test.ok { background: rgba(89,230,181,.12); color: #8ff0cc; }
+.ss-test.bad { background: rgba(239,140,140,.12); color: #f5b3b3; }
+.ss-kits { display: flex; flex-wrap: wrap; gap: 4px; font-size: 18px; min-height: 28px; }
+.ss-kit.ok { color: #59e6b5; }
+.ss-kit.over { color: #ef8c8c; }
+.ss-lab-stats { display: grid; gap: 4px; color: #dce8f5; font-size: 14px; }
+.ss-final-grid { display: grid; gap: 12px; margin-top: 14px; }
+.ss-list { margin: 8px 0 0; padding-left: 20px; color: #dbeafe; line-height: 1.75; }
+.ss-recap { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: #0a1930; border: 1px solid #1f3a5c; color: #c5d3e4; }
+.ss-recap strong { display: block; color: #59e6b5; margin-bottom: 6px; }
+.ss-final .bab7-game-kicker { margin-bottom: 4px; }
+.bab7-next-row { gap: 10px; flex-wrap: wrap; }
+
+/* Media penerapan (dipakai di Studi Kasus dan Soal Simulasi) */
+.ss-media { margin: 18px 0 22px; padding: 18px; border-radius: 14px; background: #0a1930; border: 1px solid #1f3a5c; }
+.ss-media-title { margin: 0 0 12px; color: #59e6b5; font-size: 17px; }
+.ss-media-sub { margin: 16px 0 8px; color: #08d9f5; font-size: 14px; }
+.ss-media-fig { margin: 0; }
+.ss-media-img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid #30445f; background: #fff; }
+.ss-media-fig figcaption { margin-top: 8px; color: #c5d3e4; font-size: 13px; line-height: 1.6; }
+.ss-media-list { margin: 12px 0 0; padding-left: 20px; color: #dbeafe; line-height: 1.75; }
+.ss-video-links { display: grid; gap: 8px; }
+.ss-video-btn { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 10px; background: #172b47; border: 1px solid #30445f; color: #dce8f5; text-decoration: none; font-weight: 600; font-size: 14px; }
+.ss-video-btn:hover { border-color: #08d9f5; color: #08d9f5; }
+.ss-video-play { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #ef4444; color: #fff; font-size: 11px; flex: 0 0 28px; }
+.ss-media-note { margin: 10px 0 0; font-size: 12px; color: #91a8c2; line-height: 1.6; }
+
+@media (max-width: 760px) {
+    .ss-meters, .ss-people { grid-template-columns: 1fr; }
+    .ss-alloc-row { grid-template-columns: 1fr 44px; }
+    .ss-alloc-row label { grid-column: 1 / -1; }
+    .ss-alloc-row input[type=range] { grid-column: 1; }
+    .ss-assign-row { grid-template-columns: 1fr; }
+}
+
+/* ===== Penyempurnaan alur belajar BAB 7 ===== */
+.case-roadmap { margin-top: 18px; padding: 22px; }
+.roadmap-subtitle { margin: 5px 0 0; color: #aebed2; font-size: 13px; }
+.case-roadmap-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+.roadmap-card { display:flex; align-items:center; gap:12px; min-width:0; padding:14px; border:1px solid #28456b; border-radius:14px; background:linear-gradient(120deg,#102747,#0b1c35); }
+.roadmap-number { display:grid; place-items:center; flex:0 0 38px; height:38px; border-radius:11px; color:#07152f; background:#59e6b5; font-weight:800; }
+.roadmap-card div { display:flex; flex:1; min-width:0; flex-direction:column; gap:4px; }
+.roadmap-card b { color:#f3f7ff; font-size:13px; }
+.roadmap-card small { color:#aebed2; font-size:11px; line-height:1.4; }
+.roadmap-card button { border:1px solid #3a658b; border-radius:9px; padding:7px 10px; background:#17395c; color:#dffcf3; cursor:pointer; font-size:11px; font-weight:700; }
+.sim-tabs { display:flex; flex-wrap:wrap; gap:10px; margin:0 0 18px; padding:7px; width:max-content; max-width:100%; border:1px solid #29486b; border-radius:13px; background:#091a31; }
+.sim-tab { border:0; border-radius:9px; padding:11px 17px; color:#b9c9dc; background:transparent; cursor:pointer; font-weight:700; }
+.sim-tab.active { color:#06172c; background:#59e6b5; }
+.sim-tab-panel[hidden] { display:none !important; }
+@media(max-width:700px) { .case-roadmap-grid { grid-template-columns:1fr; } .roadmap-card { padding:11px; } .sim-tabs { width:100%; } .sim-tab { flex:1; padding:10px 8px; font-size:12px; } }
+
+
+/* QUIZ LOKAL BAB 7 */
+.bab7-quiz-app{margin-top:22px;padding:clamp(16px,3vw,26px);border:1px solid rgba(89,230,181,.22);border-radius:18px;background:rgba(7,21,47,.58)}
+.bab7-quiz-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#a9c5dc;font-size:.9rem;margin-bottom:12px}
+.bab7-quiz-progress{height:8px;background:rgba(255,255,255,.09);border-radius:99px;overflow:hidden;margin-bottom:24px}
+.bab7-quiz-progress span{display:block;width:5%;height:100%;background:#59e6b5;border-radius:99px;transition:width .2s ease}
+.bab7-quiz-question h3{font-size:1.12rem;line-height:1.55;color:#f4f8ff;margin:0 0 20px}
+.bab7-quiz-options{display:grid;gap:11px}
+.bab7-quiz-option{width:100%;text-align:left;padding:14px 16px;border:1px solid rgba(160,190,220,.22);border-radius:12px;background:rgba(255,255,255,.035);color:#eaf2ff;cursor:pointer;line-height:1.5}
+.bab7-quiz-option:hover:not(:disabled){border-color:#59e6b5;background:rgba(89,230,181,.08)}
+.bab7-quiz-option:disabled{cursor:default;opacity:1}
+.bab7-quiz-option.correct{border-color:#59e6b5;background:rgba(89,230,181,.13)}
+.bab7-quiz-option.incorrect{border-color:#ff8d8d;background:rgba(255,100,100,.1)}
+.bab7-quiz-feedback{margin-top:16px;padding:14px;border-radius:12px;background:rgba(89,230,181,.08);color:#dcebe9;line-height:1.6}
+.bab7-quiz-actions{display:flex;justify-content:flex-end;margin-top:20px}
+.bab7-quiz-actions button:disabled{opacity:.45;cursor:not-allowed}
+.bab7-quiz-result{margin-top:20px;padding:20px;border:1px solid rgba(89,230,181,.3);border-radius:14px;color:#eef8ff;line-height:1.65}
+.bab7-quiz-result h3{margin-top:0;color:#59e6b5}
+.bab7-quiz-restart{margin-top:14px}
+
+/* ==========================================
+   LABORATORIUM VIRTUAL 3D - BAB 7 STUDI KASUS 04
+========================================== */
+.lab-virtual-card { display:block; }
+.lab-virtual-heading { margin-bottom:18px; }
+.lab-virtual-heading h2 { color:#f1f6ff; font-size:clamp(23px,3vw,30px); margin:7px 0; }
+.lab-virtual-heading p { color:#a9bfd7; line-height:1.7; max-width:900px; }
+.lab-tool-picker { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:18px 0; }
+.lab-tool-btn { display:flex; flex-direction:column; align-items:flex-start; gap:5px; min-height:94px; padding:13px; border:1px solid #294763; border-radius:12px; background:#0b1b31; color:#eaf3ff; cursor:pointer; text-align:left; transition:.2s; }
+.lab-tool-btn:hover,.lab-tool-btn.active { border-color:#59e6b5; background:#12344a; box-shadow:0 0 0 1px rgba(89,230,181,.15); }
+.lab-tool-btn span { font-size:21px; }
+.lab-tool-btn b { font-size:13px; }
+.lab-tool-btn small { color:#9db8d3; font-size:11px; }
+.lab-virtual-detail-grid { display:grid; grid-template-columns:1.15fr .85fr; gap:14px; margin-top:16px; }
+.lab-detail-panel { min-width:0; border:1px solid #294763; border-radius:13px; padding:18px; background:#0b1b31; color:#dce9f7; line-height:1.65; }
+.lab-info-kicker { color:#59e6b5; font-size:10px; font-weight:800; letter-spacing:1.4px; }
+.lab-info-heading h3 { color:#fff; margin:5px 0 0; font-size:21px; }
+.lab-info-heading p { color:#59e6b5; margin:0 0 12px; font-size:13px; }
+.lab-info-block { margin-top:13px; padding-top:12px; border-top:1px solid #294763; }
+.lab-info-block b,.lab-safety b { color:#8fffd7; }
+.lab-info-block p,.lab-safety p { margin:5px 0 0; color:#b5c8dc; font-size:13px; }
+.lab-info-block ol { margin:7px 0 0; padding-left:20px; color:#b5c8dc; font-size:13px; }
+.lab-info-block li { margin:5px 0; }
+.lab-safety { margin-top:13px; padding:12px; border:1px solid rgba(244,201,93,.35); border-radius:10px; background:rgba(244,201,93,.07); }
+.lab-safety b { color:#f4c95d; }
+.lab-control-panel h4 { color:#fff; margin:0 0 6px; font-size:17px; }
+.lab-control-panel > p { color:#a9bfd7; font-size:13px; margin:0 0 14px; }
+.lab-control-panel label { display:flex; justify-content:space-between; gap:10px; color:#dce9f7; font-size:13px; margin:12px 0 6px; }
+.lab-control-panel label strong { color:#59e6b5; }
+.lab-control-panel input[type=range] { width:100%; accent-color:#59e6b5; }
+.lab-control-panel button { margin-top:12px; border:0; border-radius:8px; padding:10px 14px; background:#59e6b5; color:#06271e; font-weight:800; cursor:pointer; }
+.lab-result { margin-top:13px; padding:12px; border-radius:9px; background:#102b43; border:1px solid #28516a; color:#c9f8e9; font-size:13px; }
+#scopeWave { width:100%; height:auto; display:block; margin-top:12px; border:1px solid #28516a; border-radius:8px; }
+.lab-virtual-note { margin-top:15px; padding:13px 15px; border-left:3px solid #59e6b5; background:rgba(89,230,181,.07); border-radius:8px; color:#b8cadd; font-size:12px; line-height:1.65; }
+.lab-virtual-note b { color:#8fffd7; }
+@media(max-width:850px) { .lab-virtual-detail-grid { grid-template-columns:1fr; } }
+@media(max-width:620px) { .lab-tool-picker { grid-template-columns:repeat(2,minmax(0,1fr)); } .lab-tool-btn { min-height:84px; padding:10px; } #sim3DViewport { height:340px; } }
+\n/* Warna kategori Progress Belajar BAB 7 */\n.dot.purple{background:#a78bfa}.dot.violet{background:#818cf8}.dot.orange{background:#fb923c}.dot.pink{background:#f472b6}\n
+
+/* ==========================================
+   DASHBOARD: PROGRESS BELAJAR - TATA LETAK RAPI
+   ========================================== */
+.progress-panel {
+  padding: 20px 24px;
+  min-height: 0;
+  overflow: hidden;
+}
+.progress-panel > h3 {
+  margin-bottom: 18px;
+  font-size: 20px;
+  line-height: 1.3;
+}
+.progress-content {
+  display: grid;
+  grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
+  align-items: center;
+  justify-content: initial;
+  gap: clamp(18px, 3vw, 38px);
+  height: auto;
+  min-height: 190px;
+}
+.progress-content .donut {
+  width: 132px;
+  height: 132px;
+  justify-self: center;
+  background: conic-gradient(#00e2b0 calc(var(--progress, 0)*1%), #1b477b 0);
+}
+.progress-content .donut:before { inset: 12px; }
+.progress-content .donut span {
+  font-size: 27px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.progress-list {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: center;
+  gap: 0 22px;
+}
+.progress-list > div {
+  min-width: 0;
+  min-height: 43px;
+  display: grid;
+  grid-template-columns: 11px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 2px;
+  border-bottom: 1px solid rgba(104, 145, 190, .25);
+  font-size: 13px;
+  line-height: 1.35;
+}
+.progress-list > div span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.progress-list b {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+.progress-list .dot { width: 10px; height: 10px; }
+.progress-list .purple { background: #8b83ff; }
+.progress-list .violet { background: #8b83ff; }
+.progress-list .orange { background: #ff963d; }
+.progress-list .pink { background: #ed65bd; }
+
+@media (max-width: 900px) {
+  .progress-content {
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 16px;
+  }
+  .progress-content .donut { width: 112px; height: 112px; }
+  .progress-list { gap: 0 14px; }
+  .progress-list > div { font-size: 12px; }
+  .progress-list b { font-size: 12px; }
+}
+@media (max-width: 620px) {
+  .progress-panel { padding: 16px; }
+  .progress-content {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .progress-content .donut { width: 104px; height: 104px; }
+  .progress-list { grid-template-columns: 1fr; }
+  .progress-list > div { min-height: 40px; font-size: 13px; }
+  .progress-list b { font-size: 13px; }
 }
