@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#07152f">
-  <title>VEC | Vocational Education Challenge</title>
+  <title>VEC | Pendidikan Teknik Elektronika</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -15,7 +15,7 @@
     <div class="auth-card">
       <div class="auth-logo">VEC<span>✦</span></div>
       <h1>Selamat Datang di VEC</h1>
-      <p>Vocational Education Challenge</p>
+      <p>Media Pembelajaran Program Studi Pendidikan Teknik Elektronika</p>
 
       <form id="loginForm">
       <label for="loginNim">NIM / NIP</label>
@@ -257,68 +257,22 @@
 
 
 <nav class="nav-menu" aria-label="Navigasi utama">
-
-    <button class="nav-link" data-page="Profil">
-        <span data-lucide="user-round"></span>
-        Profil
-    </button>
-
-    <button class="nav-link active" data-page="Dashboard">
-        <span data-lucide="layout-dashboard"></span>
-        Dashboard
-    </button>
-
-    <button class="nav-link" data-page="Materi">
-        <span data-lucide="book-open"></span>
-        Materi
-    </button>
-
-    <button class="nav-link" data-page="Challenges">
-        <span data-lucide="trophy"></span>
-        Challenges
-    </button>
-
-    <button class="nav-link" data-page="Studi Kasus">
-        <span data-lucide="cpu"></span>
-        Studi Kasus
-    </button>
-
-    <button class="nav-link" data-page="Simulasi">
-        <span data-lucide="circuit-board"></span>
-        Simulasi
-    </button>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-
-    <button class="nav-link" data-page="Laboratorium 3D">
-    <span data-lucide="cpu"></span>
-    Laboratorium 3D
-    </button>
-
-    <button class="nav-link" data-page="Quiz">
-        <span data-lucide="brain-circuit"></span>
-        Quiz
-    </button>
-
-    <button class="nav-link" data-page="Pencapaian">
-        <span data-lucide="medal"></span>
-        Pencapaian
-    </button>
-
-    <button class="nav-link" data-page="VEC Racing">
-        <span data-lucide="flag-triangle-right"></span>
-        VEC Racing
-    </button>
-
-    <button class="nav-link" data-page="Leaderboard">
-        <span data-lucide="chart-no-axes-column-increasing"></span>
-        Leaderboard
-    </button>
-
+    <button class="nav-link active" data-page="Dashboard"><span data-lucide="layout-dashboard"></span>Dashboard</button>
+    <button class="nav-link" data-page="Materi"><span data-lucide="book-open"></span>Materi</button>
+    <button class="nav-link" data-page="Studi Kasus"><span data-lucide="folder-kanban"></span>Studi Kasus</button>
+    <button class="nav-link" data-page="Simulasi"><span data-lucide="brain-circuit"></span>Simulasi</button>
+    <button class="nav-link" data-page="Challenges"><span data-lucide="clipboard-check"></span>Ujian Challenges</button>
+    <button class="nav-link" data-page="Game Edukasi"><span data-lucide="gamepad-2"></span>Game Edukasi</button>
+    <button class="nav-link" data-page="Quiz"><span data-lucide="list-checks"></span>Quiz</button>
+    <button class="nav-link" data-page="Pencapaian"><span data-lucide="medal"></span>Pencapaian</button>
+    <button class="nav-link" data-page="Leaderboard"><span data-lucide="chart-no-axes-column-increasing"></span>Leaderboard</button>
+    <button class="nav-link" data-page="Profil"><span data-lucide="user-round"></span>Profil</button>
+    <button class="nav-link" data-page="Laboratorium 3D"><span data-lucide="flask-conical"></span>Laboratorium Virtual 3D</button>
 </nav>
 
 <button class="nav-link" id="adminMenu" data-page="Admin VEC" hidden>
     <span>⚙</span>Admin VEC
 </button>
-      </nav>
       <button class="logout" id="logoutBtn"><span>⇥</span> Logout</button>
     </aside>
 
@@ -386,16 +340,29 @@
           <div class="progress-content">
             <div class="donut" id="progressDonut" style="--progress:68"><span id="progressPercent">68%</span></div>
             <div class="progress-list">
-             <div><i class="dot cyan"></i><span>Materi</span><b id="materiProgressCount">0/6</b></div>
-              <div>
-                <i class="dot blue"></i>
-                <span>Challenges</span>
-                <b id="challengeProgressCount">0/20</b>
-                </div>          
-             <div><i class="dot gold"></i><span>Quiz</span><b id="quizProgressCount">0/1</b></div>
+              <div><i class="dot cyan"></i><span>Materi</span><b id="materiProgressCount">0/6 bab</b></div>
+              <div><i class="dot blue"></i><span>Studi Kasus</span><b id="caseProgressCount">0/6 kasus</b></div>
+              <div><i class="dot purple"></i><span>Simulasi Keputusan</span><b id="decisionProgressCount">0/6 skenario</b></div>
+              <div><i class="dot violet"></i><span>Simulasi Soal Bertahap</span><b id="stepwiseProgressCount">0/6 kasus</b></div>
+              <div><i class="dot violet"></i><span>Laboratorium Virtual 3D</span><b id="labProgressCount">0/4 alat</b></div>
+              <div><i class="dot gold"></i><span>Challenges</span><b id="challengeProgressCount">0/20 soal</b></div>
+              <div><i class="dot orange"></i><span>Quiz</span><b id="quizProgressCount">0/20 soal</b></div>
+              <div><i class="dot pink"></i><span>Game Edukasi</span><b id="gameProgressCount">0/6 misi</b></div>
             </div>
           </div>
         </article>
+      </section>
+
+      <section class="panel case-roadmap" aria-labelledby="caseRoadmapTitle">
+        <div class="panel-heading"><div><h3 id="caseRoadmapTitle">Peta Belajar 6 Studi Kasus</h3><p class="roadmap-subtitle">Ikuti alur BAB 7 dari memahami masalah hingga menentukan solusi.</p></div><button class="text-link" data-go="Studi Kasus">Buka Semua Kasus →</button></div>
+        <div class="case-roadmap-grid">
+          <article class="roadmap-card"><span class="roadmap-number">01</span><div><b>Kesenjangan Kompetensi</b><small>Kebutuhan industri dan kompetensi lulusan</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+          <article class="roadmap-card"><span class="roadmap-number">02</span><div><b>Teaching Factory</b><small>Pembelajaran berbasis produksi</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+          <article class="roadmap-card"><span class="roadmap-number">03</span><div><b>Perkembangan Teknologi</b><small>Pembaruan kurikulum dan teknologi</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+          <article class="roadmap-card"><span class="roadmap-number">04</span><div><b>Peralatan Laboratorium</b><small>Keterbatasan sarana praktik</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+          <article class="roadmap-card"><span class="roadmap-number">05</span><div><b>Kerja Sama Proyek</b><small>Kolaborasi dan pembagian peran</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+          <article class="roadmap-card"><span class="roadmap-number">06</span><div><b>Sertifikasi Kompetensi</b><small>Pengakuan kompetensi kerja</small></div><button data-go="Studi Kasus" type="button">Pelajari</button></article>
+        </div>
       </section>
 
       <section class="middle-grid">
@@ -551,56 +518,43 @@
     </div> <!-- penutup dashboardHomeContent -->
 
 
-<!-- HALAMAN LABORATORIUM ELEKTRONIKA 3D -->
+<!-- LABORATORIUM VIRTUAL 3D: SOLUSI KETERBATASAN PERALATAN SMK -->
 <section id="laboratorium3DPage" class="content-page" hidden>
-
-    <div class="simulation-card vec-3d-card">
-
-        <h3>Laboratorium Elektronika 3D</h3>
-        <p>
-            Praktikum rangkaian dasar DC menggunakan komponen
-            elektronika virtual.
-        </p>
-
-        <div class="vec-3d-toolbar">
-            <span id="sim3DStatus">LABORATORIUM SIAP</span>
-
-            <div>
-                <button type="button" id="sim3DReset">
-                    Reset Kamera
-                </button>
-
-                <button type="button" id="sim3DSwitch">
-                    Sakelar ON
-                </button>
-            </div>
-        </div>
-
-        <div id="sim3DViewport">
-            <div id="sim3DLoading">
-                Menyiapkan Laboratorium 3D...
-            </div>
-        </div>
-
-        <div class="vec-3d-instructions">
-            <span>🖱️ Geser mouse: Putar kamera</span>
-            <span>🔍 Scroll: Zoom</span>
-            <span>💡 Klik sakelar: Hidupkan LED</span>
-        </div>
-
+  <div class="simulation-card vec-3d-card lab-virtual-card">
+    <div class="lab-virtual-heading">
+      <span class="bab7-eyebrow">BAB 7 · STUDI KASUS 04</span>
+      <h2>Laboratorium Virtual 3D</h2>
+      <p>Eksplorasi peralatan laboratorium elektronika sebagai media belajar alternatif ketika jumlah alat praktik di SMK terbatas. Pilih alat, amati bagian-bagiannya, lalu coba aktivitas virtual.</p>
     </div>
-
+    <div class="lab-tool-picker" role="group" aria-label="Pilih peralatan laboratorium">
+      <button type="button" class="lab-tool-btn" data-lab-tool="osiloskop"><span>〰️</span><b>Osiloskop</b><small>Pengamatan sinyal</small></button>
+      <button type="button" class="lab-tool-btn active" data-lab-tool="multimeter"><span>📟</span><b>Multimeter</b><small>Pengukuran listrik</small></button>
+      <button type="button" class="lab-tool-btn" data-lab-tool="power"><span>🔌</span><b>Power Supply DC</b><small>Sumber tegangan</small></button>
+      <button type="button" class="lab-tool-btn" data-lab-tool="solder"><span>♨️</span><b>Solder Station</b><small>Penyolderan PCB</small></button>
+    </div>
+    <div class="vec-3d-toolbar">
+      <span id="sim3DStatus">MENYIAPKAN LABORATORIUM</span>
+      <div><button type="button" id="sim3DReset">Reset Kamera</button></div>
+    </div>
+    <div id="sim3DViewport"><div id="sim3DLoading">Menyiapkan Laboratorium Virtual 3D...</div></div>
+    <div class="vec-3d-instructions"><span>🖱️ Geser: putar sudut pandang</span><span>🔍 Scroll: zoom</span><span>👆 Klik alat: pilih peralatan</span></div>
+    <div class="lab-virtual-detail-grid">
+      <article class="lab-detail-panel" id="lab3DInfo" aria-live="polite"></article>
+      <article class="lab-detail-panel lab-control-panel" id="lab3DControls" aria-live="polite"></article>
+    </div>
+    <div class="lab-virtual-note"><b>Catatan pembelajaran:</b> Simulasi ini membantu pengenalan alat dan latihan prosedur dasar. Keterampilan menggunakan alat, pengukuran nyata, dan keselamatan kerja tetap harus dilatih dengan pendampingan guru serta peralatan fisik yang sesuai.</div>
+  </div>
 </section>
-<!-- AKHIR LABORATORIUM 3D -->
+<!-- AKHIR LABORATORIUM VIRTUAL 3D -->
 
     
 <!-- HALAMAN MATERI -->
 <section id="materiPage" class="content-page" hidden>
     <div class="panel materi-container">
         <div class="materi-header">
-            <span class="materi-label">PEMBELAJARAN TEKNIK ELEKTRONIKA</span>
-            <h2>Materi Pendidikan Teknik Elektronika</h2>
-<p>Pelajari konsep dasar dan penerapan teknik elektronika melalui enam bab pembelajaran berikut.</p>
+            <span class="materi-label">BAB 7 · PENDIDIKAN TEKNOLOGI KEJURUAN</span>
+            <h2>Tantangan Kurikulum dan Pembelajaran di Pendidikan Teknologi Kejuruan</h2>
+<p>Pelajari materi BAB 7 melalui enam topik tantangan dan penerapannya pada pembelajaran di SMK.</p>
         </div>
 
         <!-- DAFTAR BAB -->
@@ -620,203 +574,81 @@
 
 
 
-<!-- HALAMAN SIMULASI -->
-<section id="simulasiPage" class="content-page" hidden>
 
-    <div class="page-header">
-        <h2>Simulasi Hukum Kirchhoff</h2>
+<section id="simulasiHubPage" class="content-page" hidden>
+    <div class="sim-tabs" role="tablist" aria-label="Jenis simulasi">
+        <button type="button" class="sim-tab active" data-sim-tab="simulasiPage" role="tab" aria-selected="true">Keputusan Cepat</button>
+        <button type="button" class="sim-tab" data-sim-tab="soalSimPage" role="tab" aria-selected="false">Soal Bertahap</button>
+    </div>
+    <div class="sim-tab-panel" id="simulasiPage">
+    <div class="bab7-page-header">
+        <span class="bab7-eyebrow">BAB 7 · TANTANGAN KURIKULUM DAN PEMBELAJARAN</span>
+        <h2>Simulasi Keputusan Pembelajaran</h2>
         <p>
-            Pelajari hubungan arus dan tegangan melalui
-            simulasi rangkaian listrik interaktif.
+            Berperanlah sebagai calon pendidik Teknik Elektronika. Analisis situasi
+            pembelajaran, pilih tindakan yang paling tepat, lalu pelajari dampak
+            keputusan berdasarkan enam studi kasus pada materi BAB 7.
         </p>
     </div>
-    
 
-    <div class="simulation-container">
-
-        <div class="simulation-card">
-            <h3>Hukum Kirchhoff I (KCL)</h3>
-            <p>Hukum arus pada titik percabangan.</p>
-           <div class="kcl-simulation">
-
-    <h4>Simulasi Titik Percabangan</h4>
-    <p>Masukkan nilai arus listrik untuk membuktikan Hukum Kirchhoff I.</p>
-
-    <div class="kcl-circuit">
-
-        <svg viewBox="0 0 320 220" width="100%" role="img"
-     aria-label="Diagram arus masuk dan dua arus keluar pada titik percabangan">
-
-    <defs>
-        <marker id="panahKCL" markerWidth="8" markerHeight="8"
-                refX="6" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6" fill="none"
-                  stroke="#59e6b5" stroke-width="1.5"/>
-        </marker>
-    </defs>
-
-    <!-- Arus masuk -->
-    <path d="M20 110 H145"
-          stroke="#59e6b5" stroke-width="3"
-          fill="none" marker-end="url(#panahKCL)"/>
-
-    <!-- Arus keluar atas -->
-    <path d="M175 100 L275 40"
-          stroke="#59e6b5" stroke-width="3"
-          fill="none" marker-end="url(#panahKCL)"/>
-
-    <!-- Arus keluar bawah -->
-    <path d="M175 120 L275 180"
-          stroke="#59e6b5" stroke-width="3"
-          fill="none" marker-end="url(#panahKCL)"/>
-
-    <!-- Titik percabangan -->
-    <circle cx="160" cy="110" r="10" fill="#59e6b5"/>
-
-    <!-- Label -->
-    <g fill="currentColor" font-size="12" text-anchor="middle">
-        <text x="65" y="92" id="labelArusMasuk">I₁ = 5 A</text>
-        <text x="250" y="25" id="labelArusKeluar1">I₂ = 2 A</text>
-        <text x="250" y="205" id="labelArusKeluar2">I₃ = 3 A</text>
-        <text x="160" y="145">Titik Cabang</text>
-    </g>
-</svg>
-
-        <div class="kcl-node">●</div>
-        <p>Arus Masuk (I₁)</p>
-        <input type="number" id="arusMasuk" value="5" min="0" step="0.1">
-
-        <p>Arus Keluar (I₂)</p>
-        <input type="number" id="arusKeluar1" value="2" min="0" step="0.1">
-
-        <p>Arus Keluar (I₃)</p>
-        <input type="number" id="arusKeluar2" value="3" min="0" step="0.1">
+    <div class="bab7-intro-strip">
+        <div><strong>6</strong><span>Skenario kasus</span></div>
+        <div><strong>1</strong><span>Keputusan per skenario</span></div>
+        <div><strong>Refleksi</strong><span>Alasan dan tindak lanjut</span></div>
     </div>
 
-    <button type="button" id="hitungKCL">
-        Hitung Arus
-    </button>
+    <div class="bab7-sim-layout">
+        <aside class="bab7-case-list">
+            <h3>Pilih Tantangan</h3>
+            <div id="bab7ScenarioList" class="bab7-scenario-list"></div>
+        </aside>
 
-    <div id="hasilKCL">
-        <p>Hasil perhitungan akan muncul di sini.</p>
+        <section class="bab7-sim-panel" aria-live="polite">
+            <div id="bab7ScenarioContent">
+                <div class="bab7-empty-state">
+                    <span class="bab7-empty-icon">🧭</span>
+                    <h3>Mulai Simulasi Keputusan</h3>
+                    <p>Pilih salah satu tantangan di samping untuk memulai analisis.</p>
+                </div>
+            </div>
+        </section>
     </div>
-
 </div>
-        </div>
+    <div class="sim-tab-panel" id="soalSimPage" hidden>
+    <div class="bab7-page-header">
+        <span class="bab7-eyebrow">SOAL SIMULASI · STUDI KASUS SMK</span>
+        <h2>Soal Simulasi Bertahap</h2>
+        <p>
+            Setiap soal terdiri dari beberapa pertanyaan yang saling terhubung.
+            Jawab satu per satu, amati perubahan indikator simulasi, lalu temukan
+            solusi akhir untuk masing-masing studi kasus.
+        </p>
+    </div>
 
-        <div class="simulation-card">
-            <h3>Hukum Kirchhoff II (KVL)</h3>
-            <p>Hukum tegangan pada rangkaian tertutup.</p>
-            <div class="kvl-simulation">
+    <div class="bab7-intro-strip">
+        <div><strong>6</strong><span>Soal dari 6 studi kasus</span></div>
+        <div><strong>4</strong><span>Pertanyaan bertahap per soal</span></div>
+        <div><strong>Solusi</strong><span>Rekomendasi dan bukti hasil</span></div>
+    </div>
 
-    <h4>Simulasi Rangkaian Tertutup</h4>
-    <p>
-        Masukkan tegangan sumber dan nilai hambatan
-        untuk menghitung tegangan pada setiap resistor.
-    </p>
+    <div class="bab7-sim-layout">
+        <aside class="bab7-case-list">
+            <h3>Pilih Soal</h3>
+            <div id="ssCaseList" class="bab7-scenario-list"></div>
+        </aside>
 
-    <div class="kvl-circuit">
-
-    <svg viewBox="0 0 340 230" width="100%"
-         role="img" aria-label="Rangkaian tertutup KVL dengan baterai dan dua resistor">
-
-        <defs>
-            <marker id="panahKVL" markerWidth="8" markerHeight="8"
-                    refX="6" refY="3" orient="auto">
-                <path d="M0 0 L6 3 L0 6"
-                      fill="none" stroke="#59e6b5"
-                      stroke-width="1.5"/>
-            </marker>
-        </defs>
-
-        <!-- Kabel rangkaian tanpa melewati simbol resistor -->
-        <path d="M70 45 H125
-         M185 45 H270 V90
-         M270 150 V185 H70 V45"
-         fill="none" stroke="#59e6b5" stroke-width="3"/>
-
-        <!-- Baterai -->
-        <path d="M70 100 V115 M55 115 H85 M60 125 H80 M70 125 V185"
-              stroke="#ffffff" stroke-width="3" fill="none"/>
-
-        <!-- Resistor R1: 3 puncak zig-zag horizontal -->
-        <path d="M125 45
-                L135 32
-                L145 58
-                L155 32
-                L165 58
-                L175 32
-                L185 45"
-            fill="none"
-            stroke="#59e6b5"
-            stroke-width="3"
-            stroke-linejoin="round"/>
-
-        <!-- Resistor R2: 3 puncak zig-zag vertikal -->
-        <path d="M270 90
-                L283 100
-                L257 110
-                L283 120
-                L257 130
-                L283 140
-                L270 150"
-        fill="none"
-        stroke="#59e6b5"
-        stroke-width="3"
-        stroke-linejoin="round"/>
-
-        <!-- Arah arus -->
-        <path d="M100 25 H220"
-              stroke="#59e6b5" stroke-width="2"
-              fill="none" marker-end="url(#panahKVL)"/>
-
-        <!-- Label -->
-        <g fill="#ffffff" font-size="12" text-anchor="middle">
-           <text x="70" y="88" id="labelSumberKVL">Vs = 12 V</text>
-            <text x="155" y="22" id="labelR1KVL">R₁ = 2 Ω</text>
-            <text x="305" y="122" id="labelR2KVL">R₂ = 4 Ω</text>
-            <text x="160" y="215">Rangkaian Tertutup</text>
-            <text x="160" y="10" fill="#59e6b5" id="labelArusKVL">I = 2 A</text>
-        </g>
-
-    </svg>
-
+        <section class="bab7-sim-panel" aria-live="polite">
+            <div id="ssContent">
+                <div class="bab7-empty-state">
+                    <span class="bab7-empty-icon">🧩</span>
+                    <h3>Mulai Soal Simulasi</h3>
+                    <p>Pilih salah satu soal di samping. Setiap soal berisi gambar penerapan, empat pertanyaan bertahap, dan solusi akhir.</p>
+                </div>
+            </div>
+        </section>
+    </div>
 </div>
-
-    <div class="kvl-inputs">
-
-        <label>Tegangan Sumber (Vs)</label>
-        <input type="number" id="teganganSumber"
-               value="12" min="0.1" step="0.1">
-
-        <label>Resistor R₁ (Ω)</label>
-        <input type="number" id="resistor1"
-               value="2" min="0.1" step="0.1">
-
-        <label>Resistor R₂ (Ω)</label>
-        <input type="number" id="resistor2"
-               value="4" min="0.1" step="0.1">
-
-    </div>
-
-    <button type="button" id="hitungKVL">
-        Hitung Tegangan
-    </button>
-
-    <div id="hasilKVL">
-        <p>Hasil perhitungan akan muncul di sini.</p>
-    </div>
-
-</div>
-        </div>
-
-    </div>
-
 </section>
-
-
-
-
 
 <!-- HALAMAN STUDI KASUS -->
 <section id="studiKasusPage" class="content-page" hidden>
@@ -826,11 +658,11 @@
         <div class="studi-kasus-header">
             <span class="studi-kasus-label">TEKNIK ELEKTRONIKA CASE STUDY</span>
 
-            <h2>Studi Kasus Pendidikan Teknik Elektronika</h2>
+            <h2>Studi Kasus Pendidikan Teknologi Kejuruan</h2>
 
             <p>
                 Pelajari berbagai permasalahan dalam penyelenggaraan
-                pendidikan teknik elektronika dan kembangkan kemampuan berpikir
+                pendidikan teknologi kejuruan, khususnya pembelajaran Teknik Elektronika, dan kembangkan kemampuan berpikir
                 kritis melalui analisis kasus.
             </p>
         </div>
@@ -967,35 +799,24 @@
 </section>
 
 
-<!-- HALAMAN QUIZ WAYGROUND -->
+<!-- HALAMAN QUIZ BAB 7 -->
 <section id="quizPage" class="content-page" hidden>
-    <div class="panel challenges-container">
-
-        <div class="challenges-header">
-            <span class="challenges-label">TEKNIK ELEKTRONIKA LEARNING QUIZ</span>
-            <h2>Quiz Pendidikan Teknik Elektronika</h2>
-            <p>
-                Uji pemahaman kamu melalui 20 soal pendidikan teknik elektronika.
-                Kerjakan kuis secara langsung melalui Wayground.
-            </p>
-        </div>
-
-
-        <div style="width:100%;display:flex;flex-direction:column;gap:8px;min-height:635px;">
-            <iframe
-                src="https://wayground.com/embed/quiz/6af73cddeecbd61c764389c7"
-                title="Quiz VEC - Wayground"
-                style="flex:1;"
-                frameBorder="0"
-                allowfullscreen>
-            </iframe>
-            <a href="https://wayground.com/admin?source=embedFrame" target="_blank">
-                Explore more at Wayground.
-            </a>
-        </div>
-            
-
+  <div class="panel challenges-container">
+    <div class="challenges-header">
+      <span class="challenges-label">EVALUASI BAB 7 · 20 SOAL</span>
+      <h2>Quiz: Tantangan Kurikulum dan Pembelajaran di Pendidikan Teknologi Kejuruan</h2>
+      <p>Kerjakan 20 soal berdasarkan enam pokok bahasan BAB 7. Soal menggunakan konteks pembelajaran Teknik Elektronika di SMK.</p>
     </div>
+    <div id="bab7QuizApp" class="bab7-quiz-app">
+      <div class="bab7-quiz-summary"><span id="bab7QuizProgress">Soal 1 dari 20</span><span id="bab7QuizTopic">Pokok bahasan 1</span></div>
+      <div class="bab7-quiz-progress"><span id="bab7QuizProgressBar"></span></div>
+      <div id="bab7QuizQuestion" class="bab7-quiz-question"></div>
+      <div id="bab7QuizOptions" class="bab7-quiz-options"></div>
+      <div id="bab7QuizFeedback" class="bab7-quiz-feedback" hidden></div>
+      <div class="bab7-quiz-actions"><button type="button" id="bab7QuizNext" class="bab7-primary-btn" disabled>Soal Berikutnya</button></div>
+      <div id="bab7QuizResult" class="bab7-quiz-result" hidden></div>
+    </div>
+  </div>
 </section>
 
 
@@ -1118,7 +939,7 @@
                 <small class="badge-status">Belum terbuka</small>
                 <p>
                     Berhasil mengikuti tantangan teknologi untuk
-                    mengembangkan pemahaman tentang pendidikan vokasi.
+                    mengembangkan pemahaman tentang kurikulum dan pembelajaran Teknik Elektronika.
                 </p>
             </div>
 
@@ -1225,147 +1046,37 @@
 
 
       
-<!-- HALAMAN VEC RACING 3D -->
-<section id="racingPage" class="content-page vec-racing-page" hidden>
-
-  <div class="racing-heading">
-    <div>
-      <span class="racing-eyebrow">VEC COMPETITIVE RACING</span>
-      <h2>VEC Racing 3D</h2>
-      <p>Berkompetisi melawan 9 pembalap AI di arena fantasi.</p>
-    </div>
-    <span class="racing-stage">RACE MODE</span>
-  </div>
-
-  <!-- INFORMASI BALAP -->
-  <div class="racing-toolbar">
-    <div class="racing-stat">
-      <small>POSISI</small>
-      <strong id="racingPosition">1 / 10</strong>
-    </div>
-    <div class="racing-stat">
-      <small>LAP</small>
-      <strong id="racingLap">0 / 3</strong>
-    </div>
-    <div class="racing-stat">
-      <small>WAKTU</small>
-      <strong id="racingTimer">00:00.000</strong>
-    </div>
-    <div class="racing-stat">
-      <small>KECEPATAN</small>
-      <strong id="racingSpeed">0 <small>km/j</small></strong>
-    </div>
-    <div class="racing-stat">
-      <small>NITRO</small>
-      <strong id="racingNitro">100%</strong>
-    </div>
-    <div class="racing-stat">
-      <small>KAMERA</small>
-      <strong id="racingCameraLabel">ORANG KETIGA</strong>
-    </div>
-    <button type="button" id="racingCameraBtn" class="racing-action">
-      Ganti Kamera
-    </button>
-    <button type="button" id="racingNitroBtn" class="racing-action racing-nitro-button">
-      NITRO · SHIFT
-    </button>
-  </div>
-
-  <!-- ARENA -->
-  <div class="racing-game-shell">
-    <div id="racingViewport" class="racing-viewport">
-
-      <div id="racingLoading" class="racing-loading">
-        Menyiapkan arena balapan...
-      </div>
-
-      <div class="racing-hud-top">
-        <span id="racingRaceState">VEC GRAND PRIX</span>
-        <span>WASD / PANAH · SHIFT NITRO</span>
-      </div>
-
-      <!-- COUNTDOWN -->
-      <div id="racingCountdown" hidden
-           style="position:absolute;inset:0;display:grid;place-items:center;
-           font-size:clamp(70px,15vw,150px);font-weight:900;
-           color:#59e6b5;text-shadow:0 0 30px #00dfff;
-           pointer-events:none;z-index:5;">
-        3
-      </div>
-
-      <!-- LEADERBOARD BALAP -->
-      <div id="racingLeaderboard"
-           style="position:absolute;top:55px;left:12px;z-index:4;
-           width:min(210px,45%);padding:10px;border-radius:12px;
-           background:rgba(4,15,35,.82);color:white;
-           font-size:12px;pointer-events:none;">
-        <b>🏁 POSISI PEMBALAP</b>
-        <ol id="racingLeaderboardList" style="padding-left:22px;margin:8px 0;">
-          <li>Memuat pembalap...</li>
-        </ol>
-      </div>
-
-      <div class="racing-hud-bottom">
-        <span id="racingStatus">Menunggu balapan</span>
-        <span id="racingCheckpointStatus">CHECKPOINT 0 / 4</span>
-      </div>
+<!-- HALAMAN GAME EDUKASI BAB 7 -->
+<section id="gamePage" class="content-page" hidden>
+    <div class="bab7-page-header game-header">
+        <span class="bab7-eyebrow">VEC · GAME EDUKASI BAB 7</span>
+        <h2>Misi Calon Pendidik Teknik Elektronika</h2>
+        <p>
+            Selesaikan enam misi berbasis studi kasus. Setiap keputusan menguji
+            kemampuan menganalisis tantangan kurikulum dan pembelajaran dalam
+            konteks Pendidikan Teknik Elektronika.
+        </p>
     </div>
 
-    <!-- KONTROL HP -->
-    <div class="racing-mobile-controls">
-      <div class="racing-steer-controls">
-        <button type="button" data-racing-key="ArrowLeft">◀</button>
-        <button type="button" data-racing-key="ArrowRight">▶</button>
-      </div>
-      <div class="racing-drive-controls">
-        <button type="button" data-racing-key="ArrowUp">▲</button>
-        <button type="button" data-racing-key="ArrowDown">▼</button>
-      </div>
+    <div class="bab7-game-topbar">
+        <div class="bab7-game-stat"><span>MISI</span><strong id="bab7GameMission">1 / 6</strong></div>
+        <div class="bab7-game-stat"><span>SKOR</span><strong id="bab7GameScore">0</strong></div>
+        <div class="bab7-game-stat"><span>PROGRES</span><strong id="bab7GameProgressText">0 / 6 selesai</strong></div>
     </div>
-  </div>
+    <div class="bab7-progress-track"><span id="bab7GameProgress"></span></div>
 
-
-<!-- PANEL PERTANYAAN VEC RACING -->
-<div id="racingQuestionPanel" class="racing-question-panel" hidden>
-  <div class="racing-question-header">
-    <strong id="racingQuestionNumber">SOAL 1 / 9</strong>
-    <strong id="racingQuestionTimer">15</strong>
-  </div>
-
-  <div class="racing-question-progress">
-    <div id="racingQuestionProgressBar"></div>
-  </div>
-
-  <h3 id="racingQuestionText">Memuat pertanyaan...</h3>
-
-  <div id="racingAnswerOptions" class="racing-answer-options"></div>
-
-  <p id="racingQuestionFeedback" aria-live="polite"></p>
-</div>
-
-
-  <!-- HASIL BALAP -->
-  <div id="racingResult" hidden
-       style="margin-top:20px;padding:24px;border-radius:16px;
-       background:#102849;color:white;">
-    <h2 id="racingResultTitle">BALAPAN SELESAI!</h2>
-    <p id="racingResultTime">Waktu: --</p>
-    <p id="racingResultPosition">Posisi: --</p>
-    <h3>🏆 HASIL AKHIR</h3>
-    <ol id="racingFinalLeaderboard"></ol>
-    <button type="button" id="racingRestartBtn" class="racing-action">
-      BALAP LAGI
-    </button>
-  </div>
-
-  <p class="racing-note">
-    Selesaikan 3 lap dan lewati seluruh checkpoint secara berurutan.
-    Gunakan nitro untuk menyalip lawan.
-  </p>
+    <div id="bab7GameStage" class="bab7-game-stage" aria-live="polite">
+        <div class="bab7-empty-state">
+            <span class="bab7-empty-icon">🎓</span>
+            <h3>Siap Menjalankan Misi?</h3>
+            <p>Jawab tantangan berdasarkan enam studi kasus yang tersedia di VEC.</p>
+            <button type="button" id="bab7GameStart" class="bab7-primary-btn">Mulai Misi</button>
+        </div>
+    </div>
 </section>
 
 
-      <footer>© 2026 VEC — Vocational Education Challenge <span>Learn • Explore • Solve</span></footer>
+      <footer>© 2026 VEC — Pendidikan Teknik Elektronika <span>Learn • Explore • Solve</span></footer>
     </main>
   </div>
 
@@ -1507,8 +1218,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="script.js"></script>
+  <script src="aktivitas-bab7.js"></script>
+  <script src="quiz-bab7.js"></script>
+  <script src="soal-simulasi.js"></script>
   <script type="module" src="racing.js"></script>
-  <script type="module" src="simulasi-3d.js"></script>
+  <script type="module" src="lab-virtual-3d.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
       lucide.createIcons();
