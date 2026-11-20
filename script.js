@@ -196,6 +196,75 @@ async function muatStatistikMisi(user) {
 
 
 
+// ==========================================
+// MENGHITUNG TOTAL PROGRES BELAJAR
+// ==========================================
+function ambilAngkaProgress(id) {
+    const el = document.getElementById(id);
+    const match = el?.textContent?.match(/(\d+)/);
+    return match ? Number(match[1]) : 0;
+}
+
+window.vecProgressNim = window.vecProgressNim || null;
+window.vecGetLocalProgress = function (kind) {
+    try {
+        if (!window.vecProgressNim) return [];
+        return JSON.parse(localStorage.getItem(`vec_progress_${window.vecProgressNim}_${kind}`) || "[]");
+    } catch (error) { console.warn("Progress lokal tidak dapat dibaca:", error); return []; }
+};
+window.vecMarkProgress = function (kind, id) {
+    try {
+        if (!window.vecProgressNim || id === undefined || id === null) {
+            console.warn("Progress belum disimpan: NIM atau ID aktivitas belum tersedia.");
+            return;
+        }
+
+        const current = window.vecGetLocalProgress(kind);
+        const value = String(id);
+
+        if (!current.includes(value)) {
+            current.push(value);
+            localStorage.setItem(
+                `vec_progress_${window.vecProgressNim}_${kind}`,
+                JSON.stringify(current)
+            );
+        }
+
+        // Perbarui angka aktivitas dan persentase setiap kali aktivitas selesai/dieksplorasi.
+        const progressTargets = {
+            decision: { elementId: "decisionProgressCount", cap: 6, suffix: "skenario" },
+            stepwise: { elementId: "stepwiseProgressCount", cap: 6, suffix: "kasus" },
+            lab: { elementId: "labProgressCount", cap: 4, suffix: "alat" },
+            game: { elementId: "gameProgressCount", cap: 6, suffix: "misi" }
+        };
+
+        const config = progressTargets[kind];
+        if (config) {
+            const count = Math.min(
+                window.vecGetLocalProgress(kind).length,
+                config.cap
+            );
+            const target = document.getElementById(config.elementId);
+            if (target) target.textContent = `${count}/${config.cap} ${config.suffix}`;
+        }
+
+        perbaruiProgressBelajar();
+    } catch (error) {
+        console.warn("Progress lokal tidak dapat disimpan:", error);
+    }
+};
+
+function perbaruiProgressBelajar() {
+    const ids = ["materiProgressCount","caseProgressCount","decisionProgressCount","stepwiseProgressCount","labProgressCount","challengeProgressCount","quizProgressCount","gameProgressCount"];
+    const caps = [6,6,6,6,4,20,20,6];
+    const total = ids.reduce((sum, id, i) => sum + Math.min(ambilAngkaProgress(id), caps[i]), 0);
+    const progress = Math.min(100, Math.round((total / 74) * 100));
+    const percent = document.getElementById("progressPercent");
+    if (percent) percent.textContent = `${progress}%`;
+    const donut = document.getElementById("progressDonut");
+    if (donut) donut.style.setProperty("--progress", progress);
+}
+
 async function masukDashboard(user) {
     currentUser = user;
     showScreen("dashboard");
@@ -249,37 +318,14 @@ await muatStatistikMisi(user);
 
 
 
-// ==========================================
-// MENGHITUNG TOTAL PROGRES BELAJAR
-// ==========================================
-function perbaruiProgressBelajar() {
-    const ambilJumlah = (id) => {
-        const el = document.getElementById(id);
-        return Number(el?.textContent?.split("/")[0] || 0);
-    };
 
-    const materi = ambilJumlah("materiProgressCount");
-    const challenge = ambilJumlah("challengeProgressCount");
-    const quiz = ambilJumlah("quizProgressCount");
-
-    const totalSelesai = materi + challenge + quiz;
-    const progress = Math.min(100, Math.round((totalSelesai / 27) * 100));
-
-    const progressPercent = document.getElementById("progressPercent");
-    if (progressPercent) {
-        progressPercent.textContent = `${progress}%`;
-    }
-
-    const progressDonut = document.getElementById("progressDonut");
-    if (progressDonut) {
-        progressDonut.style.setProperty("--progress", progress);
-    }
-}
 
     // Memuat progres secara terpisah
     muatProgressMahasiswa(user);
     muatHasilQuizMahasiswa(user);
     muatProgresMateri(user);
+    muatProgresStudiKasus(user);
+    muatProgressSimulasiLokal();
     muatDashboardLeaderboard();
 
     // Memuat progres Challenges tanpa mengganggu menu Admin
@@ -460,6 +506,7 @@ function perbaruiPencapaian() {
 // MEMUAT PROGRES MATERI MAHASISWA
 async function muatProgresMateri(user) {
     const nim = user.user_metadata?.nim;
+    if (nim) window.vecProgressNim = nim;
 
     if (!nim) return;
 
@@ -481,7 +528,7 @@ async function muatProgresMateri(user) {
         document.getElementById("materiProgressCount");
 
     if (materiProgressCount) {
-        materiProgressCount.textContent = `${jumlahSelesai}/6`;
+        materiProgressCount.textContent = `${Math.min(6, jumlahSelesai)}/6 bab`;
     }
 
     perbaruiProgressBelajar();
@@ -489,6 +536,47 @@ async function muatProgresMateri(user) {
 }
 
 // MEMUAT PROGRES CHALLENGES MAHASISWA
+async function muatProgresStudiKasus(user) {
+    const nim = user.user_metadata?.nim;
+    if (!nim) return;
+    const target = document.getElementById("caseProgressCount");
+    if (!target) return;
+    const { data, error } = await supabaseClient
+        .from("vec_case_answers")
+        .select("case_no, question_no")
+        .eq("nim", nim);
+    if (error) { console.error("Gagal memuat progres Studi Kasus:", error); return; }
+    const byCase = new Map();
+    (data || []).forEach(row => {
+        const no = Number(row.case_no);
+        if (!byCase.has(no)) byCase.set(no, new Set());
+        byCase.get(no).add(Number(row.question_no));
+    });
+    let completed = 0;
+    for (let no = 1; no <= 6; no++) {
+        const answers = byCase.get(no) || new Set();
+        if ([1, 2, 3, 4].every(q => answers.has(q))) completed++;
+    }
+    target.textContent = `${completed}/6 kasus`;
+    perbaruiProgressBelajar();
+}
+
+function muatProgressSimulasiLokal() {
+    const decision = window.vecGetLocalProgress("decision").length;
+    const stepwise = window.vecGetLocalProgress("stepwise").length;
+    const lab = window.vecGetLocalProgress("lab").length;
+    const game = window.vecGetLocalProgress("game").length;
+    const d = document.getElementById("decisionProgressCount");
+    const s = document.getElementById("stepwiseProgressCount");
+    const l = document.getElementById("labProgressCount");
+    const g = document.getElementById("gameProgressCount");
+    if (d) d.textContent = `${Math.min(6, decision)}/6 skenario`;
+    if (s) s.textContent = `${Math.min(6, stepwise)}/6 kasus`;
+    if (l) l.textContent = `${Math.min(4, lab)}/4 alat`;
+    if (g) g.textContent = `${Math.min(6, game)}/6 misi`;
+    perbaruiProgressBelajar();
+}
+
 async function muatProgresChallenges(user) {
     const nim = user.user_metadata?.nim;
 
@@ -544,7 +632,7 @@ async function muatHasilQuizMahasiswa(user) {
 
     if (quizProgressCount) {
         quizProgressCount.textContent =
-            data && data.length > 0 ? "1/1" : "0/1";
+            data && data.length > 0 ? "20/20 soal" : "0/20 soal";
     }
 
     // Hitung nilai rata-rata seluruh Quiz
@@ -578,34 +666,7 @@ async function muatHasilQuizMahasiswa(user) {
 // ==========================================
 // MENGHITUNG TOTAL PROGRES BELAJAR
 // ==========================================
-function perbaruiProgressBelajar() {
-    const ambilJumlah = (id) => {
-        const el = document.getElementById(id);
-        return Number(el?.textContent?.split("/")[0] || 0);
-    };
 
-    const materi = ambilJumlah("materiProgressCount");
-    const challenge = ambilJumlah("challengeProgressCount");
-    const quiz = ambilJumlah("quizProgressCount");
-
-    const totalSelesai = materi + challenge + quiz;
-    const progress = Math.min(
-        100,
-        Math.round((totalSelesai / 27) * 100)
-    );
-
-    const progressPercent = document.getElementById("progressPercent");
-    if (progressPercent) {
-        progressPercent.textContent = `${progress}%`;
-    }
-
-    const progressDonut = document.getElementById("progressDonut");
-    if (progressDonut) {
-        progressDonut.style.setProperty("--progress", progress);
-    }
-
-    console.log("Progres VEC:", materi, challenge, quiz, progress + "%");
-}
 
 
 // MEMUAT PROGRESS MAHASISWA DARI SUPABASE
@@ -1036,10 +1097,10 @@ const daftarHalaman = [
     "challengesPage",
     "quizPage",
     "studiKasusPage",
-    "simulasiPage",
+    "simulasiHubPage",
     "laboratorium3DPage",
     "leaderboardPage",
-    "racingPage",
+    "gamePage",
     "pencapaianPage",
     "adminScreen",
     "profilPage"
@@ -1070,10 +1131,10 @@ document.querySelectorAll("[data-page]").forEach((button) => {
         "Challenges": "challengesPage",
         "Quiz": "quizPage",
         "Studi Kasus": "studiKasusPage",
-        "Simulasi": "simulasiPage",
+        "Simulasi": "simulasiHubPage",
         "Laboratorium 3D": "laboratorium3DPage",
         "Leaderboard": "leaderboardPage",
-        "VEC Racing": "racingPage",
+        "Game Edukasi": "gamePage",
         "Pencapaian": "pencapaianPage",
         "Profil": "profilPage",
         "Admin VEC": "adminScreen"
@@ -1108,6 +1169,24 @@ document.querySelectorAll("[data-page]").forEach((button) => {
 });
 
 
+// TAB SIMULASI BAB 7: keputusan cepat dan soal bertahap
+(function initSimulationTabs() {
+    const tabs = document.querySelectorAll("[data-sim-tab]");
+    if (!tabs.length) return;
+    tabs.forEach((tab) => tab.addEventListener("click", () => {
+        const targetId = tab.dataset.simTab;
+        tabs.forEach((item) => {
+            const active = item === tab;
+            item.classList.toggle("active", active);
+            item.setAttribute("aria-selected", String(active));
+        });
+        ["simulasiPage", "soalSimPage"].forEach((id) => {
+            const panel = document.getElementById(id);
+            if (panel) panel.hidden = id !== targetId;
+        });
+    }));
+})();
+
 // ==========================================
 // NAVIGASI TOMBOL DATA-GO
 // ==========================================
@@ -1128,287 +1207,80 @@ document.querySelectorAll("[data-go]").forEach((button) => {
 
 const daftarMateri = [
     {
-        judul: "Konsep Dasar Pendidikan Teknik Elektronika",
-        ringkasan: "Mengenal pengertian, tujuan, fungsi, dan karakteristik pendidikan teknik elektronika.",
-        tujuan: [
-            "Memahami pengertian pendidikan teknik elektronika.",
-            "Menjelaskan tujuan dan fungsi pendidikan teknik elektronika.",
-            "Mengidentifikasi karakteristik pendidikan teknik elektronika."
-        ],
+        judul: "Kesenjangan Kompetensi dengan Kebutuhan Industri",
+        ringkasan: "Menganalisis kesenjangan kompetensi lulusan SMK dan kebutuhan dunia kerja melalui Link and Match.",
+        tujuan: ["Menjelaskan penyebab kesenjangan kompetensi.", "Mengidentifikasi kompetensi teknis dan nonteknis yang dibutuhkan industri.", "Merancang langkah penyelarasan pembelajaran dengan kebutuhan kerja."],
         isi: `
-            <h3>A. Pengertian Pendidikan Teknik Elektronika</h3>
-            <p>
-                Pendidikan teknik elektronika merupakan pendidikan yang berfokus pada
-                penguasaan keterampilan dan keahlian tertentu agar peserta
-                didik memiliki kemampuan untuk memasuki dunia kerja.
-                Pembelajaran menggabungkan pengetahuan teori dengan
-                kegiatan praktik sesuai bidang keahlian.
-            </p>
-
-            <h3>B. Tujuan Pendidikan Teknik Elektronika</h3>
-            <p>
-                Pendidikan teknik elektronika bertujuan menghasilkan lulusan yang
-                kompeten, terampil, mandiri, dan mampu menyesuaikan diri
-                dengan perkembangan teknologi serta kebutuhan dunia kerja.
-            </p>
-
-            <h3>C. Fungsi Pendidikan Teknik Elektronika</h3>
-            <ul>
-                <li>Mempersiapkan tenaga kerja yang memiliki keterampilan.</li>
-                <li>Meningkatkan kompetensi dan produktivitas masyarakat.</li>
-                <li>Mendukung kebutuhan tenaga kerja di berbagai sektor industri.</li>
-                <li>Mendorong kemampuan berwirausaha.</li>
-            </ul>
-
-            <h3>D. Karakteristik Pendidikan Teknik Elektronika</h3>
-            <ul>
-                <li>Berorientasi pada keterampilan dan kompetensi kerja.</li>
-                <li>Memiliki kegiatan praktik yang terstruktur.</li>
-                <li>Menyesuaikan pembelajaran dengan kebutuhan industri.</li>
-                <li>Menggunakan peralatan dan teknologi sesuai bidang keahlian.</li>
-            </ul>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Pada Program Studi Teknik Elektronika, mahasiswa tidak hanya
-                mempelajari teori rangkaian listrik, tetapi juga melakukan
-                praktik merakit, mengukur, menguji, dan memperbaiki rangkaian
-                elektronika.
-            </p>
-        `,
-        rangkuman: "Pendidikan teknik elektronika adalah pendidikan yang menekankan penguasaan kompetensi dan keterampilan praktis untuk mempersiapkan peserta didik menghadapi dunia kerja."
+            <h3>A. Pengertian kesenjangan kompetensi</h3>
+            <p>Kesenjangan kompetensi adalah perbedaan antara kemampuan yang dimiliki lulusan dengan pengetahuan, keterampilan, dan sikap kerja yang dibutuhkan di tempat kerja. Pada bidang Teknik Elektronika, kesenjangan dapat terlihat pada penggunaan alat ukur, pembacaan diagram, perakitan, pengujian, pemecahan masalah, dan penerapan prosedur keselamatan.</p>
+            <h3>B. Penyebab tantangan</h3>
+            <ul><li>Materi dan jobsheet belum diperbarui mengikuti perkembangan pekerjaan.</li><li>Kesempatan praktik dan penggunaan alat belum merata.</li><li>Masukan dari dunia usaha dan dunia industri (DUDI) masih terbatas.</li><li>Soft skills seperti komunikasi, disiplin, dan pemecahan masalah belum dilatih secara konsisten.</li></ul>
+            <h3>C. Link and Match</h3>
+            <p>Link and Match merupakan upaya menyelaraskan pembelajaran dengan kebutuhan DUDI. Bentuknya dapat berupa penyusunan kurikulum bersama, guru tamu/praktisi, magang atau praktik kerja lapangan, kunjungan industri, proyek bersama, dan pemetaan kompetensi yang dibutuhkan.</p>
+            <h3>D. Strategi penyelesaian</h3>
+            <ol><li>Petakan kompetensi yang diminta dunia kerja.</li><li>Bandingkan dengan capaian pembelajaran dan kegiatan praktik yang tersedia.</li><li>Tentukan kesenjangan prioritas.</li><li>Perbarui materi, jobsheet, alat, dan metode pembelajaran.</li><li>Evaluasi hasil bersama mitra industri.</li></ol>
+            <h3>Contoh di SMK</h3><p>Program Keahlian Teknik Elektronika bekerja sama dengan perusahaan perakitan perangkat untuk meninjau kemampuan membaca diagram, menyolder, mengukur, dan menguji rangkaian. Hasil pemetaan digunakan guru untuk memperbarui jobsheet dan praktik siswa.</p>`,
+        rangkuman: "Kesenjangan kompetensi diatasi dengan pemetaan kebutuhan kerja, evaluasi pembelajaran, penguatan praktik, dan kerja sama Link and Match dengan DUDI."
     },
     {
-        judul: "Kurikulum Pendidikan Teknik Elektronika",
-        ringkasan: "Memahami struktur kurikulum, capaian pembelajaran, dan kompetensi lulusan.",
-        tujuan: [
-            "Memahami pengertian kurikulum pendidikan teknik elektronika.",
-            "Menjelaskan komponen kurikulum.",
-            "Memahami hubungan kurikulum dengan kompetensi lulusan."
-        ],
+        judul: "Tantangan Penerapan Teaching Factory",
+        ringkasan: "Memahami pembelajaran berbasis produksi atau jasa dengan alur dan standar kerja industri.",
+        tujuan: ["Menjelaskan konsep dan prinsip Teaching Factory.", "Mengidentifikasi kendala penerapan TEFA di SMK.", "Merancang pengelolaan pembelajaran berbasis produksi yang aman dan bermutu."],
         isi: `
-            <h3>A. Pengertian Kurikulum</h3>
-            <p>
-                Kurikulum merupakan seperangkat rencana dan pengaturan
-                mengenai tujuan, isi, bahan pembelajaran, serta cara yang
-                digunakan sebagai pedoman penyelenggaraan pembelajaran.
-            </p>
-
-            <h3>B. Kurikulum dalam Pendidikan Teknik Elektronika</h3>
-            <p>
-                Kurikulum pendidikan teknik elektronika dirancang agar peserta didik
-                menguasai pengetahuan, keterampilan, dan sikap kerja yang
-                dibutuhkan sesuai bidang keahliannya. Materi teori harus
-                didukung kegiatan praktik dan pengalaman kerja.
-            </p>
-
-            <h3>C. Komponen Kurikulum</h3>
-            <ul>
-                <li>Tujuan pendidikan dan capaian pembelajaran.</li>
-                <li>Materi atau bahan pembelajaran.</li>
-                <li>Strategi dan metode pembelajaran.</li>
-                <li>Media serta fasilitas pembelajaran.</li>
-                <li>Evaluasi hasil belajar.</li>
-            </ul>
-
-            <h3>D. Kompetensi Lulusan</h3>
-            <p>
-                Lulusan pendidikan teknik elektronika diharapkan memiliki kompetensi
-                teknis sesuai bidang keahlian, kemampuan komunikasi,
-                kedisiplinan, kerja sama, pemecahan masalah, dan tanggung
-                jawab dalam bekerja.
-            </p>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Dalam pembelajaran elektronika, kurikulum dapat mencakup
-                mata kuliah dasar elektronika, pengukuran listrik,
-                mikrokontroler, sistem kendali, dan praktik perancangan
-                rangkaian.
-            </p>
-        `,
-        rangkuman: "Kurikulum pendidikan teknik elektronika menjadi pedoman pembelajaran untuk membentuk lulusan yang memiliki pengetahuan, keterampilan, dan sikap kerja sesuai kebutuhan bidang keahlian."
+            <h3>A. Pengertian Teaching Factory</h3><p>Teaching Factory (TEFA) adalah pendekatan pembelajaran yang membawa suasana, proses, dan standar kerja industri ke lingkungan sekolah. Siswa belajar melalui proses menghasilkan barang atau jasa yang memiliki fungsi dan memperhatikan kebutuhan pengguna.</p>
+            <h3>B. Alur pembelajaran TEFA</h3><ol><li>Menganalisis kebutuhan atau pesanan.</li><li>Merencanakan desain, bahan, alat, biaya, dan pembagian tugas.</li><li>Melaksanakan proses produksi atau layanan sesuai SOP dan K3.</li><li>Melakukan pengujian serta pemeriksaan kualitas (quality control).</li><li>Menyerahkan produk/jasa, menerima umpan balik, dan mengevaluasi proses.</li></ol>
+            <h3>C. Tantangan penerapan</h3><ul><li>Kompetensi guru dalam mengelola pembelajaran berbasis produksi.</li><li>Ketersediaan alat, bahan, ruang, dan biaya operasional.</li><li>Kontinuitas pesanan dan kemitraan dengan industri/pelanggan.</li><li>Keselamatan kerja, standar mutu, waktu, dan pencatatan produksi.</li></ul>
+            <h3>D. Strategi penguatan</h3><p>Sekolah dapat memulai dari produk sederhana sesuai kompetensi, menyusun SOP dan jobsheet, melatih guru, membangun mitra, mengatur peran siswa, serta menerapkan pemeriksaan mutu dan K3. Penilaian tidak hanya melihat produk akhir, tetapi juga proses, kerja sama, disiplin, dan dokumentasi.</p>
+            <h3>Contoh di SMK</h3><p>Siswa menerima tugas membuat lampu otomatis. Kelompok menyusun desain, daftar komponen, jadwal, dan pembagian peran; merakit sesuai SOP; menguji fungsi; lalu memeriksa kualitas sebelum mempresentasikan hasil.</p>`,
+        rangkuman: "TEFA mengintegrasikan pembelajaran dengan proses produksi/jasa. Keberhasilannya membutuhkan pendidik siap, fasilitas, mitra, SOP, K3, dan pengendalian mutu."
     },
     {
-        judul: "Link and Match dengan Dunia Industri",
-        ringkasan: "Memahami hubungan antara lembaga pendidikan dan dunia usaha serta dunia industri.",
-        tujuan: [
-            "Memahami konsep Link and Match.",
-            "Menjelaskan manfaat kerja sama pendidikan dengan industri.",
-            "Mengetahui bentuk penerapan kerja sama industri."
-        ],
+        judul: "Tantangan Perkembangan Teknologi terhadap Kurikulum",
+        ringkasan: "Mengkaji pembaruan kurikulum agar tetap relevan dengan otomasi, IoT, dan teknologi digital.",
+        tujuan: ["Menjelaskan alasan kurikulum perlu ditinjau berkala.", "Mengidentifikasi dampak perubahan teknologi pada kompetensi Teknik Elektronika.", "Menentukan cara mengintegrasikan teknologi baru tanpa mengabaikan dasar keilmuan."],
         isi: `
-            <h3>A. Pengertian Link and Match</h3>
-            <p>
-                Link and Match merupakan konsep penyelarasan antara dunia
-                pendidikan dengan dunia usaha dan dunia industri agar
-                kompetensi lulusan sesuai dengan kebutuhan lapangan kerja.
-            </p>
-
-            <h3>B. Tujuan Link and Match</h3>
-            <ul>
-                <li>Mengurangi kesenjangan kompetensi lulusan dengan kebutuhan industri.</li>
-                <li>Meningkatkan kesiapan lulusan memasuki dunia kerja.</li>
-                <li>Meningkatkan relevansi materi pembelajaran.</li>
-                <li>Memperkuat hubungan antara lembaga pendidikan dan industri.</li>
-            </ul>
-
-            <h3>C. Bentuk Kerja Sama</h3>
-            <ul>
-                <li>Praktik kerja lapangan atau magang.</li>
-                <li>Guru atau dosen praktisi dari industri.</li>
-                <li>Penyelarasan kurikulum bersama industri.</li>
-                <li>Sertifikasi kompetensi sesuai bidang pekerjaan.</li>
-                <li>Rekrutmen lulusan oleh perusahaan mitra.</li>
-            </ul>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Mahasiswa Teknik Elektronika melaksanakan magang di
-                perusahaan yang bergerak dalam bidang perawatan perangkat
-                elektronik. Selama kegiatan tersebut, mahasiswa memperoleh
-                pengalaman menggunakan peralatan dan prosedur kerja
-                yang diterapkan di industri.
-            </p>
-        `,
-        rangkuman: "Link and Match merupakan upaya menyelaraskan pendidikan dengan kebutuhan industri melalui kerja sama, praktik kerja, penyelarasan kurikulum, dan pengembangan kompetensi."
+            <h3>A. Mengapa kurikulum perlu diperbarui?</h3><p>Perubahan teknologi memengaruhi alat, proses produksi, jenis pekerjaan, dan kompetensi yang dibutuhkan. Kurikulum yang tidak ditinjau dapat membuat pengalaman belajar kurang relevan dengan kebutuhan dunia kerja.</p>
+            <h3>B. Perkembangan pada bidang Teknik Elektronika</h3><ul><li>Otomasi dan sistem kendali.</li><li>Internet of Things (IoT) dan sensor.</li><li>Mikrokontroler dan sistem tertanam.</li><li>Instrumentasi, pengukuran digital, dan pemantauan data.</li><li>Perangkat lunak desain, simulasi, dan diagnosis.</li></ul>
+            <h3>C. Prinsip pembaruan kurikulum</h3><p>Pembaruan dilakukan berdasarkan analisis kebutuhan, bukan sekadar menambahkan istilah teknologi. Dasar elektronika, matematika, pengukuran, rangkaian, dan keselamatan tetap menjadi fondasi. Teknologi baru diintegrasikan melalui capaian pembelajaran, materi, proyek, praktik, dan asesmen yang sesuai.</p>
+            <h3>D. Langkah evaluasi</h3><ol><li>Mengumpulkan masukan dari industri, alumni, guru, dan siswa.</li><li>Meninjau capaian pembelajaran dan materi yang sudah ada.</li><li>Memilih kompetensi baru yang relevan dan realistis.</li><li>Menyiapkan guru, alat, bahan, dan sumber belajar.</li><li>Menguji penerapan dan mengevaluasi hasilnya.</li></ol>
+            <h3>Contoh di SMK</h3><p>Materi kendali dasar dapat dikembangkan menjadi proyek pemantauan suhu menggunakan sensor dan mikrokontroler. Siswa tetap mempelajari prinsip rangkaian, input-output, pengukuran, pemrograman, dan pengujian sistem.</p>`,
+        rangkuman: "Kurikulum perlu ditinjau berdasarkan kebutuhan dan perkembangan teknologi. Pembaruan harus terencana, melibatkan pemangku kepentingan, dan tetap membangun fondasi Teknik Elektronika."
     },
     {
-        judul: "Teaching Factory (TEFA)",
-        ringkasan: "Mengenal pembelajaran berbasis produksi atau jasa dengan standar industri.",
-        tujuan: [
-            "Memahami konsep Teaching Factory.",
-            "Menjelaskan prinsip pelaksanaan Teaching Factory.",
-            "Mengidentifikasi manfaat Teaching Factory."
-        ],
+        judul: "Tantangan Sarana dan Prasarana Pembelajaran Praktik",
+        ringkasan: "Menganalisis keterbatasan laboratorium dan strategi pemerataan kesempatan praktik siswa.",
+        tujuan: ["Mengidentifikasi dampak keterbatasan fasilitas praktik.", "Menjelaskan pengelolaan alat dan laboratorium.", "Memilih alternatif pembelajaran yang tetap mengutamakan pengalaman praktik."],
         isi: `
-            <h3>A. Pengertian Teaching Factory</h3>
-            <p>
-                Teaching Factory atau TEFA merupakan model pembelajaran
-                yang menghadirkan suasana dan proses kerja industri
-                ke dalam lingkungan pendidikan. Peserta didik belajar
-                melalui kegiatan menghasilkan produk atau memberikan
-                layanan sesuai standar yang ditetapkan.
-            </p>
-
-            <h3>B. Prinsip Teaching Factory</h3>
-            <ul>
-                <li>Berorientasi pada produk atau jasa.</li>
-                <li>Mengikuti prosedur dan standar kerja.</li>
-                <li>Mengutamakan kualitas hasil pekerjaan.</li>
-                <li>Melibatkan peserta didik dalam proses produksi.</li>
-                <li>Mengutamakan keselamatan dan kesehatan kerja.</li>
-            </ul>
-
-            <h3>C. Manfaat Teaching Factory</h3>
-            <ul>
-                <li>Meningkatkan keterampilan praktik peserta didik.</li>
-                <li>Membiasakan peserta didik dengan budaya kerja industri.</li>
-                <li>Melatih kerja sama dan tanggung jawab.</li>
-                <li>Mengembangkan kemampuan menghasilkan produk yang bernilai guna.</li>
-            </ul>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Mahasiswa Teknik Elektronika membuat perangkat pengendali
-                lampu otomatis. Kegiatan dimulai dari perancangan,
-                perakitan, pengujian, hingga pemeriksaan kualitas produk.
-            </p>
-        `,
-        rangkuman: "Teaching Factory adalah model pembelajaran yang menggabungkan kegiatan belajar dengan proses produksi atau jasa berdasarkan prosedur dan standar industri."
+            <h3>A. Peran sarana dan prasarana</h3><p>Laboratorium, alat ukur, komponen, bahan, perangkat komputer, dan ruang praktik mendukung pembentukan keterampilan. Fasilitas perlu sesuai tujuan pembelajaran, jumlah siswa, jenis pekerjaan, dan ketentuan keselamatan.</p>
+            <h3>B. Bentuk tantangan</h3><ul><li>Jumlah alat tidak sebanding dengan jumlah siswa.</li><li>Alat rusak atau belum terkalibrasi.</li><li>Bahan praktik dan biaya pemeliharaan terbatas.</li><li>Ruang, instalasi listrik, ventilasi, atau penyimpanan belum memadai.</li></ul>
+            <h3>C. Strategi pengelolaan</h3><ol><li>Mendata kondisi dan kebutuhan alat secara berkala.</li><li>Membuat jadwal penggunaan dan rotasi kelompok.</li><li>Membagi peran agar setiap siswa mendapat giliran melakukan praktik.</li><li>Melaksanakan perawatan, penyimpanan, dan pemeriksaan alat.</li><li>Mengembangkan kemitraan atau peminjaman fasilitas bila memungkinkan.</li></ol>
+            <h3>D. Peran simulasi digital</h3><p>Simulasi dapat digunakan untuk pengenalan rangkaian, prediksi hasil, dan latihan awal sebelum praktik fisik. Namun simulasi tidak sepenuhnya menggantikan pengalaman menggunakan alat nyata, mengukur, merakit, dan menerapkan K3.</p>
+            <h3>Contoh di SMK</h3><p>Jika multimeter dan osiloskop terbatas, guru membagi siswa ke beberapa stasiun: pengukuran, pengamatan demonstrasi, simulasi, dan pencatatan hasil. Kelompok berotasi sehingga setiap siswa tetap memperoleh pengalaman langsung.</p>`,
+        rangkuman: "Keterbatasan fasilitas dapat ditangani melalui inventarisasi, perawatan, rotasi, pembagian peran, kemitraan, dan simulasi sebagai pendukung praktik nyata."
     },
     {
-        judul: "Model Pembelajaran Pendidikan Teknik Elektronika",
-        ringkasan: "Mempelajari model pembelajaran yang mendukung keterampilan dan pemecahan masalah.",
-        tujuan: [
-            "Mengenal berbagai model pembelajaran teknik elektronika.",
-            "Menjelaskan karakteristik model pembelajaran.",
-            "Menentukan model pembelajaran sesuai kebutuhan praktik."
-        ],
+        judul: "Tantangan Pembelajaran Kolaboratif dan Kompetensi Kerja",
+        ringkasan: "Membangun komunikasi, tanggung jawab, kolaborasi, dan pemecahan masalah melalui proyek Teknik Elektronika.",
+        tujuan: ["Menjelaskan pentingnya kompetensi nonteknis.", "Mengidentifikasi masalah dalam kerja kelompok.", "Merancang pembelajaran proyek dengan pembagian peran dan penilaian yang adil."],
         isi: `
-            <h3>A. Project Based Learning (PjBL)</h3>
-            <p>
-                Project Based Learning merupakan model pembelajaran
-                berbasis proyek. Peserta didik mengerjakan suatu proyek
-                untuk menghasilkan produk atau karya melalui tahapan
-                perencanaan, pelaksanaan, dan evaluasi.
-            </p>
-
-            <h3>B. Problem Based Learning (PBL)</h3>
-            <p>
-                Problem Based Learning merupakan pembelajaran yang
-                menggunakan masalah nyata sebagai dasar kegiatan belajar.
-                Peserta didik menganalisis masalah, mencari informasi,
-                dan menyusun solusi.
-            </p>
-
-            <h3>C. Pembelajaran Praktik</h3>
-            <p>
-                Pembelajaran praktik memberikan kesempatan kepada peserta
-                didik untuk menerapkan teori secara langsung menggunakan
-                alat, bahan, dan peralatan sesuai bidang keahlian.
-            </p>
-
-            <h3>D. Pembelajaran Berbasis Kompetensi</h3>
-            <p>
-                Pembelajaran berbasis kompetensi menekankan pencapaian
-                kemampuan tertentu yang dapat dibuktikan melalui hasil
-                kerja atau unjuk kerja peserta didik.
-            </p>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Pada materi mikrokontroler, mahasiswa diberikan proyek
-                membuat sistem penyiram tanaman otomatis. Mahasiswa
-                merancang rangkaian, memprogram mikrokontroler,
-                menguji sensor, dan mengevaluasi hasil proyek.
-            </p>
-        `,
-        rangkuman: "Model pembelajaran teknik elektronika menekankan pengalaman langsung, pemecahan masalah, penyelesaian proyek, dan pencapaian kompetensi yang dapat diterapkan dalam pekerjaan."
+            <h3>A. Kompetensi teknis dan nonteknis</h3><p>Pembelajaran Teknik Elektronika tidak hanya mengembangkan keterampilan merancang, merakit, mengukur, dan menguji. Siswa juga perlu berlatih komunikasi, kolaborasi, disiplin, tanggung jawab, kreativitas, dan pemecahan masalah.</p>
+            <h3>B. Tantangan kerja kelompok</h3><ul><li>Pembagian tugas tidak jelas.</li><li>Kontribusi anggota tidak seimbang.</li><li>Komunikasi dan penyelesaian konflik kurang baik.</li><li>Target dan jadwal kerja tidak dipantau.</li><li>Penilaian hanya berfokus pada produk akhir.</li></ul>
+            <h3>C. Strategi pembelajaran</h3><p>Guru dapat menerapkan Project Based Learning (PjBL) atau Problem Based Learning (PBL) dengan masalah kontekstual. Tetapkan tujuan, peran, jadwal, target tiap tahap, aturan komunikasi, dan bukti kontribusi. Lakukan pemantauan serta refleksi selama proyek berlangsung.</p>
+            <h3>D. Penilaian kolaborasi</h3><p>Gunakan rubrik yang menilai kualitas produk, proses kerja, komunikasi, tanggung jawab, keselamatan, dokumentasi, dan kontribusi individu. Penilaian individu dan kelompok perlu saling melengkapi.</p>
+            <h3>Contoh di SMK</h3><p>Dalam proyek sistem monitoring suhu, siswa berbagi peran sebagai perancang, perakit/programmer, penguji, dan penyaji. Setiap siswa mengisi logbook, sementara kelompok menyampaikan hasil dan refleksi.</p>`,
+        rangkuman: "Pembelajaran kolaboratif perlu dirancang dengan peran dan target jelas, pemantauan proses, dokumentasi kontribusi, serta penilaian individu dan kelompok."
     },
     {
-        judul: "Penilaian Kompetensi",
-        ringkasan: "Memahami penilaian pengetahuan, sikap, dan keterampilan peserta didik.",
-        tujuan: [
-            "Memahami pengertian penilaian kompetensi.",
-            "Membedakan aspek kognitif, afektif, dan psikomotorik.",
-            "Mengetahui teknik penilaian dalam pendidikan teknik elektronika."
-        ],
+        judul: "Tantangan Penilaian dan Sertifikasi Kompetensi",
+        ringkasan: "Memahami asesmen pengetahuan, sikap, keterampilan, dan persiapan uji kompetensi.",
+        tujuan: ["Membedakan aspek penilaian kompetensi.", "Menentukan bukti unjuk kerja yang sesuai.", "Menjelaskan hubungan pembelajaran, asesmen, dan sertifikasi profesi."],
         isi: `
-            <h3>A. Pengertian Penilaian Kompetensi</h3>
-            <p>
-                Penilaian kompetensi merupakan proses mengumpulkan dan
-                mengolah informasi untuk mengetahui pencapaian kemampuan
-                peserta didik berdasarkan tujuan pembelajaran atau
-                standar kompetensi yang telah ditentukan.
-            </p>
-
-            <h3>B. Aspek Penilaian</h3>
-            <ul>
-                <li><b>Kognitif:</b> mengukur pengetahuan dan pemahaman peserta didik.</li>
-                <li><b>Afektif:</b> menilai sikap, kedisiplinan, tanggung jawab, dan kerja sama.</li>
-                <li><b>Psikomotorik:</b> menilai keterampilan dalam melakukan suatu pekerjaan atau praktik.</li>
-            </ul>
-
-            <h3>C. Teknik Penilaian</h3>
-            <ul>
-                <li>Tes tertulis untuk mengukur pemahaman teori.</li>
-                <li>Observasi untuk menilai sikap dan perilaku.</li>
-                <li>Praktik atau unjuk kerja untuk menilai keterampilan.</li>
-                <li>Portofolio untuk menilai kumpulan hasil pekerjaan.</li>
-                <li>Proyek untuk menilai kemampuan menyelesaikan tugas secara menyeluruh.</li>
-            </ul>
-
-            <h3>Contoh Penerapan</h3>
-            <p>
-                Dalam praktik merakit rangkaian elektronika, penilaian
-                kognitif dapat dilakukan melalui pertanyaan tentang fungsi
-                komponen, penilaian afektif melalui kedisiplinan dan
-                keselamatan kerja, serta penilaian psikomotorik melalui
-                ketepatan proses perakitan dan hasil rangkaian.
-            </p>
-        `,
-        rangkuman: "Penilaian kompetensi dalam pendidikan teknik elektronika mencakup pengetahuan, sikap, dan keterampilan agar kemampuan peserta didik dapat dinilai secara menyeluruh."
+            <h3>A. Penilaian berbasis kompetensi</h3><p>Penilaian kompetensi mengumpulkan bukti untuk menentukan apakah siswa telah mencapai kemampuan yang ditetapkan. Penilaian perlu transparan, sesuai kriteria, dan terkait dengan tugas atau pekerjaan yang dipelajari.</p>
+            <h3>B. Aspek yang dinilai</h3><ul><li><b>Pengetahuan:</b> pemahaman konsep, fungsi komponen, prosedur, dan alasan teknis.</li><li><b>Sikap kerja:</b> disiplin, tanggung jawab, komunikasi, dan kepatuhan terhadap K3.</li><li><b>Keterampilan:</b> ketepatan merakit, mengukur, menguji, mendiagnosis, dan mendokumentasikan pekerjaan.</li></ul>
+            <h3>C. Teknik dan bukti penilaian</h3><p>Teknik dapat berupa tes tertulis/lisan, observasi, demonstrasi, praktik atau unjuk kerja, proyek, portofolio, dan penilaian produk. Rubrik harus memuat kriteria seperti prosedur, ketepatan, fungsi, mutu, keselamatan, dan dokumentasi.</p>
+            <h3>D. Sertifikasi kompetensi</h3><p>Sertifikasi merupakan pengakuan kompetensi melalui proses asesmen berdasarkan skema dan ketentuan lembaga sertifikasi yang berwenang. Sertifikat tidak otomatis diperoleh hanya karena mengikuti pembelajaran atau menyelesaikan proyek. Siswa perlu memahami unit kompetensi, menyiapkan bukti, dan mengikuti asesmen sesuai prosedur.</p>
+            <h3>Contoh di SMK</h3><p>Siswa diminta merakit dan menguji rangkaian catu daya. Guru menilai pemahaman rangkaian, penerapan K3, proses perakitan, hasil pengukuran, fungsi alat, dan laporan. Latihan ini dapat menjadi persiapan, tetapi bukan sertifikasi resmi.</p>`,
+        rangkuman: "Penilaian kompetensi harus mengukur pengetahuan, sikap kerja, dan keterampilan melalui bukti yang relevan. Sertifikasi memerlukan asesmen resmi sesuai skema yang berlaku."
     }
 ];
 
@@ -1576,15 +1448,15 @@ const dataStudiKasusVEC = [
         judul: "Kurikulum yang Tidak Sesuai Perkembangan Teknologi",
         kategori: "Kurikulum Teknik Elektronika",
         bacaan: [
-            "Sebuah lembaga pendidikan teknik elektronika masih menggunakan kurikulum yang disusun beberapa tahun lalu. Materi pembelajaran lebih banyak membahas teknologi konvensional, sedangkan dunia industri telah menggunakan sistem otomasi, Internet of Things (IoT), dan teknologi digital.",
-            "Mahasiswa mulai mengalami kesulitan ketika mengikuti kegiatan magang karena belum memahami teknologi yang digunakan perusahaan. Mereka membutuhkan waktu lebih lama untuk beradaptasi dengan peralatan dan sistem kerja yang baru.",
-            "Pihak lembaga menyadari bahwa kurikulum perlu diperbarui. Namun, perubahan tersebut membutuhkan koordinasi antara pengelola pendidikan, guru atau dosen, serta pihak industri agar materi pembelajaran tetap relevan dengan kebutuhan pekerjaan."
+            "Sebuah SMK Program Keahlian Teknik Elektronika masih menggunakan kurikulum yang disusun beberapa tahun lalu. Materi pembelajaran lebih banyak membahas teknologi konvensional, sedangkan dunia industri telah menggunakan sistem otomasi, Internet of Things (IoT), dan teknologi digital.",
+            "Siswa mulai mengalami kesulitan ketika mengikuti praktik kerja lapangan karena belum memahami teknologi yang digunakan perusahaan. Mereka membutuhkan waktu lebih lama untuk beradaptasi dengan peralatan dan sistem kerja yang baru.",
+            "Pihak sekolah menyadari bahwa kurikulum perlu diperbarui. Namun, perubahan tersebut membutuhkan koordinasi antara pengelola sekolah, guru, serta pihak industri agar materi pembelajaran tetap relevan dengan kebutuhan pekerjaan."
         ],
         pertanyaan: [
             "Mengapa kurikulum pendidikan teknik elektronika perlu mengikuti perkembangan teknologi?",
-            "Apa dampak penggunaan kurikulum yang sudah tidak relevan bagi mahasiswa?",
+            "Apa dampak penggunaan kurikulum yang sudah tidak relevan bagi siswa SMK?",
             "Bagaimana cara melibatkan industri dalam pengembangan kurikulum?",
-            "Materi atau kompetensi teknologi apa yang perlu ditambahkan dalam pembelajaran Teknik Elektronika?"
+            "Materi atau kompetensi teknologi apa yang perlu ditambahkan dalam pembelajaran Teknik Elektronika di SMK?"
         ]
     },
     {
@@ -1603,25 +1475,25 @@ const dataStudiKasusVEC = [
         ]
     },
     {
-        judul: "Rendahnya Keterampilan Kerja Sama Mahasiswa",
+        judul: "Rendahnya Keterampilan Kerja Sama Siswa SMK",
         kategori: "Kompetensi Kerja",
         bacaan: [
-            "Dalam sebuah kegiatan proyek elektronika, mahasiswa dibagi menjadi beberapa kelompok untuk merancang dan membuat sistem kendali sederhana. Setiap anggota memiliki tugas yang berbeda, seperti merancang rangkaian, membuat program, merakit komponen, dan melakukan pengujian.",
-            "Namun, pelaksanaan proyek mengalami hambatan. Beberapa mahasiswa tidak menjalankan tugas sesuai pembagian, komunikasi antaranggotanya kurang baik, dan sebagian pekerjaan hanya dikerjakan oleh satu atau dua orang.",
-            "Akibatnya, proyek terlambat diselesaikan dan hasilnya tidak sesuai target. Dosen kemudian mengevaluasi proses pembelajaran dan menyadari bahwa mahasiswa tidak hanya perlu menguasai keterampilan teknis, tetapi juga keterampilan komunikasi, tanggung jawab, dan kerja sama tim."
+            "Dalam sebuah kegiatan proyek elektronika di kelas XI SMK, siswa dibagi menjadi beberapa kelompok untuk merancang dan membuat sistem kendali sederhana. Setiap anggota memiliki tugas yang berbeda, seperti merancang rangkaian, membuat program, merakit komponen, dan melakukan pengujian.",
+            "Namun, pelaksanaan proyek mengalami hambatan. Beberapa siswa tidak menjalankan tugas sesuai pembagian, komunikasi antaranggotanya kurang baik, dan sebagian pekerjaan hanya dikerjakan oleh satu atau dua orang.",
+            "Akibatnya, proyek terlambat diselesaikan dan hasilnya tidak sesuai target. Guru kemudian mengevaluasi proses pembelajaran dan menyadari bahwa siswa tidak hanya perlu menguasai keterampilan teknis, tetapi juga keterampilan komunikasi, tanggung jawab, dan kerja sama tim."
         ],
         pertanyaan: [
             "Apa penyebab utama kurang efektifnya kerja kelompok dalam kasus tersebut?",
-            "Mengapa keterampilan kerja sama penting bagi lulusan pendidikan teknik elektronika?",
+            "Mengapa keterampilan kerja sama penting bagi lulusan SMK Teknik Elektronika?",
             "Bagaimana cara membangun komunikasi dan tanggung jawab dalam sebuah tim?",
-            "Bagaimana dosen dapat menilai keterampilan kerja sama mahasiswa?"
+            "Bagaimana guru dapat menilai keterampilan kerja sama siswa?"
         ]
     },
     {
         judul: "Sertifikasi Kompetensi sebagai Bekal Memasuki Dunia Kerja",
         kategori: "Sertifikasi Kompetensi",
         bacaan: [
-            "Seorang lulusan pendidikan teknik elektronika memiliki kemampuan yang cukup baik dalam merakit dan memperbaiki perangkat elektronika. Selama mengikuti pendidikan, ia telah melakukan berbagai kegiatan praktik dan menyelesaikan beberapa proyek.",
+            "Seorang lulusan SMK Program Keahlian Teknik Elektronika memiliki kemampuan yang cukup baik dalam merakit dan memperbaiki perangkat elektronika. Selama mengikuti pembelajaran, ia telah melakukan berbagai kegiatan praktik dan menyelesaikan beberapa proyek.",
             "Ketika melamar pekerjaan, perusahaan meminta bukti kompetensi yang dapat menunjukkan bahwa pelamar telah memenuhi standar kemampuan tertentu. Lulusan tersebut belum memiliki sertifikat kompetensi sehingga harus mengikuti proses pengujian untuk membuktikan keterampilannya.",
             "Sekolah kemudian mempertimbangkan untuk bekerja sama dengan Lembaga Sertifikasi Profesi (LSP) agar siswa dapat mengikuti uji kompetensi sesuai bidang keahliannya. Dengan demikian, lulusan tidak hanya memiliki ijazah, tetapi juga bukti kemampuan yang diakui sesuai skema sertifikasi yang diikuti."
         ],
@@ -1629,8 +1501,60 @@ const dataStudiKasusVEC = [
             "Apa fungsi sertifikasi kompetensi bagi lulusan pendidikan teknik elektronika?",
             "Mengapa perusahaan membutuhkan bukti kompetensi calon tenaga kerja?",
             "Bagaimana peran Lembaga Sertifikasi Profesi dalam pendidikan teknik elektronika?",
-            "Apa manfaat sertifikasi kompetensi bagi mahasiswa ketika memasuki dunia kerja?"
+            "Apa manfaat sertifikasi kompetensi bagi lulusan SMK ketika memasuki dunia kerja?"
         ]
+    }
+];
+
+// Pengayaan studi kasus: analisis kritis dan praktik yang dapat disimulasikan.
+const pengayaanStudiKasusVEC = [
+    {
+        diagnosis: "Kompetensi lulusan belum terpetakan terhadap kebutuhan kerja. Materi mikrokontroler masih berhenti pada pemrograman dasar, sementara industri mulai membutuhkan integrasi sensor, konektivitas, dan pemantauan data.",
+        penyebab: ["Kurikulum dan jobsheet belum ditinjau bersama industri.", "Pendidik belum memperoleh pembaruan kompetensi atau pelatihan teknologi terbaru.", "Masukan dari HRD, teknisi, dan alumni belum dikumpulkan secara terstruktur."],
+        solusi: ["Adakan FGD satu hari dengan 1–2 mitra industri lokal, alumni, dan pendidik untuk memetakan kompetensi prioritas.", "Perbarui satu unit pembelajaran, misalnya Mikrokontroler menjadi Mikrokontroler dan IoT menggunakan ESP32, sensor, serta dashboard sederhana.", "Bangun proyek bersama industri dan siapkan mahasiswa mengikuti sertifikasi melalui LSP sesuai skema yang tersedia; sertifikat tidak diberikan otomatis."],
+        praktik: "Simulasi FGD Link and Match (30 menit): bentuk kelompok dengan peran HRD industri, alumni, pendidik, dan mahasiswa. Catat tiga kompetensi yang dibutuhkan, bandingkan dengan materi yang diajarkan, lalu susun tabel kesenjangan dan satu usulan revisi capaian pembelajaran.",
+        bukti: "Produk kegiatan: tabel kebutuhan industri vs. capaian pembelajaran, notulen FGD, dan rancangan jobsheet ESP32–IoT.",
+        refleksi: "Apakah usulan pembaruan benar-benar menjawab kebutuhan industri, atau hanya menambahkan istilah teknologi baru tanpa membuktikan kompetensinya?"
+    },
+    {
+        diagnosis: "Teaching Factory belum berjalan karena sekolah mencoba membangun unit produksi terlalu besar sebelum memiliki alur layanan, standar mutu, pembimbing, dan pelanggan yang jelas.",
+        penyebab: ["Belum ada produk atau jasa awal yang realistis.", "Peran peserta, pendidik, dan penanggung jawab mutu belum jelas.", "Kegiatan produksi belum menggunakan SOP, keselamatan kerja, dan pencatatan biaya."],
+        solusi: ["Mulai dari satu layanan atau produk sederhana, misalnya perakitan lampu LED otomatis, pemeriksaan perangkat elektronika, atau kit edukasi; pilih sesuai fasilitas, keselamatan, dan kebutuhan pasar.", "Buat alur pesanan–desain–produksi–pengujian–QC–serah terima. Peserta mengerjakan dengan supervisi pendidik.", "Lakukan uji coba pesanan terbatas terlebih dahulu. Hasil dapat dipasarkan jika memenuhi standar, keselamatan, dan aturan sekolah."],
+        praktik: "Simulasi pabrik mini: kelompok membagi peran menjadi produksi, quality control (QC), dan pemasaran. Rancang lampu otomatis, buat daftar komponen dan SOP, uji fungsi dengan checklist, lalu presentasikan harga pokok, mutu, dan masukan pelanggan.",
+        bukti: "Produk kegiatan: diagram alur produksi, jobsheet, checklist QC, catatan biaya, dan portofolio foto/video proses.",
+        refleksi: "Apakah kegiatan ini benar-benar meniru budaya kerja industri—termasuk mutu, keselamatan, tenggat, dan kepuasan pengguna—atau hanya membuat produk untuk tugas?"
+    },
+    {
+        diagnosis: "Kurikulum terlalu berpusat pada penyampaian teori dan kurang memberi ruang bagi mahasiswa untuk menerapkan konsep pada proyek yang relevan dengan perkembangan teknologi.",
+        penyebab: ["Peninjauan kurikulum belum dilakukan secara berkala.", "Kegiatan proyek belum terhubung dengan capaian pembelajaran dan asesmen.", "Teknologi baru ditambahkan sebagai materi terpisah, bukan konteks penerapan konsep dasar."],
+        solusi: ["Tinjau capaian pembelajaran bersama dosen, mahasiswa, alumni, dan mitra industri secara berkala.", "Gunakan pembelajaran berbasis proyek secara proporsional. Komposisi teori dan proyek ditentukan oleh capaian, tingkat kesulitan, keselamatan, serta waktu; angka 30:70 dapat menjadi rancangan awal, bukan aturan mutlak.", "Susun peta proyek bertahap: lampu otomatis, sistem smart home, lalu monitoring PLTS. Nilai fungsi produk, proses desain, pengujian, dokumentasi, dan presentasi."],
+        praktik: "Simulasi digital: rancang lampu otomatis berbasis Arduino, sensor cahaya (LDR), dan LED di Tinkercad. Untuk proyek ESP32 dan IoT gunakan Wokwi atau simulator yang mendukung ESP32. Uji beberapa kondisi, dokumentasikan hasil, lalu jelaskan konsep elektronika yang mendasarinya.",
+        bukti: "Produk kegiatan: peta kurikulum berbasis proyek, diagram rangkaian, tabel hasil pengujian, video demonstrasi, dan rubrik penilaian produk.",
+        refleksi: "Bagaimana memastikan proyek tidak sekadar menarik, tetapi tetap mengukur konsep dasar, kompetensi teknis, pemecahan masalah, dan keselamatan?"
+    },
+    {
+        diagnosis: "Kesempatan praktik tidak merata karena rasio alat terhadap jumlah peserta terlalu besar. Sebagian peserta hanya menjadi pengamat sehingga keterampilan menggunakan alat ukur tidak berkembang.",
+        penyebab: ["Jumlah alat terbatas dan perawatan belum terjadwal.", "Penggunaan alat belum diatur dengan rotasi dan pembagian peran.", "Kegiatan simulasi belum dimanfaatkan sebagai persiapan sebelum praktik langsung."],
+        solusi: ["Atur kelompok kecil dan rotasi stasiun; contoh satu kit digunakan tiga orang dengan peran operator, pencatat, dan pemeriksa yang bergantian.", "Gunakan Tinkercad untuk rangkaian dasar Arduino, Wokwi untuk ESP32, CADe SIMU untuk latihan rangkaian kendali listrik, atau PLC Fiddle untuk logika PLC jika sesuai materi dan tersedia. Simulasi menjadi persiapan sebelum praktik nyata, bukan pengganti permanen; pastikan setiap peserta tetap mendapat giliran menggunakan alat fisik.", "Buat kit portable sederhana berdasarkan kebutuhan dan anggaran, serta lakukan inventarisasi, pemeliharaan, dan pemeriksaan keselamatan."],
+        praktik: "Simulasi lab virtual: peserta merancang rangkaian LED dan resistor di Tinkercad, memprediksi tegangan/arus, lalu membandingkannya dengan pengukuran nyata menggunakan multimeter secara bergiliran. Catat selisih hasil dan kemungkinan penyebabnya.",
+        bukti: "Produk kegiatan: jadwal rotasi, lembar kerja prediksi dan pengukuran, daftar inventaris, serta catatan perawatan alat.",
+        refleksi: "Apakah semua peserta memperoleh kesempatan melakukan keterampilan inti secara langsung, atau simulasi justru menjadi pengganti permanen praktik laboratorium?"
+    },
+    {
+        diagnosis: "Proyek kelompok tidak berjalan efektif karena pembagian tugas dan indikator kontribusi tidak jelas. Penilaian yang hanya berfokus pada produk akhir dapat menyembunyikan ketimpangan kerja.",
+        penyebab: ["Peran dan target tiap anggota tidak disepakati sejak awal.", "Tidak ada dokumentasi kontribusi dan evaluasi proses.", "Nilai kelompok disamaratakan tanpa asesmen individu."],
+        solusi: ["Untuk tim tiga orang, tetapkan peran perancang rangkaian, perakit/programmer, serta penguji dan dokumentator/presenter; lakukan rotasi peran pada proyek berikutnya.", "Gunakan logbook tugas, target mingguan, dan pemeriksaan kemajuan.", "Gabungkan penilaian produk/kelompok dengan penilaian individu melalui demonstrasi, tanya jawab, dan refleksi. Proporsi 50:50 dapat dipakai sebagai contoh lalu disesuaikan dengan rubrik."],
+        praktik: "Simulasi kerja tim: rancang alat monitoring suhu sederhana untuk kebutuhan ruang penyimpanan UMKM. Setiap anggota menandatangani pembagian tugas, mengisi logbook, melakukan peer assessment, dan menjelaskan kontribusinya saat presentasi.",
+        bukti: "Produk kegiatan: matriks pembagian peran, logbook, prototipe, hasil uji, penilaian teman sejawat, dan refleksi individu.",
+        refleksi: "Bagaimana guru membedakan kontribusi nyata tiap siswa tanpa mengabaikan keberhasilan kolaborasi sebagai satu tim?"
+    },
+    {
+        diagnosis: "Kemampuan praktik lulusan belum didukung bukti kompetensi yang mudah diverifikasi oleh pengguna lulusan. Ijazah dan portofolio memiliki fungsi berbeda dari sertifikat kompetensi.",
+        penyebab: ["Persiapan uji kompetensi dilakukan terlalu dekat dengan kelulusan.", "Latihan belum mengacu pada unit kompetensi atau skema yang relevan.", "Mahasiswa belum terbiasa mendokumentasikan bukti kerja."],
+        solusi: ["Identifikasi skema sertifikasi yang sesuai bidang dan tersedia pada LSP berlisensi; cek persyaratan serta unit kompetensinya.", "Integrasikan latihan unjuk kerja, SOP, keselamatan, dan checklist asesmen sejak semester awal.", "Bangun portofolio proyek berisi tujuan, diagram, proses, hasil pengujian, video demonstrasi, dan refleksi. Sertifikat hanya diperoleh setelah dinyatakan kompeten oleh asesmen resmi."],
+        praktik: "Simulasi uji kompetensi: peserta mendapat tugas merakit atau mendiagnosis rangkaian elektronika dalam waktu yang ditetapkan. Penguji menggunakan checklist prosedur kerja, keselamatan, ketepatan hasil, dan dokumentasi. Simulasi ini latihan, bukan sertifikasi resmi BNSP.",
+        bukti: "Produk kegiatan: checklist unjuk kerja, lembar hasil asesmen latihan, portofolio proyek, dan rencana tindak lanjut kompetensi.",
+        refleksi: "Apakah bukti yang dikumpulkan menunjukkan kemampuan yang benar-benar dilakukan peserta, dan apakah skema sertifikasi yang dipilih relevan serta resmi?"
     }
 ];
 
@@ -1727,6 +1651,41 @@ async function bukaStudiKasus(index) {
         studiKasusDetailContent.appendChild(p);
     });
 
+    // Contoh gambar dan video penerapan di lingkungan SMK/kelas
+    if (window.VECMedia) {
+        const panelMedia = window.VECMedia.buat(index);
+        if (panelMedia) studiKasusDetailContent.appendChild(panelMedia);
+    }
+
+    // Analisis kritis, solusi konkret, dan simulasi kelas/sekolah
+    const pengayaan = pengayaanStudiKasusVEC[index];
+    if (pengayaan) {
+        const panel = document.createElement("section");
+        panel.className = "studi-kasus-enrichment";
+        const buatBagian = (judulBagian, isi, daftar = false) => {
+            const bagian = document.createElement("div");
+            bagian.className = "studi-kasus-enrichment-section";
+            const h = document.createElement("h3");
+            h.textContent = judulBagian;
+            bagian.appendChild(h);
+            if (daftar) {
+                const ul = document.createElement("ul");
+                isi.forEach(teks => { const li = document.createElement("li"); li.textContent = teks; ul.appendChild(li); });
+                bagian.appendChild(ul);
+            } else {
+                const p = document.createElement("p"); p.textContent = isi; bagian.appendChild(p);
+            }
+            panel.appendChild(bagian);
+        };
+        buatBagian("Analisis Masalah", pengayaan.diagnosis);
+        buatBagian("Akar Penyebab", pengayaan.penyebab, true);
+        buatBagian("Solusi Konkret", pengayaan.solusi, true);
+        buatBagian("Simulasi yang Dapat Dilakukan", pengayaan.praktik);
+        buatBagian("Bukti atau Hasil yang Diharapkan", pengayaan.bukti);
+        buatBagian("Pertanyaan Berpikir Kritis", pengayaan.refleksi);
+        studiKasusDetailContent.appendChild(panel);
+    }
+
     // Mengambil jawaban mahasiswa dari Supabase
     const nim = currentUser?.user_metadata?.nim;
     let jawabanTersimpan = [];
@@ -1815,6 +1774,9 @@ async function bukaStudiKasus(index) {
             if (data?.success) {
                 pesan.textContent = "Jawaban berhasil disimpan.";
                 showToast("Jawaban berhasil disimpan.");
+                if (typeof muatProgresStudiKasus === "function" && currentUser) {
+                    muatProgresStudiKasus(currentUser);
+                }
             } else {
                 pesan.textContent = "Jawaban gagal disimpan.";
             }
@@ -3208,176 +3170,7 @@ document.querySelector('[data-page="Leaderboard"]')
 document.getElementById("refreshLeaderboardBtn")
     ?.addEventListener("click", muatLeaderboardVEC);
 
-// ==========================================
-// SIMULASI HUKUM KIRCHHOFF I (KCL)
-// ==========================================
-
-const tombolKCL = document.getElementById("hitungKCL");
-
-if (tombolKCL) {
-    tombolKCL.addEventListener("click", function () {
-
-        const arusMasuk = Number(
-            document.getElementById("arusMasuk").value
-        );
-
-        const arusKeluar1 = Number(
-            document.getElementById("arusKeluar1").value
-        );
-
-        const arusKeluar2 = Number(
-            document.getElementById("arusKeluar2").value
-        );
-
-        const hasilKCL = document.getElementById("hasilKCL");
-
-        const semuaInput = [
-            document.getElementById("arusMasuk"),
-            document.getElementById("arusKeluar1"),
-            document.getElementById("arusKeluar2")
-        ];
-
-        if (semuaInput.some(input =>
-            input.value.trim() === "" ||
-            !Number.isFinite(Number(input.value)) ||
-            Number(input.value) < 0
-        )) {
-            hasilKCL.innerHTML = `
-                <p>Masukkan nilai arus yang valid dan tidak negatif.</p>
-            `;
-            return;
-        }
-
-        const totalArusKeluar = arusKeluar1 + arusKeluar2;
-
-        document.getElementById("labelArusMasuk").textContent =
-            `I₁ = ${arusMasuk} A`;
-
-        document.getElementById("labelArusKeluar1").textContent =
-            `I₂ = ${arusKeluar1} A`;
-
-        document.getElementById("labelArusKeluar2").textContent =
-            `I₃ = ${arusKeluar2} A`;
-
-        const selisih = Math.abs(arusMasuk - totalArusKeluar);
-
-        if (selisih < 0.001) {
-            hasilKCL.classList.remove("status-salah");
-            hasilKCL.classList.add("status-benar");
-            hasilKCL.innerHTML = `
-                <h4>Benar! Arus Seimbang</h4>
-                <p>Arus Masuk = ${arusMasuk} A</p>
-                <p>Total Arus Keluar = ${totalArusKeluar} A</p>
-                <p>ΣI masuk = ΣI keluar</p>
-                <p>Hukum Kirchhoff I terpenuhi.</p>
-            `;
-        } else {
-            hasilKCL.classList.remove("status-benar");
-            hasilKCL.classList.add("status-salah");
-            hasilKCL.innerHTML = `
-                <h4>Belum Seimbang</h4>
-                <p>Arus Masuk = ${arusMasuk} A</p>
-                <p>Total Arus Keluar = ${totalArusKeluar} A</p>
-                <p>Selisih Arus = ${selisih.toFixed(2)} A</p>
-                <p>Ubah nilai arus agar jumlah arus masuk dan keluar sama.</p>
-            `;
-        }
-    });
-}
-
-// ==========================================
-// SIMULASI HUKUM KIRCHHOFF II (KVL)
-// ==========================================
-
-const tombolKVL = document.getElementById("hitungKVL");
-
-if (tombolKVL) {
-    tombolKVL.addEventListener("click", function () {
-
-        const sumber = Number(
-            document.getElementById("teganganSumber").value
-        );
-
-        const R1 = Number(
-            document.getElementById("resistor1").value
-        );
-
-        const R2 = Number(
-            document.getElementById("resistor2").value
-        );
-
-        const hasil = document.getElementById("hasilKVL");
-
-        const inputKVL = [
-            document.getElementById("teganganSumber"),
-            document.getElementById("resistor1"),
-            document.getElementById("resistor2")
-        ];
-
-        if (inputKVL.some(input =>
-            input.value.trim() === "" ||
-            !Number.isFinite(Number(input.value)) ||
-            Number(input.value) <= 0
-        )) {
-            hasil.innerHTML = `
-                <h4>Input Tidak Valid</h4>
-                <p>Masukkan tegangan dan hambatan lebih dari 0.</p>
-            `;
-            return;
-        }
-
-        // Menghitung arus rangkaian seri
-        const hambatanTotal = R1 + R2;
-        const arus = sumber / hambatanTotal;
-
-        // Menghitung tegangan pada resistor
-        const V1 = arus * R1;
-        const V2 = arus * R2;
-
-        // Memperbarui nilai pada diagram KVL
-        document.getElementById("labelSumberKVL").textContent =
-            `Vs = ${sumber} V`;
-
-        document.getElementById("labelR1KVL").textContent =
-            `R₁ = ${R1} Ω`;
-
-        document.getElementById("labelR2KVL").textContent =
-            `R₂ = ${R2} Ω`;
-
-        document.getElementById("labelArusKVL").textContent =
-            `I = ${arus.toFixed(2)} A`;
-
-        // Membuktikan Hukum Kirchhoff II
-        const totalTegangan = V1 + V2;
-        const selisih = Math.abs(sumber - totalTegangan);
-
-        hasil.classList.remove("status-benar", "status-salah");
-        hasil.classList.add(
-            selisih < 0.001 ? "status-benar" : "status-salah"
-        );
-
-        hasil.innerHTML = `
-            <h4>Hasil Perhitungan KVL</h4>
-
-            <p>Hambatan Total = ${hambatanTotal.toFixed(2)} Ω</p>
-            <p>Arus Rangkaian = ${arus.toFixed(2)} A</p>
-
-            <p>Tegangan R₁ = ${V1.toFixed(2)} V</p>
-            <p>Tegangan R₂ = ${V2.toFixed(2)} V</p>
-
-            <p>Tegangan Sumber = ${sumber.toFixed(2)} V</p>
-            <p>Total Tegangan Resistor = ${totalTegangan.toFixed(2)} V</p>
-
-            <h4>
-                ${selisih < 0.001
-                    ? "Benar! Hukum Kirchhoff II Terpenuhi"
-                    : "Perhitungan Belum Seimbang"}
-            </h4>
-
-            <p>ΣV = Vs - V₁ - V₂ = ${selisih < 0.001 ? "0 V" : (sumber - totalTegangan).toFixed(4) + " V"}</p>
-        `;
-    });
-}
+// Aktivitas simulasi rangkaian KCL/KVL lama digantikan simulasi keputusan BAB 7.
 
 // ==========================================
 // MEMUAT STREAK BELAJAR
